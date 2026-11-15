@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# A page rendered by hand with "capped_dkp_publish.py render"; the workflow builds its own.
+/_site/
+/community-data.json

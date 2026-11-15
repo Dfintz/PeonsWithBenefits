@@ -1,0 +1,1624 @@
+# SPDX-License-Identifier: Apache-2.0
+"""Original publisher for the approved Capped DKP ledger.
+
+  ingest    copy an addon export (journal + character rows) into the private ledger folder
+  verify    re-check the ledger; --replay-addon replays it through the addon rules
+  site      write a static public page plus standings.json, history.json and the guild logo
+  render    rebuild the full guild page from published standings/history JSON (public repository)
+  announce  print new events, or post them to a Discord webhook with --send
+
+Only `announce --send` uses the network, and only to the webhook in DISCORD_WEBHOOK_URL. The URL is
+never accepted on the command line and never printed. Nothing here touches the game, SavedVariables,
+Git or Raid-Helper, and no command runs unless you invoke it. Community data (Raid-Helper sign-ups,
+live streams, Wowhead item names) is fetched separately by capped_dkp_community.py.
+
+The public pages show player names, DKP balances, raiding class/spec with its raid role, and awarded
+loot by design. They never show BattleTags, Discord IDs, Discord names, free-text notes, disciplinary
+findings or who recorded, checked or approved an event. Those stay in the private ledger, which this
+tool reads in full so that the public page can still be checked against it.
+"""
+
+import argparse
+import base64
+import hashlib
+import html
+import json
+import math
+import os
+import re
+import sys
+import time
+import unicodedata
+import urllib.error
+import urllib.parse
+import urllib.request
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+
+_TOOLS = str(Path(__file__).resolve().parent)
+if _TOOLS not in sys.path:
+    sys.path.insert(0, _TOOLS)
+
+import capped_dkp_ledger as store  # noqa: E402
+from capped_dkp_ledger import IntegrityError, RemoteError, ToolError  # noqa: E402
+
+STANDINGS_FORMAT = "capped-dkp-public-standings"
+HISTORY_FORMAT = "capped-dkp-public-history"
+CURSOR_FORMAT = "capped-dkp-announce-cursor"
+SITE_VERSION = 1
+WEBHOOK_VARIABLE = "DISCORD_WEBHOOK_URL"
+WEBHOOK_PATTERN = re.compile(
+    r"https://(?:(?:ptb|canary)\.)?(?:discord|discordapp)\.com/api/webhooks/[0-9]{17,20}/[A-Za-z0-9_-]{16,128}")
+DEFAULT_USERNAME = "Capped DKP Ledger"
+USER_AGENT = "CappedDKP-Publisher/1.0"
+TIMEOUT_SECONDS = 30
+MESSAGE_LIMIT = 1900
+LINE_LIMIT = 300
+FIELD_LIMIT = 80
+NAME_LIMIT = 120
+SUMMARY_LIMIT = 200
+RECENT_EVENTS = 250
+CURSOR_BYTES = 4096
+
+# Records that hold private identities, and disciplinary findings. Both are counted in history.json
+# ("omitted") without saying which kind they were, and never shown on the page or in Discord. A penalty's
+# effect on a balance stays visible in the standings; the finding behind it does not.
+IDENTITY_KINDS = frozenset({"battletag", "discord", "discordname"})
+DISCIPLINARY_KINDS = frozenset({"misclaim", "penaltyappeal", "appealfile"})
+PRIVATE_KINDS = IDENTITY_KINDS | DISCIPLINARY_KINDS
+PAGE_ACTIVITY = frozenset({
+    "boss", "award", "disenchant", "progression", "tradeaward", "adjust", "repair", "creditrepair", "reverse",
+    "improper", "week", "depart", "returned", "policy", "adopt", "cap", "appeal", "plan", "lateplan", "farm",
+    "settlecredit", "reassign", "cutover", "bank", "account", "rosteradd", "alt",
+})
+DISCORD_ACTIVITY = PAGE_ACTIVITY - {"account", "rosteradd", "alt"}
+
+# Only these keys are ever copied out of an event. Free text (evidence, reason, proceeds), Discord and
+# BattleTag values, spec, per-account result tables and the officers who checked or approved an event
+# (checker, approval, approver) are deliberately absent.
+FIELDS = (
+    "character", "account", "run", "raid", "boss", "encounterName", "item", "mode", "cost", "amount",
+    "action", "status", "rank", "role", "group", "method", "value", "farm",
+    "start", "finish", "killed", "effective",
+)
+# An event's result can be the award it refers to (a reversal, for example), so only the facts that describe
+# the item and its price are taken from it, never who checked or approved the original award.
+RESULT_FIELDS = frozenset({"account", "item", "cost", "mode", "run", "method"})
+SUMMARY_SKIPPED = frozenset({"farm", "start", "finish", "killed", "effective"})
+COUNT_FIELDS = ("present", "items", "bosses", "names")
+
+LABELS = {
+    "setup": "Guild setup recorded", "roles": "Roles changed", "cap": "DKP cap changed",
+    "policy": "Membership policy adopted",
+    "rankmap": "Ranks mapped", "membership": "Membership changed", "guildrefresh": "Roster refreshed",
+    "rolemap": "Rank roles mapped", "rotlist": "ROT list changed", "tier": "Loot guide changed",
+    "classify": "Item classified", "lock": "Loot guide locked", "account": "Player added",
+    "rosteradd": "Roster players added", "alt": "Alt linked", "spec": "Class or spec changed",
+    "week": "Raid week started", "farm": "Farm status changed", "run": "Raid run started",
+    "boss": "Boss kill confirmed", "drops": "Loot drops recorded", "drop": "Loot drop recorded",
+    "dropvoid": "Loot drop voided", "open": "Loot item opened", "opendrop": "Observed drop opened",
+    "claim": "Loot choice recorded", "offer": "Loot offer recorded", "pass": "Pass recorded",
+    "roll": "Roll recorded", "award": "DKP award recorded", "enchanter": "Enchanter recorded",
+    "disenchant": "Item disenchanted", "cancel": "Loot call cancelled", "plan": "Progression award planned",
+    "lateplan": "Late progression award planned", "progression": "Progression award recorded",
+    "improper": "Improper award recorded", "reverse": "Award reversed", "tradeaward": "Trade award recorded",
+    "repair": "DKP repaired", "adjust": "DKP adjusted", "creditrepair": "Credit repaired",
+    "depart": "Player departed", "returned": "Player returned", "appeal": "Appeal recorded",
+    "adopt": "Capped DKP rules adopted", "start": "Roll call started", "rollrepair": "Roll corrected",
+    "close": "Roll call closed", "verifyrank": "Guild rank verified", "matrix": "Loot matrix row published",
+    "amend": "Loot matrix amended", "settlecredit": "Pending earnings released",
+    "reassign": "Earning group reassigned", "shadow": "Shadow pilot started", "cutover": "Cutover declared",
+    "bank": "Item banked or sold", "misclaim": "Misclaim finding recorded",
+    "penaltyappeal": "Penalty appeal decided", "appealfile": "Penalty appeal filed",
+}
+STATUS_TEXT = {"full": "Full member", "trial": "Trial member"}
+
+GUILD_NAME = "Peons with Benefits"
+DEFAULT_TITLE = GUILD_NAME
+GUILD_SUMMARY = ("We are Peons with Benefits, a guild built on camaraderie, hard work, and good company. Inspired by "
+                 "the grit of the Horde's hardest workers, we're here to fight, farm, and survive together \u2014 "
+                 "and have a good time doing it.")
+LOGO_FILE = "pwb-logo.png"
+LOGO_ALT = "Peons with Benefits: red and parchment lettering, a crown and an orc skull"
+LOGO_SIZE = (1024, 887)
+DISCORD_SERVER = "1561718146769883229"
+WOWHEAD_ITEM = "https://www.wowhead.com/forever/item="
+WOWHEAD_SCRIPT = "https://wow.zamimg.com/js/tooltips.js"
+ICON_PREFIX = "https://wow.zamimg.com/images/wow/icons/small/"
+ITEM_MAX = 999_999_999
+LOOT_LIMIT = 200
+KILL_LIMIT = 12
+EMBED_LIMIT = 4
+PUBLIC_JSON_BYTES = 64 * 1024 * 1024
+RAID_DAYS = 14
+MODE_LABELS = {"need": "Need", "greed": "Greed", "progression-need": "Progression", "allocation": "Allocation",
+               "disenchant": "Disenchant"}
+AWARD_KINDS = ("award", "progression", "disenchant", "tradeaward")
+CHANGE_KINDS = ("reverse", "improper", "repair")
+SPEC_KINDS = ("account", "rosteradd", "alt", "spec")
+CLASSES = ("Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior")
+ROLES = ("Tank", "Healer", "Melee", "Ranged")
+ROLE_WORDS = {
+    "Tank": frozenset({"prot", "protection", "tank", "bear", "guardian", "blood", "brewmaster", "vengeance"}),
+    "Healer": frozenset({"holy", "disc", "discipline", "resto", "restoration", "heal", "healer", "healing",
+                         "mistweaver", "preservation"}),
+    "Melee": frozenset({"fury", "arms", "rogue", "combat", "assassination", "subtlety", "ret", "retribution",
+                        "enhancement", "enh", "cat", "melee", "unholy", "windwalker", "havoc"}),
+    "Ranged": frozenset({"mage", "warlock", "hunter", "shadow", "balance", "moonkin", "boomkin", "elemental", "ele",
+                         "fire", "arcane", "affliction", "demonology", "destruction", "marksmanship", "mm", "bm",
+                         "beast", "survival", "ranged", "caster", "devastation", "augmentation"}),
+}
+GALLERY_LABELS = (("memory", "Memories"), ("event", "Events"), ("kill", "Raid kills"))
+APPLY_LABELS = {"guildsofwow.com": "Apply on Guilds of WoW", "guildsforever.com": "Apply on Guilds Forever"}
+
+# The only script the page runs inline: Wowhead tooltip options, local times and the gallery carousel.
+# It carries no data, so its hash is fixed and the Content-Security-Policy can allow exactly this script.
+INLINE_SCRIPT = (
+    'window.whTooltips={colorLinks:false,iconizeLinks:false,renameLinks:true};'
+    '(function(){var d=document;'
+    'function still(){return !!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);}'
+    'try{var f=new Intl.DateTimeFormat(undefined,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",'
+    'minute:"2-digit"});d.querySelectorAll("time[data-local]").forEach(function(t){'
+    'var w=new Date(t.getAttribute("datetime"));if(!isNaN(w))t.textContent=f.format(w);});}catch(e){}'
+    'd.querySelectorAll("[data-carousel]").forEach(function(c){'
+    'var k=c.querySelector(".track"),n=c.querySelector(".carousel-nav");if(!k||!n)return;'
+    'var b=n.querySelectorAll("button[data-dir]");if(b.length<2)return;'
+    'function sync(){var m=k.scrollWidth-k.clientWidth;n.hidden=m<=2;'
+    'b[0].disabled=k.scrollLeft<=2;b[1].disabled=k.scrollLeft>=m-2;}'
+    'b.forEach(function(x){x.addEventListener("click",function(){'
+    'k.scrollBy({left:k.clientWidth*.9*Number(x.getAttribute("data-dir")),behavior:still()?"auto":"smooth"});});});'
+    'k.addEventListener("scroll",sync,{passive:true});window.addEventListener("resize",sync);'
+    'c.querySelectorAll("input[name=gf]").forEach(function(r){r.addEventListener("change",function(){'
+    'k.scrollLeft=0;sync();});});sync();});})();'
+)
+SCRIPT_HASH = base64.b64encode(hashlib.sha256(INLINE_SCRIPT.encode("utf-8")).digest()).decode("ascii")
+CSP = ("default-src 'none'; "
+       f"script-src 'sha256-{SCRIPT_HASH}' https://wow.zamimg.com; "
+       "connect-src https://nether.wowhead.com https://www.wowhead.com; "
+       "img-src 'self' data: https://wow.zamimg.com; "
+       "style-src 'unsafe-inline' https://wow.zamimg.com; font-src https://wow.zamimg.com; "
+       "frame-src https://discord.com https://player.twitch.tv https://www.youtube-nocookie.com; "
+       "base-uri 'none'; form-action 'none'")
+CSS = """\
+:root{color-scheme:dark;--bg:#100f0d;--fg:#f3e5cb;--muted:#c1b49e;--line:#443a2e;--head:#211d18;--accent:#efc783;--neg:#ff9d8c;--red:#b52d20;--ember:#241411;--emberline:#66332a}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:1rem}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:76rem;margin:0 auto;padding:0 2rem 3rem}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:.8rem 0;border-bottom:1px solid var(--line)}
+.wordmark{display:inline-flex;align-items:center;gap:.7rem;min-height:44px;font-family:Georgia,serif;font-size:1.2rem;font-weight:bold;letter-spacing:.08em;text-decoration:none}
+.wordmark img{display:block;width:48px;height:auto}
+.navlinks{display:flex;gap:0 1.3rem;flex-wrap:wrap;font-size:.9rem}
+.navlinks a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:var(--muted)}
+.navlinks a:hover{color:var(--fg)}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;gap:2.5rem;padding:3rem 0}
+h1{font:700 clamp(2.8rem,6vw,5.2rem)/1.02 Georgia,serif;margin:0 0 1.2rem;letter-spacing:-.03em}
+.hero p{color:var(--muted);max-width:46ch;margin:0 0 1.5rem}
+.hero .realm{color:var(--accent);font-size:.95rem;margin-bottom:1rem}
+.hero-art{width:100%;max-width:32rem;justify-self:end}
+.guild-logo{display:block;width:100%;height:auto}
+.actions{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.button{display:inline-flex;align-items:center;justify-content:center;padding:.7rem 1.3rem;border:1px solid #df6650;background:var(--red);color:#fff5e6;text-decoration:none;font-weight:650;min-height:44px}
+.button:hover{background:#902318}
+.secondary{background:transparent;border-color:var(--line);color:var(--fg)}
+.secondary:hover{background:var(--head)}
+.ledger-status{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 1.4rem;background:var(--head);border-block:1px solid var(--line)}
+.ledger-status strong{color:var(--accent);font-size:.9rem}
+.lede{margin:0;color:var(--muted);font-size:.9rem}
+h2{font:700 1.8rem/1.25 Georgia,serif;margin:0 0 1.2rem}
+h3{font:700 1.35rem/1.3 Georgia,serif;margin:0 0 1rem}
+section{margin-top:3.5rem;min-width:0}
+.empty{padding:2rem;border:1px dashed var(--line);color:var(--muted);background:var(--head)}
+.empty strong{display:block;color:var(--fg);font-size:1.1rem;margin-bottom:.4rem}
+.empty p{margin:0}
+.scroll{overflow-x:auto;border:1px solid var(--line)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:5px}
+table{width:100%;border-collapse:collapse;min-width:30rem}
+table.wide{min-width:44rem}
+caption{text-align:left;padding:.8rem 1rem;color:var(--muted);font-size:.9rem}
+th,td{padding:.8rem 1rem;text-align:left;vertical-align:top;border-top:1px solid var(--line)}
+thead th{background:var(--head);font-weight:600}
+tbody th{font-weight:600}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.neg{color:var(--neg)}
+.nowrap{white-space:nowrap}
+a{color:var(--accent)}
+a:hover{text-decoration:underline;text-underline-offset:4px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+ul{padding-left:1.25rem}
+li{margin:.35rem 0}
+.note,.foot{color:var(--muted);font-size:.9rem}
+.foot{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--line)}
+tr{scroll-margin-top:1rem}
+tr:target>*{background:var(--head)}
+tr:target>th{color:var(--accent)}
+.share{margin-left:.4rem;color:var(--muted);text-decoration:none;font-weight:400}
+.share:hover,.share:focus-visible{color:var(--accent);text-decoration:underline}
+ul.chars{list-style:none;padding:0;margin:0}
+ul.chars li{margin:0 0 .35rem}
+.char{font-weight:600}
+.spec{margin-left:.45rem;font-size:.88rem}
+.pill{display:inline-block;margin-left:.45rem;padding:0 .5rem;border:1px solid var(--line);border-radius:999px;font-size:.78rem;line-height:1.6;white-space:nowrap}
+.c-druid{color:#FF7C0A}
+.c-hunter{color:#AAD372}
+.c-mage{color:#3FC7EB}
+.c-paladin{color:#F48CBA}
+.c-priest{color:#FFFFFF}
+.c-rogue{color:#FFF468}
+.c-shaman{color:#3d8fe8}
+.c-warlock{color:#8788EE}
+.c-warrior{color:#C69B6D}
+.role-tank{color:#9cc3ff}
+.role-healer{color:#8fe39a}
+.role-melee{color:#f0a868}
+.role-ranged{color:#d0a8ff}
+.loot summary{padding:.35rem 0;white-space:nowrap}
+.loot ul{list-style:none;padding:0;margin:.2rem 0 0;min-width:15rem}
+.loot li{margin:0 0 .55rem}
+.meta{display:block;color:var(--muted);font-size:.85rem}
+a.item{text-decoration:none;font-weight:600}
+a.item:hover{text-decoration:underline;text-underline-offset:3px}
+a.item img{width:18px;height:18px;margin-right:.4rem;vertical-align:-3px;border:1px solid var(--line)}
+a.item.q0{color:#9d9d9d}
+a.item.q1{color:#ffffff}
+a.item.q2{color:#1eff00}
+a.item.q3{color:#4a9eff}
+a.item.q4{color:#b65cff}
+a.item.q5{color:#ff8000}
+a.item.q6{color:#e6cc80}
+a.item.q7{color:#00ccff}
+.carousel-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.gallery-filters{display:flex;flex-wrap:wrap;gap:.6rem}
+.gallery-filters input{position:absolute;width:1px;height:1px;margin:0;opacity:0}
+.gallery-filters label{display:inline-flex;align-items:center;min-height:44px;padding:0 1.1rem;border:1px solid var(--line);color:var(--muted);cursor:pointer}
+.gallery-filters label:hover{color:var(--fg);border-color:var(--muted)}
+.gallery-filters input:checked+label{color:var(--fg);background:var(--head);border-color:var(--accent)}
+.gallery-filters input:focus-visible+label{outline:2px solid var(--accent);outline-offset:3px}
+.carousel-nav{display:flex;gap:.6rem;margin-left:auto}
+.step{width:44px;height:44px;border:1px solid var(--line);background:var(--head);color:var(--fg);font:inherit;font-size:1.1rem;cursor:pointer}
+.step:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.step:disabled{opacity:.4;cursor:default}
+.track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(15rem,21rem);gap:1rem;margin:0;padding:0 0 1rem;list-style:none;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory}
+.slide{margin:0;scroll-snap-align:start;background:var(--head);border:1px solid var(--line)}
+.slide figure{margin:0}
+.slide img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--bg)}
+.slide figcaption{padding:.8rem 1rem 1rem}
+.kill{display:flex;flex-direction:column;justify-content:flex-end;min-height:15rem;padding:1.2rem;background:var(--ember);border-color:var(--emberline)}
+.kill h3{font-size:1.6rem;margin:0 0 .4rem;overflow-wrap:anywhere}
+.kill h3 a{color:var(--fg);text-decoration:none}
+.kill h3 a:hover{text-decoration:underline}
+.kill p{margin:0;color:var(--muted)}
+.gallery:has(#gf-memory:checked) .slide:not(.cat-memory),.gallery:has(#gf-event:checked) .slide:not(.cat-event),.gallery:has(#gf-kill:checked) .slide:not(.cat-kill){display:none}
+.community-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:2.5rem;align-items:start}
+.raids{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.raids li{display:grid;grid-template-columns:11rem minmax(0,1fr) auto;gap:.3rem 1.2rem;align-items:baseline;margin:0;padding:1rem 0;border-bottom:1px solid var(--line)}
+.raid-when{color:var(--accent);font-variant-numeric:tabular-nums}
+.raid-title{font-weight:650;overflow-wrap:anywhere}
+.raid-count{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.raid-roles{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:.2rem 1rem;font-size:.88rem}
+.widget h3{font-size:1.15rem}
+.widget iframe{display:block;width:100%;max-width:350px;height:500px;border:0;background:var(--head)}
+.live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr));gap:1.2rem}
+.stream{border:1px solid var(--line);background:var(--head)}
+.stream iframe{display:block;width:100%;height:auto;aspect-ratio:16/9;border:0;background:var(--bg)}
+.stream-body{padding:.9rem 1rem 1rem}
+.stream h3{font-size:1.15rem;margin:0 0 .3rem}
+.stream p{margin:0 0 .5rem;color:var(--muted);overflow-wrap:anywhere}
+.pill.live{margin:0 0 0 .5rem;background:var(--red);border-color:#df6650;color:#fff5e6;font-family:system-ui,sans-serif;font-weight:650;vertical-align:middle}
+.positions{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2.5rem;align-items:start}
+.openings{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2rem;border-top:1px solid var(--line)}
+.openings li{margin:0;padding:1rem 0;border-bottom:1px solid var(--line)}
+.cls{display:block;font:700 1.25rem/1.3 Georgia,serif}
+.openings .specs{color:var(--muted)}
+.expect{padding:1.6rem;background:var(--ember);border:1px solid var(--emberline)}
+.expect ul{margin:0 0 1.4rem;padding-left:1.1rem}
+.guild-links{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5rem;padding:2.5rem;background:var(--ember);border-block:1px solid var(--emberline)}
+.guild-links ul{list-style:none;padding:0;margin:0}
+.guild-links li{margin:0}
+.guild-links li a{display:block;padding:.65rem 0;border-bottom:1px solid #53372e;text-decoration:none}
+.guild-links li a:hover{color:#fff5e6;text-decoration:underline}
+.guild-links p{color:var(--muted);font-size:.95rem}
+.roster-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 2rem}
+.roster-list a{display:block;padding:.6rem 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+summary{cursor:pointer;min-height:44px;color:var(--accent);padding:.65rem 0}
+.about{border-top:1px solid var(--line);padding-top:2rem}
+.about ul{max-width:75ch;color:var(--muted);font-size:.9rem}
+.skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:2}
+.skip:focus{top:1rem}
+@media (max-width:50rem){.hero{grid-template-columns:1fr 1fr;gap:1rem}.guild-links{grid-template-columns:1fr 1fr}.community{grid-column:1/-1}.roster-list{grid-template-columns:repeat(2,minmax(0,1fr))}.community-grid,.positions{grid-template-columns:1fr}}
+@media (max-width:40rem){.wrap{padding:0 1rem 2rem}.topbar{align-items:flex-start;flex-direction:column;gap:.2rem}.navlinks{gap:0 1.1rem}.hero{grid-template-columns:1fr;padding:2rem 0;gap:.7rem}.hero-art{grid-row:1;max-width:20rem;justify-self:center}.hero-copy{text-align:center}.hero p{margin-left:auto;margin-right:auto}.actions{justify-content:center}.guild-links{grid-template-columns:1fr;padding:1.5rem;gap:2rem}.community{grid-column:auto}.roster-list{grid-template-columns:1fr}section{margin-top:2.5rem}table{min-width:24rem}table.wide{min-width:0}th,td{padding:.5rem .6rem}.col-record{display:none}.raids li{grid-template-columns:minmax(0,1fr) auto}.raid-when,.raid-roles{grid-column:1/-1}.openings{grid-template-columns:1fr}.track{grid-auto-columns:82%}table.standings,table.standings caption,table.standings tbody{display:block;min-width:0}table.standings thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}table.standings tr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;gap:.3rem 1rem;padding:.8rem 1rem;border-top:1px solid var(--line)}table.standings tr:target{background:var(--head)}table.standings tr>*{padding:0;border:0}table.standings td:nth-child(n+4){grid-column:1/-1}table.standings td[data-label]::before{content:attr(data-label);margin-right:.35rem;color:var(--muted);font-size:.8rem}}
+"""
+
+GUILD_LINKS = (
+    ("Apply", (
+        ("Guilds of WoW", "https://guildsofwow.com/peons-with-benefits"),
+        ("Guilds Forever", "https://guildsforever.com/guilds/peons-with-benefits"),
+    )),
+    ("Roster & progress", (
+        ("Blizzard Armory", "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"),
+        ("Raider.IO", "https://forever.raider.io/guilds/eu/pvp/Peons%20with%20Benefits"),
+        ("Warcraft Logs", "https://forever.warcraftlogs.com/guild/id/833455"),
+    )),
+)
+DISCORD_INVITE = "https://discord.gg/Cahah6u4yZ"
+DISCORD_WIDGET = f"https://discord.com/widget?id={DISCORD_SERVER}&theme=dark"
+PROFILE_PREFIX = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/"
+
+
+def brand_asset(name):
+    try:
+        return (Path(_TOOLS) / name).read_bytes()
+    except OSError as error:
+        raise ToolError(f"Cannot read branding asset {name}: {error}") from None
+
+
+def armory_roster():
+    """A dated, public Armory snapshot, separate from DKP membership and authority."""
+    try:
+        snapshot = json.loads(brand_asset("pwb-roster.json"))
+        members = snapshot["members"]
+        stamp = datetime.fromisoformat(snapshot["retrievedAt"].replace("Z", "+00:00"))
+        if not isinstance(members, list) or not members or stamp.tzinfo is None:
+            raise ValueError("no members")
+        seen = set()
+        for member in members:
+            name, url = member["name"], member["url"]
+            if (not isinstance(name, str) or not name.strip() or len(name) > NAME_LIMIT
+                    or not isinstance(url, str) or not url.startswith(PROFILE_PREFIX)
+                    or not re.fullmatch(r"(?:[a-z0-9-]|%[0-9A-Fa-f]{2})+", url[len(PROFILE_PREFIX):]) or url in seen):
+                raise ValueError("invalid or repeated character")
+            seen.add(url)
+    except (ValueError, KeyError, TypeError, AttributeError) as error:
+        raise ToolError(f"Invalid public Armory snapshot: {error}") from None
+    return members, stamp.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+
+def guild_sections():
+    members, stamp = armory_roster()
+    page = ['<section aria-labelledby="roster"><h2 id="roster">The guild roster</h2>',
+            f'<p class="note">{len(members)} characters from the public Blizzard Armory. Snapshot: {esc(stamp)}. '
+            'Not a live feed or a DKP eligibility list. Select a name to open its Armory profile.</p>',
+            f'<details><summary>View all {len(members)} characters</summary><ul class="roster-list">']
+    for member in members:
+        page.append(f'<li><a href="{esc(member["url"])}" rel="noopener noreferrer">{esc(member["name"])}</a></li>')
+    page += ['</ul></details></section>', '<section id="guild-links" class="guild-links" aria-label="Guild links">']
+    for heading, links in GUILD_LINKS:
+        page.append(f'<div><h2>{esc(heading)}</h2><ul>')
+        for label, url in links:
+            page.append(f'<li><a href="{esc(url)}" rel="noopener noreferrer">{esc(label)} <span aria-hidden="true">&nearr;</span></a></li>')
+        page.append('</ul></div>')
+    page += ['<div class="community"><h2>Meet the peons.</h2><p>Peons with Benefits on WoW: Forever. '
+             'Find us, apply, or come say hello.</p>',
+             f'<a class="button" href="{DISCORD_INVITE}" rel="noopener noreferrer">Join our Discord &nearr;</a>',
+             '</div></section>']
+    return page
+
+_TAG = re.compile(r"\w{3,32}#[0-9]{3,8}")
+_LONG_NUMBER = re.compile(r"[0-9]{17,}")
+_DISCORD_STRIP = re.compile(r"[<>@]")
+_DISCORD_MARKDOWN = re.compile(r"([\\*_~`|#\[\]()])")
+
+
+def say(text, stream=None):
+    stream = stream or sys.stdout
+    encoding = getattr(stream, "encoding", None) or "ascii"
+    print(text.encode(encoding, "backslashreplace").decode(encoding), file=stream)
+
+
+def clean(value, limit=FIELD_LIMIT):
+    """Make a journal string safe to publish: printable text only, IDs and BattleTags redacted, bounded."""
+    text = "".join(ch if ch.isprintable() else " " for ch in str(value))
+    text = _TAG.sub("[tag]", _LONG_NUMBER.sub("[id]", " ".join(text.split())))
+    return text if len(text) <= limit else text[: limit - 3].rstrip() + "..."
+
+
+def is_number(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def number_text(value):
+    if isinstance(value, float):
+        return f"{value:.2f}".rstrip("0").rstrip(".")
+    return str(value)
+
+
+def signed(value):
+    return ("+" if value > 0 else "") + number_text(value)
+
+
+def scalar(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        return value if abs(value) <= store.MAX_SAFE_INTEGER else None
+    if isinstance(value, float):
+        if not math.isfinite(value) or abs(value) > store.MAX_BALANCE:
+            return None
+        return int(value) if value == int(value) else value
+    if isinstance(value, str):
+        return clean(value) or None
+    return None
+
+
+def is_whole(value, low=0, high=store.MAX_SAFE_INTEGER):
+    return isinstance(value, int) and not isinstance(value, bool) and low <= value <= high
+
+
+def utc_text(seconds, pattern="%Y-%m-%d %H:%M UTC"):
+    try:
+        return datetime.fromtimestamp(seconds, timezone.utc).strftime(pattern)
+    except (OverflowError, OSError, ValueError, TypeError):
+        return "unknown time"
+
+
+def time_html(seconds, pattern="%Y-%m-%d %H:%M UTC"):
+    """A UTC time that the page script rewrites into the reader's own time zone."""
+    try:
+        stamp = datetime.fromtimestamp(seconds, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except (OverflowError, OSError, ValueError, TypeError):
+        return "unknown time"
+    return f'<time datetime="{stamp}" data-local>{esc(utc_text(seconds, pattern))}</time>'
+
+
+def spec_words(spec):
+    return set(re.findall(r"[a-z]+", spec.lower()))
+
+
+def spec_role(spec):
+    """The raid role a class/spec text names, or None when it names none or more than one."""
+    words = spec_words(spec)
+    roles = {role for role, names in ROLE_WORDS.items() if names & words}
+    if "frost" in words and ("deathknight" in words or {"death", "knight"} <= words):
+        roles.add("Melee")
+    return roles.pop() if len(roles) == 1 else None
+
+
+def spec_class(spec):
+    words = spec_words(spec)
+    found = [name for name in CLASSES if name.lower() in words]
+    return found[0] if len(found) == 1 else None
+
+
+def projected_specs(ledger):
+    """Each character's current class/spec text, replayed the way the addon stores it."""
+    specs = {}
+    for event in ledger.events:
+        data = event["data"]
+        character = data.get("character")
+        if event["kind"] in SPEC_KINDS and isinstance(character, str):
+            text = clean(data["spec"], 60) if isinstance(data.get("spec"), str) else ""
+            if text:
+                specs[character] = text
+            else:
+                specs.pop(character, None)
+    return specs
+
+
+def loot_records(ledger):
+    """Awarded items per account, newest first, with later reversals and corrections applied.
+
+    Each award event's result is the award as the addon recorded it; a reversal, improper-Greed report or
+    repair carries the corrected award, and a trade award reverses the award it replaces."""
+    owners = {row["character"]: row["account"] for row in ledger.rows}
+    records = {}
+    for event in ledger.events:
+        kind, data, result = event["kind"], event["data"], event.get("result")
+        if not isinstance(result, dict) or not isinstance(data, dict):
+            continue
+        target = data.get("award")
+        earlier = records.get(target) if is_whole(target, 1) else None
+        if kind in AWARD_KINDS:
+            item, account = result.get("item"), result.get("account")
+            if not is_whole(item, 1, ITEM_MAX) or not isinstance(account, str):
+                continue
+            if kind == "tradeaward" and earlier is not None:
+                earlier.update(cost=0, reversed=True)
+            record = {"event": event["id"], "time": event["time"], "item": item, "account": account}
+            if isinstance(result.get("mode"), str) and clean(result["mode"], 40):
+                record["mode"] = clean(result["mode"], 40)
+            cost = scalar(result.get("cost"))
+            if is_number(cost):
+                record["cost"] = cost
+            character = data.get("character")
+            if isinstance(character, str) and owners.get(character) == account and clean(character, NAME_LIMIT):
+                record["character"] = clean(character, NAME_LIMIT)
+            for flag in ("reversed", "corrected"):
+                if result.get(flag) is True:
+                    record[flag] = True
+            records[event["id"]] = record
+        elif kind in CHANGE_KINDS and earlier is not None:
+            item = result.get("item")
+            if isinstance(item, bool) or item != earlier["item"]:
+                continue
+            cost = scalar(result.get("cost"))
+            if is_number(cost):
+                earlier["cost"] = cost
+            for flag in ("reversed", "corrected"):
+                if result.get(flag) is True:
+                    earlier[flag] = True
+                else:
+                    earlier.pop(flag, None)
+    by_account = {}
+    for record in sorted(records.values(), key=lambda entry: -entry["event"]):
+        by_account.setdefault(record.pop("account"), []).append(record)
+    return by_account
+
+
+def boss_kills(events):
+    """The newest confirmed boss kills from the public history, newest first."""
+    kills = []
+    for event in reversed(events):
+        if event["kind"] != "boss":
+            continue
+        fields = event["fields"]
+        name = fields.get("encounterName") or (f"Boss {fields['boss']}" if "boss" in fields else "Boss kill")
+        kills.append({"id": event["id"], "time": event["time"], "name": clean(name, NAME_LIMIT),
+                      "raid": clean(fields["raid"], NAME_LIMIT) if fields.get("raid") else None})
+        if len(kills) == KILL_LIMIT:
+            break
+    return kills
+
+
+def item_link(item, items):
+    """A Wowhead: Forever link. Cached names show at once; otherwise the tooltip script renames the link."""
+    entry = items.get(str(item)) or {}
+    href = esc(f"{WOWHEAD_ITEM}{item}")
+    name = entry.get("name")
+    if not name:
+        return f'<a class="item" href="{href}" rel="noopener noreferrer">Item #{item}</a>'
+    quality = entry.get("quality")
+    classes = "item" + (f" q{quality}" if is_whole(quality, 0, 7) else "")
+    icon = (f'<img src="{esc(ICON_PREFIX + entry["icon"] + ".jpg")}" alt="" width="18" height="18" loading="lazy">'
+            if entry.get("icon") else "")
+    return (f'<a class="{classes}" href="{href}" data-wh-rename-link="false" rel="noopener noreferrer">'
+            f'{icon}{esc(name)}</a>')
+
+
+def linked_summary(event, items):
+    """The escaped summary with its last "item N" turned into a Wowhead link."""
+    text = esc(event["summary"])
+    item = event["fields"].get("item")
+    if not is_whole(item, 1, ITEM_MAX):
+        return text
+    marker = f"item {item}"
+    at = text.rfind(marker)
+    end = at + len(marker)
+    if at < 0 or (end < len(text) and text[end].isdigit()) or (at > 0 and text[at - 1].isalnum()):
+        return text
+    return text[:at] + item_link(item, items) + text[end:]
+
+
+def event_fields(event, runs):
+    kind, data = event["kind"], event["data"]
+    result = event.get("result")
+    merged = {}
+    for source, allowed in ((data, FIELDS), (result if kind != "boss" else None, RESULT_FIELDS)):
+        if isinstance(source, dict):
+            for key, value in source.items():
+                if key in allowed and key not in merged:
+                    merged[key] = value
+    identifier = data.get("id")
+    if kind in ("account", "alt") and "account" not in merged and identifier is not None:
+        merged["account"] = identifier
+    if kind == "run" and "run" not in merged and identifier is not None:
+        merged["run"] = identifier
+    fields = {}
+    for key in FIELDS:
+        value = scalar(merged.get(key))
+        if value is not None:
+            fields[key] = value
+    for key in COUNT_FIELDS:
+        if isinstance(data.get(key), list):
+            fields[key + "Count"] = len(data[key])
+    run = data.get("run")
+    if kind == "boss" and "raid" not in fields and isinstance(run, str) and run in runs:
+        fields["raid"] = clean(runs[run])
+    return fields
+
+
+def item_text(fields):
+    item = fields.get("item")
+    if item is None:
+        return "an item"
+    return f"item {item}" if is_number(item) else str(item)
+
+
+def summarize(kind, label, fields):
+    """One self-contained sentence per record; kinds without a dedicated sentence start with their label."""
+    who = fields.get("character") or fields.get("account")
+    raid, run = fields.get("raid"), fields.get("run")
+    if kind == "boss":
+        name = fields.get("encounterName") or (f"Boss {fields['boss']}" if "boss" in fields else "A boss")
+        text = f"{name} defeated" + (f" in {raid}" if raid else "")
+        return text + (f", {fields['presentCount']} present" if "presentCount" in fields else "")
+    if kind in ("award", "tradeaward", "progression"):
+        cost = fields.get("cost")
+        parts = [fields.get("mode"), f"{number_text(cost)} DKP" if is_number(cost) else None]
+        detail = ", ".join(str(part) for part in parts if part)
+        return f"{who or 'A player'} received {item_text(fields)}" + (f" ({detail})" if detail else "")
+    if kind == "disenchant":
+        return f"{who or 'The enchanter'} disenchanted {item_text(fields)}"
+    if kind == "adjust" and who and is_number(fields.get("amount")):
+        return f"{who}: DKP adjusted by {signed(fields['amount'])}"
+    if kind in ("depart", "returned") and who:
+        return f"{who} {'departed' if kind == 'depart' else 'returned'}"
+    if kind in ("account", "rosteradd") and who:
+        return f"{who} added" + (" as an alt" if fields.get("action") == "alt" else "")
+    if kind == "alt" and who and fields.get("account"):
+        return f"{who} linked to {fields['account']}"
+    if kind == "week" and is_number(fields.get("start")):
+        return "Raid week starting " + utc_text(fields["start"], "%Y-%m-%d")
+    if kind == "run" and run:
+        return f"Run {run} started" + (f" in {raid}" if raid else "")
+    if kind == "farm" and raid and isinstance(fields.get("farm"), bool):
+        return f"{raid} farm status: {'on' if fields['farm'] else 'off'}"
+    if kind == "cap" and is_number(fields.get("value")):
+        return f"DKP cap set to {number_text(fields['value'])}"
+    parts = [f"{key} {fields[key]}" for key in FIELDS if key in fields and key not in SUMMARY_SKIPPED]
+    return label + (": " + ", ".join(parts) if parts else "")
+
+
+def project_events(ledger):
+    """Allowlisted public view of every non-private event, in journal order, plus the omitted count.
+
+    Free-text notes and the characters that recorded, checked or approved an event are never copied."""
+    runs, events, omitted = {}, [], 0
+    for event in ledger.events:
+        kind, data = event["kind"], event["data"]
+        if kind == "run" and isinstance(data.get("id"), str) and isinstance(data.get("raid"), str):
+            runs[data["id"]] = data["raid"]
+        if kind in PRIVATE_KINDS:
+            omitted += 1
+            continue
+        label = LABELS.get(kind) or "Recorded " + clean(kind, 40)
+        fields = event_fields(event, runs)
+        events.append({
+            "id": event["id"], "time": event["time"], "kind": clean(kind, 40), "label": label,
+            "summary": clean(summarize(kind, label, fields), SUMMARY_LIMIT), "fields": fields,
+        })
+    return events, omitted
+
+
+def status_text(row):
+    if row["membershipStatus"] == "legacy":
+        return "Not set"
+    if row["activeCap"] is None:
+        return "Unverified"
+    return STATUS_TEXT.get(row["membershipStatus"], "Not set")
+
+
+def anchor_ids(names):
+    """One fragment id per listed name, readable (p-alpha) and unique. A short hash is added only when
+    the readable form is empty or shared, and a counter when even that repeats."""
+    folded = [re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", name).encode("ascii", "ignore")
+                     .decode("ascii").lower()).strip("-") for name in names]
+    counts = Counter(folded)
+    ids, seen = [], set()
+    for name, base in zip(names, folded):
+        text = base if base and counts[base] == 1 else (
+            base + "-" if base else "") + hashlib.sha256(name.encode("utf-8")).hexdigest()[:8]
+        candidate, number = "p-" + text, 1
+        while candidate in seen:
+            number += 1
+            candidate = f"p-{text}-{number}"
+        seen.add(candidate)
+        ids.append(candidate)
+    return ids
+
+
+def standings_document(ledger):
+    """One public row per active account. Returns the document and how many names needed cleaning."""
+    accounts = {}
+    for row in ledger.rows:
+        accounts.setdefault(row["account"], []).append(row)
+    specs, loot = projected_specs(ledger), loot_records(ledger)
+    players, departed, changed = [], 0, 0
+    for name, rows in accounts.items():
+        first = rows[0]
+        if first["departed"]:
+            departed += 1
+            continue
+        shown = clean(name, NAME_LIMIT)
+        names = [clean(row["character"], NAME_LIMIT) for row in rows]
+        changed += (shown != name) + sum(text != row["character"] for text, row in zip(names, rows))
+        player = {
+            "account": shown, "balance": first["balance"], "cap": first["activeCap"],
+            "characters": sorted(names, key=lambda text: (text.lower(), text)), "status": status_text(first),
+        }
+        shown_specs = {text: specs[row["character"]] for text, row in zip(names, rows) if row["character"] in specs}
+        if shown_specs:
+            player["specs"] = dict(sorted(shown_specs.items()))
+        awarded = loot.get(name, [])
+        if awarded:
+            player["loot"] = awarded[:LOOT_LIMIT]
+            player["lootTotal"] = len(awarded)
+        players.append(player)
+    players.sort(key=lambda player: (-player["balance"], player["account"].lower(), player["account"]))
+    # Anchors follow the name order, not the balance order, so a player's link survives balance changes.
+    by_name = sorted(range(len(players)), key=lambda at: (players[at]["account"].lower(), players[at]["account"]))
+    for at, anchor in zip(by_name, anchor_ids([players[at]["account"] for at in by_name])):
+        players[at]["anchor"] = anchor
+    document = {
+        "format": STANDINGS_FORMAT, "version": SITE_VERSION, "lastEventId": ledger.count,
+        "lastEventTime": ledger.manifest["lastEventTime"], "chainHead": ledger.heads[-1],
+        "departedCount": departed, "players": players,
+    }
+    return document, changed
+
+
+def esc(value):
+    return html.escape(str(value), quote=True)
+
+
+def dkp_html(value):
+    text = number_text(abs(value))
+    return f'<span class="neg">&minus;{text}</span>' if value < 0 else text
+
+
+def table(caption, headings, rows, wide=False, kind=""):
+    head = "".join(
+        f'<th scope="col" class="{classes}">{esc(name)}</th>' if classes else f'<th scope="col">{esc(name)}</th>'
+        for name, classes in headings)
+    label = esc(caption)
+    style = " ".join(word for word in ("wide" if wide else "", kind) if word)
+    return "\n".join([
+        f'<div class="scroll" role="region" aria-label="{label}" tabindex="0">',
+        f'<table class="{style}">' if style else "<table>",
+        f"<caption>{label}</caption>",
+        f"<thead><tr>{head}</tr></thead>",
+        "<tbody>", *rows, "</tbody>", "</table>", "</div>",
+    ])
+
+
+def plural(count, singular, many):
+    return f"{count} {singular if count == 1 else many}"
+
+
+DOT = " \u00b7 "
+
+
+def empty_state(heading, *lines):
+    """Trusted copy only: callers escape any data they pass in."""
+    return f'<div class="empty"><strong>{heading}</strong>' + "".join(f"<p>{line}</p>" for line in lines) + "</div>"
+
+
+def class_name(text):
+    return next((name for name in CLASSES if name.lower() == str(text).strip().lower()), None)
+
+
+def characters_html(player):
+    specs = player.get("specs") or {}
+    lines = []
+    for name in player["characters"]:
+        parts = [f'<span class="char">{esc(name)}</span>']
+        spec = specs.get(name)
+        if isinstance(spec, str) and spec:
+            klass = spec_class(spec)
+            colour = f" c-{klass.lower()}" if klass else ""
+            parts.append(f'<span class="spec{colour}">{esc(spec)}</span>')
+            role = spec_role(spec)
+            if role:
+                parts.append(f'<span class="pill role role-{role.lower()}">{role}</span>')
+        lines.append("<li>" + "".join(parts) + "</li>")
+    return '<ul class="chars">' + "".join(lines) + "</ul>"
+
+
+def loot_html(player, items):
+    loot = player.get("loot") or []
+    if not loot:
+        return "&mdash;"
+    lines = []
+    for entry in loot:
+        link, meta = item_link(entry["item"], items), []
+        mode = entry.get("mode")
+        if mode:
+            meta.append(MODE_LABELS.get(mode, mode) + (" (corrected)" if entry.get("corrected") else ""))
+        if is_number(entry.get("cost")):
+            meta.append(f"{number_text(entry['cost'])} DKP")
+        if entry.get("character"):
+            meta.append(entry["character"])
+        meta.append(utc_text(entry["time"], "%Y-%m-%d"))
+        if entry.get("reversed"):
+            link = f"<del>{link}</del>"
+            meta.append("reversed")
+        lines.append(f'<li>{link}<span class="meta">{esc(DOT.join(meta))}</span></li>')
+    total = player.get("lootTotal", len(loot))
+    if total > len(loot):
+        lines.append(f'<li class="meta">+{total - len(loot)} older in history.json</li>')
+    return (f'<details class="loot"><summary>{plural(total, "item", "items")}</summary>'
+            "<ul>" + "".join(lines) + "</ul></details>")
+
+
+def gallery_section(gallery, kills, linked):
+    slides, present = [], set()
+    for entry in gallery:
+        date = f'<span class="meta">{esc(entry["date"])}</span>' if entry.get("date") else ""
+        slides.append(f'<li class="slide cat-{entry["category"]}"><figure>'
+                      f'<img src="gallery/{esc(entry["image"])}" alt="{esc(entry["alt"])}" loading="lazy">'
+                      f'<figcaption>{esc(entry["caption"])}{date}</figcaption></figure></li>')
+        present.add(entry["category"])
+    for kill in kills:
+        name = esc(kill["name"])
+        if kill["id"] in linked:
+            name = f'<a href="#e-{kill["id"]}">{name}</a>'
+        raid = f'{esc(kill["raid"])} &middot; ' if kill.get("raid") else ""
+        slides.append(f'<li class="slide kill cat-kill"><h3>{name}</h3>'
+                      f'<p>{raid}{time_html(kill["time"], "%Y-%m-%d")}</p></li>')
+        present.add("kill")
+    page = ['<section class="gallery" aria-labelledby="gallery"><h2 id="gallery">Memories, events and raid kills</h2>']
+    if not slides:
+        page.append(empty_state("Nothing in the gallery yet.",
+                                "Raid screenshots, guild events and confirmed boss kills will appear here."))
+        return page + ["</section>"]
+    bar = []
+    kinds = [(kind, label) for kind, label in GALLERY_LABELS if kind in present]
+    if len(kinds) > 1:
+        bar.append('<div class="gallery-filters" role="group" aria-label="Show in the gallery">'
+                   '<input type="radio" name="gf" id="gf-all" checked><label for="gf-all">All</label>')
+        bar += [f'<input type="radio" name="gf" id="gf-{kind}"><label for="gf-{kind}">{label}</label>'
+                for kind, label in kinds]
+        bar.append("</div>")
+    bar.append('<div class="carousel-nav" hidden>'
+               '<button class="step" type="button" data-dir="-1" aria-label="Previous slides">&larr;</button>'
+               '<button class="step" type="button" data-dir="1" aria-label="Next slides">&rarr;</button></div>')
+    return page + ['<div class="carousel" data-carousel>', '<div class="carousel-bar">' + "".join(bar) + "</div>",
+                   '<ul class="track" tabindex="0" aria-label="Gallery slides">', *slides, "</ul>", "</div>",
+                   "</section>"]
+
+
+def raids_section(extras):
+    community, days = extras["community"], extras["raid_days"]
+    raid = community["raidHelper"] if community else None
+    page = ['<section aria-labelledby="raids"><h2 id="raids">Upcoming raids</h2>', '<div class="community-grid"><div>']
+    if extras["raid"] is None or (raid is not None and raid["status"] == "unconfigured"):
+        page.append(empty_state("Raid-Helper isn't connected yet.",
+                                "Upcoming raids and sign-up counts will show here once officers link the guild's "
+                                "Raid-Helper server."))
+    elif raid is None:
+        page.append(empty_state("Sign-ups haven't been checked yet.", "The next scheduled update fills this in."))
+    elif raid["status"] == "error":
+        page.append(empty_state("Couldn't reach Raid-Helper on the last check.",
+                                "Sign-ups are in the events channel on Discord until the next update."))
+    elif not raid["events"]:
+        page.append(empty_state(f"No raids scheduled in the next {plural(days, 'day', 'days')}.",
+                                "New events posted in Discord appear here after the next update."))
+    else:
+        page.append('<ul class="raids">')
+        for event in raid["events"]:
+            title = esc(event["title"])
+            if event.get("url"):
+                title = f'<a href="{esc(event["url"])}" rel="noopener noreferrer">{title}</a>'
+            roles = "".join(f'<span class="role-{role.lower()}">{role} {event["roles"][role]}</span>' for role in ROLES)
+            page.append(f'<li><span class="raid-when">{time_html(event["start"], "%a %d %b, %H:%M UTC")}</span>'
+                        f'<span class="raid-title">{title}</span>'
+                        f'<span class="raid-count">{plural(event["total"], "sign-up", "sign-ups")}</span>'
+                        f'<span class="raid-roles">{roles}</span></li>')
+        page.append("</ul>")
+    checked = f" Checked {time_html(raid['checked'])}." if raid and raid["checked"] else ""
+    page += [f'<p class="note">Sign-ups are shown as counts by role; names stay in Discord.{checked}</p>', "</div>",
+             '<aside class="widget" aria-labelledby="discord-now"><h3 id="discord-now">On Discord now</h3>',
+             f'<iframe title="Peons with Benefits Discord server" src="{esc(DISCORD_WIDGET)}" width="350" height="500" '
+             'loading="lazy" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">'
+             "</iframe>",
+             f'<p class="note">Widget blank? <a href="{DISCORD_INVITE}" rel="noopener noreferrer">Join the Discord</a> '
+             "instead.</p>", "</aside>", "</div>", "</section>"]
+    return page
+
+
+def stream_card(stream, host, embed):
+    name, channel = esc(stream["name"]), stream["channel"]
+    if stream["platform"] == "twitch":
+        platform, url = "Twitch", f"https://www.twitch.tv/{channel}"
+        src = f"https://player.twitch.tv/?channel={channel}&parent={host}&muted=true&autoplay=false" if embed and host else None
+    else:
+        video = stream.get("video")
+        platform = "YouTube"
+        url = f"https://www.youtube.com/watch?v={video}" if video else f"https://www.youtube.com/channel/{channel}/live"
+        src = f"https://www.youtube-nocookie.com/embed/{video}" if embed and video else None
+    frame = (f'<iframe title="{name} live on {platform}" src="{esc(src)}" loading="lazy" allowfullscreen '
+             'referrerpolicy="strict-origin-when-cross-origin"></iframe>' if src else "")
+    return (f'<article class="stream">{frame}<div class="stream-body">'
+            f'<h3>{name}<span class="pill live">Live</span></h3><p>{esc(stream["title"])}</p>'
+            f'<a href="{esc(url)}" rel="noopener noreferrer">Watch on {platform} &nearr;</a></div></article>')
+
+
+def live_section(extras, site_url):
+    streamers, community = extras["streamers"], extras["community"]
+    streams = community["streams"] if community else None
+    page = ['<section aria-labelledby="live"><h2 id="live">Live now</h2>']
+    if not streamers:
+        page.append(empty_state("No streamers listed yet.",
+                                "Guild members who stream on Twitch or YouTube can ask an officer to be listed here."))
+        return page + ["</section>"]
+    if streams is None:
+        page.append(empty_state("Live status hasn't been checked yet.",
+                                f"{plural(len(streamers), 'guild streamer is', 'guild streamers are')} listed; "
+                                "the next update shows who is live."))
+        return page + ["</section>"]
+    if streams["checked"] is None:
+        page.append(empty_state("Live checks aren't connected yet.",
+                                "Officers still need to connect Twitch or YouTube for the listed streamers."))
+        return page + ["</section>"]
+    notes = [f"Checked {time_html(streams['checked'])}. Status can lag by about 15 minutes."]
+    if streams["live"]:
+        host = urllib.parse.urlsplit(site_url).hostname if site_url else None
+        page.append('<div class="live-grid">')
+        page += [stream_card(stream, host, index < EMBED_LIMIT) for index, stream in enumerate(streams["live"])]
+        page.append("</div>")
+    else:
+        page.append(empty_state("Nobody is live right now.", notes.pop()))
+    for key, label in (("twitch", "Twitch"), ("youtube", "YouTube")):
+        if streams[key] == "error":
+            notes.append(f"{label} couldn't be checked on the last update.")
+        elif streams[key] == "unconfigured" and any(key in streamer for streamer in streamers):
+            notes.append(f"{label} checks aren't connected yet.")
+    if notes:
+        page.append(f'<p class="note">{" ".join(notes)}</p>')
+    return page + ["</section>"]
+
+
+def positions_section(recruitment):
+    source = recruitment.get("source") or GUILD_LINKS[0][1][0][1]
+    host = (urllib.parse.urlsplit(source).hostname or "").removeprefix("www.")
+    updated = (f' Updated <span class="nowrap">{esc(recruitment["updated"])}</span>.'
+               if recruitment.get("updated") else "")
+    page = ['<section aria-labelledby="recruiting"><h2 id="recruiting">Open positions</h2>',
+            f'<p class="note">Roles the raid team is recruiting for.{updated}</p>', '<div class="positions">']
+    if recruitment["openings"]:
+        page.append('<ul class="openings">')
+        for opening in recruitment["openings"]:
+            klass = class_name(opening["class"])
+            colour = f" c-{klass.lower()}" if klass else ""
+            page.append(f'<li><span class="cls{colour}">{esc(opening["class"])}</span>'
+                        f'<span class="specs">{esc(DOT.join(opening["specs"]))}</span></li>')
+        page.append("</ul>")
+    else:
+        page.append(empty_state("No open positions right now.", "Good company is always welcome; say hello on Discord."))
+    page.append('<div class="expect"><h3>What we expect</h3>')
+    if recruitment["expectations"]:
+        page.append("<ul>" + "".join(f"<li>{esc(line)}</li>" for line in recruitment["expectations"]) + "</ul>")
+    page += ['<div class="actions">',
+             f'<a class="button" href="{esc(source)}" rel="noopener noreferrer">'
+             f'{APPLY_LABELS.get(host, "Apply")} &nearr;</a>',
+             f'<a class="button secondary" href="{DISCORD_INVITE}" rel="noopener noreferrer">Ask on Discord &nearr;</a>',
+             "</div>", "</div>", "</div>", "</section>"]
+    return page
+
+
+def render_page(title, standings, recent, omitted, source_url=None, *, pending=False, site_url=None, extras=None):
+    """The public page. Community sections (gallery, raids, live streams, open positions) need extras."""
+    players = standings["players"]
+    items = extras["items"] if extras else {}
+    if standings["lastEventId"]:
+        lede_text = (f'Standings after event {standings["lastEventId"]}, '
+                     f'recorded {utc_text(standings["lastEventTime"])}.')
+    else:
+        lede_text = "No events are recorded yet."
+    nav = [("standings", "Standings")]
+    if extras:
+        nav += [("gallery", "Gallery"), ("raids", "Raids"), ("live", "Live"), ("recruiting", "Recruiting")]
+    nav += [("activity", "Activity"), ("roster", "Roster")]
+    body = [
+        '<!-- THESIS: a guild home built around its loot ledger, not a generic stats dashboard. '
+        'OWN-WORLD: Horde red, iron charcoal, parchment type and the supplied guild crest. '
+        'STORY: inspect DKP and loot, relive kills, find a raid, join the guild. '
+        'FIRST VIEWPORT: guild name and short info beside the uncropped crest, then publication status. '
+        'FORM: user-pinned Horde identity; read-only ledger, native disclosure, one small hashed script. -->',
+        '<a class="skip" href="#standings">Skip to standings</a>', '<div class="wrap">',
+        f'<header class="topbar"><a class="wordmark" href="#" aria-label="{GUILD_NAME}">'
+        f'<img src="{LOGO_FILE}" alt="" width="48" height="42">PWB</a>',
+        '<nav class="navlinks" aria-label="Page navigation">'
+        + "".join(f'<a href="#{anchor}">{label}</a>' for anchor, label in nav) + "</nav></header>",
+        '<main><div class="hero"><div class="hero-copy">',
+        f"<h1>{esc(title)}</h1>", '<p class="realm">WoW: Forever &nbsp;/&nbsp; Horde &nbsp;/&nbsp; EU PvP</p>',
+        f"<p>{esc(GUILD_SUMMARY)}</p>",
+        '<div class="actions"><a class="button" href="#standings">View standings &darr;</a>'
+        f'<a class="button secondary" href="{DISCORD_INVITE}" rel="noopener noreferrer">Join Discord &nearr;</a></div></div>',
+        f'<div class="hero-art"><img class="guild-logo" src="{LOGO_FILE}" width="{LOGO_SIZE[0]}" height="{LOGO_SIZE[1]}" '
+        f'alt="{esc(LOGO_ALT)}"></div></div>',
+        '<div class="ledger-status">',
+        '<strong>Awaiting first publication</strong>' if pending else '<strong>Public ledger</strong>',
+        f'<p class="lede">{esc(lede_text)}</p></div>',
+        '<section aria-labelledby="standings"><h2 id="standings">Standings</h2>',
+    ]
+    if players:
+        rows = []
+        for player in players:
+            cap = "&mdash;" if player["cap"] is None else number_text(player["cap"])
+            rows.append(
+                f'<tr id="{esc(player["anchor"])}"><th scope="row">{esc(player["account"])}'
+                f'<a class="share" href="#{esc(player["anchor"])}" aria-label="Link to {esc(player["account"])}">#</a></th>'
+                f'<td class="num" data-label="DKP">{dkp_html(player["balance"])}</td>'
+                f'<td class="num" data-label="Cap">{cap}</td>'
+                f'<td>{esc(player["status"])}</td><td>{characters_html(player)}</td>'
+                f'<td>{loot_html(player, items)}</td></tr>')
+        body.append(table("Active players by DKP balance",
+                          [("Player", ""), ("DKP", "num"), ("Cap", "num"), ("Status", ""), ("Characters", ""),
+                           ("Loot", "")], rows, kind="standings"))
+    else:
+        body.append(empty_state("The first standings are still to come.", "No active players are recorded yet.",
+                                "DKP balances appear here after an officer-reviewed ledger is published."))
+    if standings["departedCount"]:
+        body.append(f'<p class="note">{plural(standings["departedCount"], "departed player is", "departed players are")}'
+                    " not listed.</p>")
+    body.append("</section>")
+    linked = {event["id"] for event in recent}
+    if extras:
+        body += gallery_section(extras["gallery"], extras["kills"], linked)
+        body += raids_section(extras)
+        body += live_section(extras, site_url)
+        body += positions_section(extras["recruitment"])
+    body.append('<section aria-labelledby="activity"><h2 id="activity">Recent activity</h2>')
+    if recent:
+        rows = [
+            f'<tr id="e-{event["id"]}"><td class="num"><a href="#e-{event["id"]}" '
+            f'aria-label="Link to event {event["id"]}">{event["id"]}</a></td>'
+            f'<td>{esc(utc_text(event["time"])).replace(" UTC", "&nbsp;UTC")}</td>'
+            f'<td class="col-record">{esc(event["label"])}</td><td>{linked_summary(event, items)}</td></tr>'
+            for event in recent]
+        body.append(table(f"Latest {plural(len(recent), 'public record', 'public records')}, newest first",
+                          [("Event", "num"), ("When", ""), ("Record", "col-record"), ("Details", "")], rows, wide=True))
+    else:
+        body.append(empty_state("Every drop has a story.", "No public records yet.",
+                                "Published loot and DKP changes will appear here, newest first."))
+    body += ["</section>", *guild_sections()]
+    joined = "\n".join(body)
+    has_items = 'class="item' in joined
+    scripted = has_items or " data-carousel" in joined or " data-local" in joined
+    providers = (["Wowhead"] if has_items else []) + (["Discord"] if extras else []) + [
+        name for name, marker in (("Twitch", "https://player.twitch.tv/"), ("YouTube", "https://www.youtube-nocookie.com/"))
+        if marker in joined]
+    body += ['<section class="about" aria-labelledby="about"><h2 id="about">About this page</h2>', "<ul>",
+             "<li>This page publishes player names, DKP balances, each character's raiding class/spec with its raid "
+             "role, and awarded loot from the officers' approved ledger. That is public by design.</li>",
+             "<li>It never publishes BattleTags, Discord IDs or Discord names, free-text notes, "
+             "disciplinary findings, or who recorded, checked or approved a record.</li>",
+             "<li>The activity list shows DKP, loot, raid-week and roster records. history.json lists every record "
+             "that is not private, setup and loot calls included, so event numbers here can skip.</li>"]
+    if omitted:
+        body.append(f"<li>{plural(omitted, 'private record is', 'private records are')} counted in history.json "
+                    "but never published.</li>")
+    body += [
+        "<li>Cap is the player's current DKP cap. Status shows confirmed membership: a dash and Unverified mean "
+        "the player's guild rank has not been confirmed yet, and Not set means membership is not tracked yet.</li>",
+        "<li>To share a player or a record, copy the link from its # mark or its event number; it opens this page "
+        "at that row. Only the newest records are listed here; older ones are in history.json.</li>",
+    ]
+    if extras:
+        body.append("<li>Raid sign-ups are shown as counts by role only; who signed up stays in Discord.</li>")
+    if providers:
+        names = providers[0] if len(providers) == 1 else ", ".join(providers[:-1]) + " and " + providers[-1]
+        body.append(f"<li>Parts of this page load from {names}. Those services see your visit and may set their "
+                    "own cookies.</li>")
+    if not pending:
+        body += [f'<li id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>. Officers compare '
+                 "it with their own copy of the ledger; it cannot be recomputed from this page alone.</li>",
+                 '<li>Raw data: <a href="standings.json">standings.json</a>, <a href="history.json">history.json</a>.</li>']
+    else:
+        body.append('<li>No approved ledger has been published. Armory roster names do not imply a DKP balance.</li>')
+    body += ["</ul>", "</section>"]
+    if source_url:
+        body.append(f'<p class="foot">Source: <a href="{esc(source_url)}" rel="noopener noreferrer">'
+                    f"{esc(urllib.parse.urlsplit(source_url).hostname)}</a></p>")
+    body += [f'<footer class="foot">{GUILD_NAME} &middot; WoW: Forever &middot; For the Horde.</footer>', "</main>",
+             "</div>"]
+    if scripted:
+        body.append(f"<script>{INLINE_SCRIPT}</script>")
+    if has_items:
+        body.append(f'<script src="{WOWHEAD_SCRIPT}"></script>')
+    head = [
+        "<!doctype html>", '<html lang="en">', "<head>", '<meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        '<meta name="color-scheme" content="dark">', '<meta name="theme-color" content="#b52d20">',
+        '<meta name="referrer" content="no-referrer">', '<meta name="robots" content="noindex, nofollow">',
+        f'<meta name="description" content="{esc(GUILD_SUMMARY)}">',
+        '<meta property="og:type" content="website">', f'<meta property="og:site_name" content="{GUILD_NAME}">',
+        f'<meta property="og:title" content="{esc(title)}">',
+        f'<meta property="og:description" content="{esc(GUILD_SUMMARY)}">',
+    ]
+    if site_url:
+        head += [f'<meta property="og:url" content="{esc(site_url)}">',
+                 f'<meta property="og:image" content="{esc(site_url + LOGO_FILE)}">',
+                 f'<meta property="og:image:width" content="{LOGO_SIZE[0]}">',
+                 f'<meta property="og:image:height" content="{LOGO_SIZE[1]}">',
+                 f'<meta property="og:image:alt" content="{esc(LOGO_ALT)}">',
+                 '<meta name="twitter:card" content="summary_large_image">']
+    else:
+        head.append('<meta name="twitter:card" content="summary">')
+    head += [f'<meta http-equiv="Content-Security-Policy" content="{CSP}">',
+             f'<link rel="icon" type="image/png" href="{LOGO_FILE}">',
+             f"<title>{esc(title)}</title>", f"<style>\n{CSS}</style>", "</head>", "<body>"]
+    return "\n".join(head + body + ["</body>", "</html>"]) + "\n"
+
+
+def build_site(ledger, title, source_url=None, site_url=None):
+    events, omitted = project_events(ledger)
+    standings, changed = standings_document(ledger)
+    history = {
+        "format": HISTORY_FORMAT, "version": SITE_VERSION, "lastEventId": ledger.count,
+        "chainHead": ledger.heads[-1], "omitted": omitted, "events": events,
+    }
+    recent = [event for event in reversed(events) if event["kind"] in PAGE_ACTIVITY][:RECENT_EVENTS]
+    files = {
+        "index.html": render_page(title, standings, recent, omitted, source_url, site_url=site_url).encode("utf-8"),
+        "standings.json": store.indented(standings),
+        "history.json": (store.canonical(history) + "\n").encode("ascii"),
+        LOGO_FILE: brand_asset(LOGO_FILE),
+    }
+    return files, standings, history, changed
+
+
+def separate_folders(private, out, label):
+    private_path, out_path = Path(private).resolve(), Path(out).resolve()
+    if out_path.exists() and not out_path.is_dir():
+        raise ToolError("--out is a file; give a folder for the public site")
+    if out_path == private_path or private_path in out_path.parents or out_path in private_path.parents:
+        raise ToolError(f"The public site folder must be separate from the {label} folder")
+
+
+def check_out_dir(ledger_dir, out):
+    separate_folders(ledger_dir, out, "private ledger")
+
+
+def check_title(value):
+    text = clean(value, 80)
+    if not text:
+        raise ToolError("--title needs some visible text")
+    return text
+
+
+def check_source_url(value):
+    if value is None:
+        return None
+    try:
+        parts = urllib.parse.urlsplit(value)
+    except ValueError:
+        raise ToolError("--source-url must be a plain https:// link") from None
+    if (len(value) > 200 or parts.scheme != "https" or not parts.hostname or parts.username or parts.password
+            or any(ch.isspace() or not ch.isprintable() for ch in value)):
+        raise ToolError("--source-url must be a plain https:// link")
+    return value
+
+
+def check_site_url(value):
+    """The page's own address, used for link previews and the Twitch player's parent check."""
+    if value is None:
+        return None
+    problem = "--site-url must be the page's own https:// address ending in /, without ? or #"
+    try:
+        parts = urllib.parse.urlsplit(value)
+        port = parts.port
+    except ValueError:
+        raise ToolError(problem) from None
+    if (len(value) > 200 or parts.scheme != "https" or not parts.hostname or parts.username or parts.password
+            or port is not None or not re.fullmatch(r"[a-z0-9.-]+", parts.hostname) or not value.endswith("/")
+            or "?" in value or "#" in value or any(ch.isspace() or not ch.isprintable() for ch in value)):
+        raise ToolError(problem)
+    return value
+
+
+def check_public(standings, history):
+    """Accept only the shapes `site` writes, so a hand-edited or damaged data folder cannot reach the page."""
+    def need(ok, what):
+        if not ok:
+            raise IntegrityError(f"Published data is malformed: {what}")
+
+    def keys(value, required, optional, what):
+        need(isinstance(value, dict) and set(required) <= set(value) <= set(required) | set(optional), what)
+
+    def text(value, limit=NAME_LIMIT):
+        return isinstance(value, str) and 0 < len(value) <= limit and value == clean(value, limit)
+
+    keys(standings, ("format", "version", "lastEventId", "lastEventTime", "chainHead", "departedCount", "players"), (),
+         "standings.json fields")
+    keys(history, ("format", "version", "lastEventId", "chainHead", "omitted", "events"), (), "history.json fields")
+    need(standings["format"] == STANDINGS_FORMAT and history["format"] == HISTORY_FORMAT
+         and standings["version"] == history["version"] == SITE_VERSION, "file format or version")
+    last = standings["lastEventId"]
+    need(is_whole(last) and history["lastEventId"] == last, "lastEventId differs between the two files")
+    need(isinstance(standings["chainHead"], str) and re.fullmatch(r"[0-9a-f]{64}", standings["chainHead"])
+         and history["chainHead"] == standings["chainHead"], "chainHead differs between the two files")
+    need(is_number(standings["lastEventTime"]) and is_whole(standings["departedCount"]) and is_whole(history["omitted"]),
+         "lastEventTime, departedCount or omitted")
+    need(isinstance(standings["players"], list) and isinstance(history["events"], list), "players or events list")
+    anchors, statuses = set(), set(STATUS_TEXT.values()) | {"Not set", "Unverified"}
+    for player in standings["players"]:
+        keys(player, ("account", "balance", "cap", "characters", "status", "anchor"), ("specs", "loot", "lootTotal"),
+             "player fields")
+        need(text(player["account"]) and is_number(player["balance"])
+             and (player["cap"] is None or is_number(player["cap"])) and player["status"] in statuses, "player row")
+        need(isinstance(player["anchor"], str) and re.fullmatch(r"p-[a-z0-9-]{1,140}", player["anchor"])
+             and player["anchor"] not in anchors, "player anchor")
+        anchors.add(player["anchor"])
+        characters = player["characters"]
+        need(isinstance(characters, list) and characters and all(text(name) for name in characters), "characters")
+        specs = player.get("specs", {})
+        need(isinstance(specs, dict) and all(name in characters and text(spec, 60) for name, spec in specs.items()),
+             "class/spec text")
+        loot = player.get("loot", [])
+        need(isinstance(loot, list) and len(loot) <= LOOT_LIMIT and ("loot" in player) == ("lootTotal" in player)
+             and (not loot or is_whole(player["lootTotal"], len(loot))), "loot list")
+        for entry in loot:
+            keys(entry, ("event", "time", "item"), ("mode", "cost", "character", "reversed", "corrected"), "loot fields")
+            need(is_whole(entry["event"], 1, last) and is_number(entry["time"]) and is_whole(entry["item"], 1, ITEM_MAX)
+                 and (("mode" not in entry) or text(entry["mode"], 40))
+                 and (("cost" not in entry) or is_number(entry["cost"]))
+                 and (("character" not in entry) or text(entry["character"]))
+                 and all(entry.get(flag, True) is True for flag in ("reversed", "corrected")), "loot entry")
+    previous = 0
+    for event in history["events"]:
+        keys(event, ("id", "time", "kind", "label", "summary", "fields"), (), "history event fields")
+        need(is_whole(event["id"], previous + 1, last) and is_number(event["time"]) and text(event["kind"], 40)
+             and text(event["label"]) and text(event["summary"], SUMMARY_LIMIT) and isinstance(event["fields"], dict),
+             "history event")
+        need(all(key in FIELDS or (key.endswith("Count") and key[:-5] in COUNT_FIELDS) for key in event["fields"])
+             and all(isinstance(value, (str, bool)) or is_number(value) for value in event["fields"].values()),
+             "history event fields")
+        previous = event["id"]
+
+
+def escape_discord(text):
+    return _DISCORD_MARKDOWN.sub(r"\\\1", _DISCORD_STRIP.sub("", text))
+
+
+def announce_line(event):
+    return escape_discord(clean(f"Event {event['id']} - {event['summary']}", LINE_LIMIT))
+
+
+def batch_lines(lines):
+    batches, current, size = [], [], 0
+    for item in lines:
+        cost = len(item[1]) + 1
+        if current and size + cost > MESSAGE_LIMIT:
+            batches.append(current)
+            current, size = [], 0
+        current.append(item)
+        size += cost
+    if current:
+        batches.append(current)
+    return batches
+
+
+def webhook_url(environ):
+    url = environ.get(WEBHOOK_VARIABLE, "").strip()
+    if not url:
+        raise ToolError(f"Set {WEBHOOK_VARIABLE} first; the webhook URL is never accepted on the command line")
+    if not WEBHOOK_PATTERN.fullmatch(url):
+        raise ToolError(f"{WEBHOOK_VARIABLE} is not a Discord webhook URL (https://discord.com/api/webhooks/ID/TOKEN)")
+    return url
+
+
+def check_username(value):
+    text = value.strip()
+    if (not 1 <= len(text) <= 80 or any(not ch.isprintable() for ch in text)
+            or any(ch in text for ch in "@#:`")
+            or any(word in text.lower() for word in ("discord", "clyde"))):
+        raise ToolError("--username must be 1-80 printable characters without @ # : ` and not contain 'discord' or 'clyde'")
+    return text
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def default_opener():
+    return urllib.request.build_opener(NoRedirect)
+
+
+def retry_hint(error):
+    value = error.headers.get("Retry-After", "") if getattr(error, "headers", None) else ""
+    value = str(value).strip()
+    return f" Retry after {value} seconds." if value.isdigit() and len(value) <= 5 else ""
+
+
+def post_webhook(opener, url, content, username):
+    body = store.canonical({"content": content, "username": username, "allowed_mentions": {"parse": []}})
+    request = urllib.request.Request(url + "?wait=true", data=body.encode("ascii"), method="POST")
+    request.add_header("Content-Type", "application/json")
+    request.add_header("User-Agent", USER_AGENT)
+    try:
+        with opener.open(request, timeout=TIMEOUT_SECONDS) as response:
+            status = getattr(response, "status", None) or getattr(response, "code", 200)
+            response.read(1)
+    except urllib.error.HTTPError as error:
+        if error.code == 429:
+            raise RemoteError("Discord is rate limiting this webhook (HTTP 429)." + retry_hint(error)) from None
+        raise RemoteError(f"Discord answered HTTP {error.code}") from None
+    except (urllib.error.URLError, OSError) as error:
+        raise RemoteError(f"Could not reach Discord: {type(error).__name__}") from None
+    if status not in (200, 204):
+        raise RemoteError(f"Discord answered HTTP {status}")
+
+
+def read_cursor(folder, ledger):
+    path = Path(folder) / store.CURSOR
+    if not path.exists():
+        return None
+    document = store.read_json(path, CURSOR_BYTES, store.CURSOR)
+    keys = {"format", "version", "lastEventId", "chainHead"}
+    if not isinstance(document, dict) or set(document) != keys or document["format"] != CURSOR_FORMAT \
+            or document["version"] != 1:
+        raise IntegrityError(f"{store.CURSOR} is not an announce cursor; restore it from Git")
+    last = document["lastEventId"]
+    if isinstance(last, bool) or not isinstance(last, int) or not 0 <= last <= ledger.count \
+            or document["chainHead"] != ledger.heads[last]:
+        raise IntegrityError("The ledger history changed since the last announcement; nothing was posted. "
+                             "Restore the ledger or announced.json from Git")
+    return last
+
+
+def write_cursor(folder, ledger, last):
+    store.write_atomic(Path(folder) / store.CURSOR, store.indented({
+        "format": CURSOR_FORMAT, "version": 1, "lastEventId": last, "chainHead": ledger.heads[last]}))
+
+
+def replay_note(replayed):
+    return ("Balances were replayed through the addon rules." if replayed
+            else "NOTE: --no-replay was used; balances and caps were NOT independently verified.")
+
+
+def run_ingest(args, opener, environ, sleep):
+    result = store.ingest(args.ledger, args.export, args.characters, store.replay_from_args(args))
+    if result["status"] == "unchanged":
+        say("No new events; ledger unchanged.")
+        return
+    if result["status"] == "created":
+        say(f"Ledger created: {result['events']} events, chain head {result['chainHead']}.")
+    else:
+        say(f"Ledger updated: {result['added']} new events ({result['events']} total), "
+            f"chain head {result['chainHead']}.")
+    say(replay_note(result["replayed"]))
+    say("Review the diff: a correct update only adds lines to journal.json. "
+        "Commit it through a pull request that a second officer approves.")
+
+
+def run_verify(args, opener, environ, sleep):
+    replay = store.replay_from_args(args)
+    ledger = store.verify_ledger(args.ledger, replay, args.previous)
+    say(f"Ledger verified: {ledger.count} events, chain head {ledger.heads[-1]}.")
+    say(replay_note(replay.enabled))
+    if args.previous:
+        say("The history extends the previous ledger without any change.")
+
+
+def run_site(args, opener, environ, sleep):
+    ledger = store.load_ledger(args.ledger)
+    check_out_dir(args.ledger, args.out)
+    files, standings, history, changed = build_site(ledger, check_title(args.title), check_source_url(args.source_url),
+                                                    check_site_url(args.site_url))
+    for name, data in files.items():
+        store.write_atomic(Path(args.out) / name, data)
+    say(f"Site written to {args.out}: {', '.join(files)} "
+        f"({plural(len(standings['players']), 'player', 'players')}, {plural(len(history['events']), 'record', 'records')}). "
+        "Nothing was uploaded.")
+    if changed:
+        say(f"Warning: {plural(changed, 'name was', 'names were')} shortened, cleaned or redacted for the public page "
+            "(IDs and BattleTag-like text are never published).")
+    if history["omitted"]:
+        say(f"{plural(history['omitted'], 'private record was', 'private records were')} left out of the history.")
+
+
+def run_render(args, opener, environ, sleep):
+    """The full guild page from already-published JSON plus the community files. Nothing is fetched here."""
+    import capped_dkp_community as community
+    title, source_url = check_title(args.title), check_source_url(args.source_url)
+    site_url = check_site_url(args.site_url)
+    data = Path(args.data)
+    separate_folders(data, args.out, "published data")
+    if args.gallery:
+        separate_folders(args.gallery, args.out, "gallery")
+    config = community.load_config(args.config) if args.config else community.empty_config()
+    items = community.load_items(args.items) if args.items else {}
+    gallery = community.load_gallery(args.gallery) if args.gallery else []
+    feed = community.load_data(args.community) if args.community else None
+    present = [name for name in ("standings.json", "history.json") if (data / name).is_file()]
+    if len(present) == 1:
+        raise ToolError(f"{data} holds {present[0]} without its partner file; publish both together with `site`")
+    files = {}
+    if present:
+        standings = store.read_json(data / "standings.json", PUBLIC_JSON_BYTES, "standings.json")
+        history = store.read_json(data / "history.json", PUBLIC_JSON_BYTES, "history.json")
+        check_public(standings, history)
+        files["standings.json"] = store.indented(standings)
+        files["history.json"] = (store.canonical(history) + "\n").encode("ascii")
+        events = history["events"]
+    else:
+        standings = {"lastEventId": 0, "lastEventTime": 0, "chainHead": "", "departedCount": 0, "players": []}
+        history, events = {"omitted": 0}, []
+    recent = [event for event in reversed(events) if event["kind"] in PAGE_ACTIVITY][:RECENT_EVENTS]
+    raid = config["raidHelper"]
+    extras = {"items": items, "gallery": gallery, "kills": boss_kills(events), "community": feed, "raid": raid,
+              "raid_days": raid["days"] if raid else community.RAID_DAYS, "streamers": config["streamers"],
+              "recruitment": config["recruitment"]}
+    page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
+                       site_url=site_url, extras=extras)
+    files = {"index.html": page.encode("utf-8"), LOGO_FILE: brand_asset(LOGO_FILE), **files}
+    for entry in gallery:
+        files[f"gallery/{entry['image']}"] = entry["data"]
+    for name, content in files.items():
+        store.write_atomic(Path(args.out) / name, content)
+    state = "awaiting first publication" if not present else plural(len(standings["players"]), "player", "players")
+    say(f"Page rendered to {args.out}: {plural(len(files), 'file', 'files')} ({state}, "
+        f"{plural(len(gallery), 'gallery image', 'gallery images')}). Nothing was fetched or uploaded.")
+
+
+def check_announce_flags(args):
+    if args.baseline and args.send:
+        raise ToolError("--baseline never posts anything; run it without --send")
+    if args.baseline and args.from_event is not None:
+        raise ToolError("Use either --baseline or --from-event, not both")
+
+
+def starting_point(args, folder, ledger):
+    """Return the event id the announcement starts after, or None when --baseline already finished the run."""
+    cursor = read_cursor(folder, ledger)
+    if cursor is not None:
+        if args.baseline or args.from_event is not None:
+            raise ToolError("An announce cursor exists; --baseline and --from-event are only for the first run")
+        return cursor
+    if args.baseline:
+        write_cursor(folder, ledger, ledger.count)
+        say(f"Baseline set: the {ledger.count} existing events will never be announced. Nothing was sent.")
+        return None
+    if args.from_event is None:
+        raise ToolError("No announce cursor yet: run once with --baseline to skip the existing history, "
+                        "or --from-event N to announce from event N")
+    if not 1 <= args.from_event <= ledger.count:
+        raise ToolError(f"--from-event must be between 1 and {ledger.count}")
+    return args.from_event - 1
+
+
+def run_announce(args, opener, environ, sleep):
+    check_announce_flags(args)
+    ledger = store.load_ledger(args.ledger)
+    folder = Path(args.ledger)
+    username = check_username(args.username)
+    url = webhook_url(environ) if args.send else None
+    start = starting_point(args, folder, ledger)
+    if start is None:
+        return
+    events, _ = project_events(ledger)
+    lines = [(event["id"], announce_line(event)) for event in events
+             if event["id"] > start and event["kind"] in DISCORD_ACTIVITY]
+    batches = batch_lines(lines)
+    selected, leftover = batches[:args.max_messages], batches[args.max_messages:]
+    if not args.send:
+        for number, batch in enumerate(selected, 1):
+            say(f"--- message {number} of {len(selected)} (events {batch[0][0]}-{batch[-1][0]}) ---")
+            say("\n".join(text for _, text in batch))
+        if not selected:
+            say(f"Nothing to announce after event {start}.")
+        if leftover:
+            say(f"{plural(len(leftover), 'more message waits', 'more messages wait')} for the next run.")
+        say("Dry run: nothing was sent and no cursor was written. "
+            f"Add --send (with {WEBHOOK_VARIABLE} set) to post these.")
+        return
+    if not selected:
+        if start < ledger.count:
+            write_cursor(folder, ledger, ledger.count)
+        say(f"Nothing to announce; the cursor is at event {ledger.count}.")
+        return
+    opener = opener or default_opener()
+    for number, batch in enumerate(selected, 1):
+        if number > 1:
+            sleep(args.delay)
+        post_webhook(opener, url, "\n".join(text for _, text in batch), username)
+        write_cursor(folder, ledger, ledger.count if number == len(selected) and not leftover else batch[-1][0])
+        say(f"Posted message {number} of {len(selected)} (events {batch[0][0]}-{batch[-1][0]}).")
+    if leftover:
+        say(f"{plural(len(leftover), 'more message waits', 'more messages wait')} for the next run.")
+
+
+class Parser(argparse.ArgumentParser):
+    def error(self, message):
+        raise ToolError(message)
+
+
+def bounded_int(low, high):
+    def parse(text):
+        try:
+            value = int(text)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f"{text!r} is not a whole number") from None
+        if not low <= value <= high:
+            raise argparse.ArgumentTypeError(f"must be between {low} and {high}")
+        return value
+    return parse
+
+
+def bounded_float(low, high):
+    def parse(text):
+        try:
+            value = float(text)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f"{text!r} is not a number") from None
+        if not low <= value <= high:
+            raise argparse.ArgumentTypeError(f"must be between {low} and {high}")
+        return value
+    return parse
+
+
+def build_parser():
+    root = Parser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    commands = root.add_subparsers(dest="command", required=True)
+
+    ingest = commands.add_parser("ingest", help="copy an addon export into the ledger folder")
+    ingest.add_argument("--ledger", required=True, metavar="DIR", help="private ledger folder")
+    ingest.add_argument("--export", required=True, metavar="FILE", help="output of /cdkp export|json")
+    ingest.add_argument("--characters", required=True, metavar="FILE", help="output of /cdkp characters|json")
+    store.add_replay_arguments(ingest)
+
+    verify = commands.add_parser("verify", help="re-check the ledger")
+    verify.add_argument("--ledger", required=True, metavar="DIR")
+    verify.add_argument("--previous", metavar="DIR", help="earlier approved ledger; the history must extend it unchanged")
+    store.add_replay_arguments(verify)
+
+    site = commands.add_parser("site", help="write the static public page and JSON files")
+    site.add_argument("--ledger", required=True, metavar="DIR")
+    site.add_argument("--out", required=True, metavar="DIR", help="public site folder, separate from the ledger")
+    site.add_argument("--title", default=DEFAULT_TITLE)
+    site.add_argument("--source-url", metavar="URL", help="optional https link shown in the page footer")
+    site.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews")
+
+    render = commands.add_parser("render", help="build the full guild page from published JSON and community files")
+    render.add_argument("--data", required=True, metavar="DIR", help="folder holding standings.json and history.json")
+    render.add_argument("--out", required=True, metavar="DIR", help="output folder, separate from --data and --gallery")
+    render.add_argument("--config", metavar="FILE", help="community.json: Raid-Helper server, streamers, open positions")
+    render.add_argument("--community", metavar="FILE", help="community data written by capped_dkp_community.py fetch")
+    render.add_argument("--items", metavar="FILE", help="item-cache.json with Wowhead item names")
+    render.add_argument("--gallery", metavar="DIR", help="folder with gallery.json and its images")
+    render.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews and Twitch")
+    render.add_argument("--source-url", metavar="URL", help="optional https link shown in the page footer")
+    render.add_argument("--title", default=DEFAULT_TITLE)
+
+    announce = commands.add_parser("announce", help="print or post new events to a Discord webhook")
+    announce.add_argument("--ledger", required=True, metavar="DIR")
+    announce.add_argument("--send", action="store_true", help=f"post to the webhook in {WEBHOOK_VARIABLE} (default: dry run)")
+    announce.add_argument("--baseline", action="store_true", help="first run: mark every existing event as announced")
+    announce.add_argument("--from-event", type=bounded_int(1, 10 ** 9), metavar="N",
+                          help="first run: announce from event N onward")
+    announce.add_argument("--max-messages", type=bounded_int(1, 50), default=10, metavar="N")
+    announce.add_argument("--delay", type=bounded_float(0, 60), default=1.0, metavar="SECONDS")
+    announce.add_argument("--username", default=DEFAULT_USERNAME)
+    return root
+
+
+def fail(message, code, secrets):
+    for secret in secrets:
+        if secret:
+            message = message.replace(secret, "***")
+    say(f"ERROR: {message}", sys.stderr)
+    return code
+
+
+def secret_values(argv, environ):
+    """Webhook URLs and tokens that must never be printed, whether they came from the environment or a mistaken argument."""
+    url = environ.get(WEBHOOK_VARIABLE, "").strip()
+    secrets = [url, url.rsplit("/", 1)[-1]]
+    for text in argv:
+        for match in WEBHOOK_PATTERN.finditer(text):
+            secrets += [match.group(0), match.group(0).rsplit("/", 1)[-1]]
+    return [secret for secret in secrets if len(secret) >= 16]
+
+
+def main(argv=None, opener=None, environ=None, sleep=time.sleep):
+    environ = os.environ if environ is None else environ
+    argv = sys.argv[1:] if argv is None else list(argv)
+    secrets = secret_values(argv, environ)
+    handlers = {"ingest": run_ingest, "verify": run_verify, "site": run_site, "render": run_render,
+                "announce": run_announce}
+    try:
+        args = build_parser().parse_args(argv)
+        handlers[args.command](args, opener, environ, sleep)
+    except ToolError as error:
+        return fail(str(error), error.code, secrets)
+    except OSError as error:
+        return fail(f"File operation failed: {type(error).__name__}: {error.strerror or error}", 1, secrets)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

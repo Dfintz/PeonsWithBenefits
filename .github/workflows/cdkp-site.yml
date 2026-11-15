@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: Apache-2.0
+# CappedDKP public site for Peons with Benefits. Builds the page from the standings that the private ledger
+# repository mirrors into data/, plus community.json, gallery/ and community data fetched on every run (Raid-Helper
+# sign-up counts, live Twitch and YouTube streams, Wowhead item names), then deploys it to GitHub Pages.
+# Written by tools/capped_dkp_scaffold.py --public; its hash is recorded in .cdkp/TOOLKIT.json.
+# Every secret is optional: a source without its secret shows its empty state on the page.
+name: CappedDKP site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cdkp-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify the vendored toolkit
+        run: python3 -B .cdkp/tools/capped_dkp_ci.py toolkit
+
+      - name: Fetch raid sign-ups, live streams and item names
+        env:
+          RAIDHELPER_API_KEY: ${{ secrets.RAIDHELPER_API_KEY }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: >-
+          python3 -B .cdkp/tools/capped_dkp_community.py fetch
+          --config community.json --data data --items cache/item-cache.json
+          --out "$RUNNER_TEMP/community-data.json"
+
+      - name: Build the page
+        env:
+          PAGE_TITLE: ${{ vars.CDKP_PAGE_TITLE }}
+          SITE_URL: ${{ vars.CDKP_SITE_URL }}
+          SOURCE_URL: ${{ vars.CDKP_SOURCE_URL }}
+        run: |
+          set -- --data data --out "$RUNNER_TEMP/site" --config community.json --gallery gallery
+          set -- "$@" --items cache/item-cache.json --community "$RUNNER_TEMP/community-data.json"
+          set -- "$@" --title "${PAGE_TITLE:-Peons with Benefits}"
+          if [ -n "$SITE_URL" ]; then set -- "$@" --site-url "$SITE_URL"; fi
+          if [ -n "$SOURCE_URL" ]; then set -- "$@" --source-url "$SOURCE_URL"; fi
+          python3 -B .cdkp/tools/capped_dkp_publish.py render "$@"
+
+      - name: Upload the page for GitHub Pages
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/site
+
+      # Pushes made with the workflow token do not start another run of this workflow.
+      - name: Save new Wowhead item names
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f cache/item-cache.json ]; then exit 0; fi
+          git add cache/item-cache.json
+          if git diff --cached --quiet; then echo "No new item names to save."; exit 0; fi
+          git -c user.name="github-actions[bot]" -c user.email="41898732+github-actions[bot]@users.noreply.github.com" commit -q -m "Cache Wowhead item names"
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          for attempt in 1 2 3; do
+            if git -c "http.extraheader=$auth" push -q origin HEAD:main; then echo "Saved the item cache."; exit 0; fi
+            git -c "http.extraheader=$auth" pull -q --rebase origin main || { git rebase --abort 2>/dev/null || true; break; }
+          done
+          echo "::warning::Could not save the item cache; the next run looks these names up again."
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

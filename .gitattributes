@@ -1,0 +1,7 @@
+# Every text file is stored and checked out with LF line endings, so the hashes in .cdkp/TOOLKIT.json match on
+# Windows and on the Linux runners. Images are never converted.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary

@@ -1,0 +1,24 @@
+{
+  "format": "pwb-community-config",
+  "version": 1,
+  "raidHelper": {
+    "serverId": "1561718146769883229",
+    "days": 14
+  },
+  "streamers": [],
+  "recruitment": {
+    "source": "https://guildsofwow.com/peons-with-benefits/recruitment",
+    "updated": "2026-11-15",
+    "openings": [
+      {"class": "Druid", "specs": ["Guardian", "Restoration"]},
+      {"class": "Paladin", "specs": ["Holy", "Protection"]},
+      {"class": "Priest", "specs": ["Discipline", "Holy"]},
+      {"class": "Warrior", "specs": ["Protection"]}
+    ],
+    "expectations": [
+      "Consumables ready before the pull.",
+      "Know your role and the mechanics.",
+      "No exploits, ever."
+    ]
+  }
+}

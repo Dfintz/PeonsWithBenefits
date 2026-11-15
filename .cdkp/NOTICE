@@ -1,0 +1,14 @@
+Copyright 2021-2023 Lantis and the Classic Loot Manager contributors
+
+In-tree third party libraries in the `Libs` folder are subject to their own licenses.
+
+Any third party files included during the build process are also subject to their own licenses.
+
+Additional notice for this distribution:
+Capped DKP is a reduced, modified derivative of Core Loot Manager.
+Only the first-party PointInfo and Loot model code is retained and adapted.
+No upstream Libs directory, bundled library, media, or build-time dependency is included.
+The original local journal and dispatcher are not copies or drop-in implementations
+of lua-eventsourcing or LibEventDispatcher. See THIRD-PARTY.md for the source audit.
+Modified model files carry individual modification notices.
+No endorsement by Core Loot Manager or its contributors is implied.
