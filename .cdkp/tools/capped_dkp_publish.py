@@ -324,8 +324,6 @@ a.item.q7{color:#00ccff}
 .roster-list a{display:inline-block;padding:.1rem 0;font-weight:600;overflow-wrap:anywhere;text-underline-offset:3px}
 .who{display:block;color:var(--muted);font-size:.85rem}
 summary{cursor:pointer;min-height:44px;color:var(--accent);padding:.65rem 0}
-.about{border-top:1px solid var(--line);padding-top:2rem}
-.about ul{max-width:75ch;color:var(--muted);font-size:.9rem}
 .skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:2}
 .skip:focus{top:1rem}
 @media (max-width:50rem){.hero{grid-template-columns:1fr 1fr;gap:1rem}.guild-links{grid-template-columns:1fr 1fr}.community{grid-column:1/-1}.roster-list{grid-template-columns:repeat(2,minmax(0,1fr))}.positions{grid-template-columns:1fr}}
@@ -1067,38 +1065,14 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
     joined = "\n".join(body)
     has_items = 'class="item' in joined
     scripted = has_items or " data-carousel" in joined or " data-local" in joined
-    body += ['<section class="about" aria-labelledby="about"><h2 id="about">About this page</h2>', "<ul>",
-             "<li>This page publishes player names, DKP balances, each character's raiding class/spec with its raid "
-             "role, and awarded loot from the officers' approved ledger. That is public by design.</li>",
-             "<li>It never publishes BattleTags, Discord IDs or Discord names, free-text notes, "
-             "disciplinary findings, or who recorded, checked or approved a record.</li>",
-             "<li>The activity list shows DKP, loot, raid-week and roster records. history.json lists every record "
-             "that is not private, setup and loot calls included, so event numbers here can skip.</li>"]
-    if omitted:
-        body.append(f"<li>{plural(omitted, 'private record is', 'private records are')} counted in history.json "
-                    "but never published.</li>")
-    body += [
-        "<li>Cap is the player's current DKP cap. Status shows confirmed membership: a dash and Unverified mean "
-        "the player's guild rank has not been confirmed yet, and Not set means membership is not tracked yet.</li>",
-        "<li>To share a player or a record, copy the link from its # mark or its event number; it opens this page "
-        "at that row. Only the newest records are listed here; older ones are in history.json.</li>",
-    ]
-    if extras:
-        body.append("<li>Raid sign-ups are shown as counts by role only; who signed up stays in Discord.</li>")
-    if has_items:
-        body.append("<li>Item names, icons and tooltips load from Wowhead. Wowhead sees your visit and may set its "
-                    "own cookies.</li>")
+    body.append('<footer class="foot">')
     if not pending:
-        body += [f'<li id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>. Officers compare '
-                 "it with their own copy of the ledger; it cannot be recomputed from this page alone.</li>",
-                 '<li>Raw data: <a href="standings.json">standings.json</a>, <a href="history.json">history.json</a>.</li>']
-    else:
-        body.append('<li>No approved ledger has been published. Armory roster names do not imply a DKP balance.</li>')
-    body += ["</ul>", "</section>"]
+        body += [f'<p id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>.</p>',
+                 '<p>Raw data: <a href="standings.json">standings.json</a>, <a href="history.json">history.json</a>.</p>']
     if source_url:
-        body.append(f'<p class="foot">Source: <a href="{esc(source_url)}" rel="noopener noreferrer">'
+        body.append(f'<p>Source: <a href="{esc(source_url)}" rel="noopener noreferrer">'
                     f"{esc(urllib.parse.urlsplit(source_url).hostname)}</a></p>")
-    body += [f'<footer class="foot">{GUILD_NAME} &middot; WoW: Forever &middot; For the Horde.</footer>', "</main>",
+    body += [f'<p>{GUILD_NAME} &middot; WoW: Forever &middot; For the Horde.</p></footer>', "</main>",
              "</div>"]
     if scripted:
         body.append(f"<script>{INLINE_SCRIPT}</script>")

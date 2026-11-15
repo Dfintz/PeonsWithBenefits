@@ -82,6 +82,25 @@ Edit these files in a commit to `main`; the page rebuilds within a few minutes.
 - GitHub turns off scheduled workflows in a public repository after 60 days without activity. If the page stops
   refreshing, enable **CappedDKP site** again under **Actions**.
 
+## Ledger reference
+
+The public page keeps this guidance here instead of displaying an "About this page" disclaimer.
+
+- The approved ledger publishes character and account names, DKP balances, recorded class/spec, raid roles and
+  awarded loot. BattleTags, Discord identities, free-text notes, disciplinary findings and record authors,
+  checkers and approvers stay private. Private records are counted as omitted in `history.json`, not published.
+- Recent activity shows DKP, loot, raid-week and roster records. `history.json` includes all non-private records,
+  including setup and loot calls, so displayed event numbers can skip.
+- **Cap** is the player's current DKP cap. A dash and **Unverified** mean their guild rank has not been confirmed;
+  **Not set** means membership is not tracked.
+- Use a player's `#` or an event number to share a direct link to that row. Only the newest records appear on
+  the page; older ones are in `history.json`.
+- Once a ledger is published, the footer links to `standings.json` and `history.json` and shows its fingerprint.
+  Officers compare that fingerprint with their own ledger copy; it cannot be recomputed from the public page.
+- Raid sign-ups publish counts by role only; names stay in Discord. The dated Armory roster is separate from
+  the ledger and does not imply DKP balances or eligibility. Before the first approved publication, standings
+  remain explicitly empty.
+
 ## When something fails
 
 Open the failed run under **Actions**; the log says which step failed and why. A problem with one community source
