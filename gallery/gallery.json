@@ -1,5 +1,13 @@
 {
   "format": "pwb-gallery",
   "version": 1,
-  "items": []
+  "items": [
+    {
+      "image": "2026-11-12-pillaging-wetlands.webp",
+      "caption": "Pillaging Wetlands",
+      "category": "event",
+      "date": "2026-11-12",
+      "alt": "Peons with Benefits members gathered in the wetlands at night in World of Warcraft."
+    }
+  ]
 }
