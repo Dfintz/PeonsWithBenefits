@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # CappedDKP public site for Peons with Benefits. Builds the page from the standings that the private ledger
 # repository mirrors into data/, plus community.json, gallery/ and community data fetched on every run (Raid-Helper
-# sign-up counts and Wowhead item names), then deploys it to GitHub Pages.
+# sign-up counts and Wowhead item names), then deploys it to GitHub Pages. The guild roster is refreshed from the
+# public Armory once the saved copy in cache/armory-roster.json is 3 hours old; until the first refresh, or if the
+# Armory stops answering, the page shows the last saved roster (or the snapshot bundled with the toolkit).
 # Written by tools/capped_dkp_scaffold.py --public; its hash is recorded in .cdkp/TOOLKIT.json.
 # The Raid-Helper secret is optional: without it the raid calendar shows its empty state on the page.
 name: CappedDKP site
@@ -35,13 +37,13 @@ jobs:
       - name: Verify the vendored toolkit
         run: python3 -B .cdkp/tools/capped_dkp_ci.py toolkit
 
-      - name: Fetch raid sign-ups and item names
+      - name: Fetch raid sign-ups, item names and the Armory roster
         env:
           RAIDHELPER_API_KEY: ${{ secrets.RAIDHELPER_API_KEY }}
         run: >-
           python3 -B .cdkp/tools/capped_dkp_community.py fetch
           --config community.json --data data --items cache/item-cache.json
-          --out "$RUNNER_TEMP/community-data.json"
+          --roster cache/armory-roster.json --out "$RUNNER_TEMP/community-data.json"
 
       - name: Build the page
         env:
@@ -51,6 +53,7 @@ jobs:
         run: |
           set -- --data data --out "$RUNNER_TEMP/site" --config community.json --gallery gallery
           set -- "$@" --items cache/item-cache.json --community "$RUNNER_TEMP/community-data.json"
+          set -- "$@" --roster cache/armory-roster.json
           set -- "$@" --title "${PAGE_TITLE:-Peons with Benefits}"
           if [ -n "$SITE_URL" ]; then set -- "$@" --site-url "$SITE_URL"; fi
           if [ -n "$SOURCE_URL" ]; then set -- "$@" --source-url "$SOURCE_URL"; fi
@@ -62,21 +65,22 @@ jobs:
           path: ${{ runner.temp }}/site
 
       # Pushes made with the workflow token do not start another run of this workflow.
-      - name: Save new Wowhead item names
+      - name: Save new item names and the refreshed roster
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ ! -f cache/item-cache.json ]; then exit 0; fi
-          git add cache/item-cache.json
-          if git diff --cached --quiet; then echo "No new item names to save."; exit 0; fi
-          git -c user.name="github-actions[bot]" -c user.email="41898732+github-actions[bot]@users.noreply.github.com" commit -q -m "Cache Wowhead item names"
+          for file in cache/item-cache.json cache/armory-roster.json; do
+            if [ -f "$file" ]; then git add "$file"; fi
+          done
+          if git diff --cached --quiet; then echo "No cache changes to save."; exit 0; fi
+          git -c user.name="github-actions[bot]" -c user.email="41898732+github-actions[bot]@users.noreply.github.com" commit -q -m "Update cached item names and Armory roster"
           auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
           for attempt in 1 2 3; do
-            if git -c "http.extraheader=$auth" push -q origin HEAD:main; then echo "Saved the item cache."; exit 0; fi
+            if git -c "http.extraheader=$auth" push -q origin HEAD:main; then echo "Saved the caches."; exit 0; fi
             git -c "http.extraheader=$auth" pull -q --rebase origin main || { git rebase --abort 2>/dev/null || true; break; }
           done
-          echo "::warning::Could not save the item cache; the next run looks these names up again."
+          echo "::warning::Could not save the caches; the next run fetches them again."
 
   deploy:
     needs: build

@@ -3,12 +3,16 @@
 
   fetch  read community.json, then download upcoming Raid-Helper events (sign-up counts by role only)
          and Wowhead names for awarded items. Writes the community data file and updates the item cache.
+         With --roster it also refreshes the saved public Armory roster once it is ROSTER_REFRESH_SECONDS old.
 
 The only secret, RAIDHELPER_API_KEY, is read from the environment and is never printed or written to a
 file. Without it the raid calendar is reported as "unconfigured"; if Raid-Helper fails it is reported as
 "error", and the page shows its empty state instead. Raid sign-up names are never stored. Requests go only
 to the hosts in ALLOWED_HOSTS (plus the Raid-Helper API through capped_dkp_raidhelper) and never follow a
 redirect.
+
+The Armory roster comes from the same undocumented query the Armory's own guild page sends. Blizzard can
+change it without notice; when a refresh fails, the saved roster is left as it was.
 
 The publisher's offline `render` command loads the files written here with the loaders below.
 """
@@ -22,7 +26,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 _TOOLS = str(Path(__file__).resolve().parent)
@@ -58,7 +62,24 @@ USER_AGENT = "PWB-Community/1.0"
 ROLES = ("Tank", "Healer", "Melee", "Ranged")
 CATEGORIES = ("memory", "event")
 STATUSES = ("ok", "error", "unconfigured")
-ALLOWED_HOSTS = frozenset({"nether.wowhead.com"})
+ALLOWED_HOSTS = frozenset({"nether.wowhead.com", "worldofwarcraft.blizzard.com"})
+ROSTER_REFRESH_SECONDS = 3 * 3600
+ARMORY_REGION = "eu"
+ARMORY_GRAPHQL = "https://worldofwarcraft.blizzard.com/en-gb/graphql"
+ARMORY_GUILD = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
+# The Armory guild page's own roster query (a persisted query, so only its hash is sent). The Referer header
+# tells the Armory which game the guild belongs to; without it the query fails.
+ARMORY_QUERY = {
+    "operationName": "GetGuildRoster",
+    "variables": {"guild": {"nameSlug": "peons-with-benefits", "region": ARMORY_REGION},
+                  "showMessageOfTheDay": False, "showRoles": False},
+    "extensions": {"persistedQuery": {
+        "version": 1, "sha256Hash": "5f32b85faa248d321a08645d470fb38b82be64b9abd8b5b5fd2816620546794b"}},
+}
+# The Armory sends rank numbers only. These names were matched against the guild's ranks on 2026-11-15;
+# a rank missing here is saved without a name.
+ARMORY_RANKS = {0: "Benefits Admin", 1: "Head Peon", 4: "Peon Plus", 5: "Side Hustle", 6: "Fresh Peon"}
+PROFILE_SLUG = re.compile(r"(?:[a-z0-9-]|%[0-9A-F]{2})+")
 SECRET_VARIABLES = ("RAIDHELPER_API_KEY",)
 DISCORD_SNOWFLAKE = re.compile(r"[0-9]{17,20}")
 DISCORD_MESSAGE = re.compile(r"https://discord\.com/channels/[0-9]{17,20}/[0-9]{17,20}/[0-9]{17,20}")
@@ -375,13 +396,19 @@ def load_data(path):
     return check_data(store.read_json(path, DATA_BYTES, path.name), path.name)
 
 
-def request(opener, url, label, *, missing_ok=False):
-    """GET one allowlisted https URL; return the bounded body, or None on an allowed 404."""
+def request(opener, url, label, *, missing_ok=False, payload=None, headers=()):
+    """GET one allowlisted https URL, or POST a JSON payload to it; return the bounded body, or None on an
+    allowed 404."""
     parts = urllib.parse.urlsplit(url)
     if parts.scheme != "https" or parts.hostname not in ALLOWED_HOSTS or parts.username or parts.password:
         raise SourceError(f"{label}: refused a host outside the allowlist")
-    outgoing = urllib.request.Request(url, method="GET")
+    data = None if payload is None else json.dumps(payload).encode("utf-8")
+    outgoing = urllib.request.Request(url, data=data, method="GET" if data is None else "POST")
     outgoing.add_header("User-Agent", USER_AGENT)
+    if data is not None:
+        outgoing.add_header("Content-Type", "application/json")
+    for name, value in headers:
+        outgoing.add_header(name, value)
     try:
         with opener.open(outgoing, timeout=TIMEOUT_SECONDS) as response:
             body = response.read(RESPONSE_BYTES + 1)
@@ -494,6 +521,75 @@ def fetch_items(opener, cache, wanted, now, sleep):
     return fetched, len(due) - fetched
 
 
+def armory_members(rows):
+    """Armory roster rows as public snapshot members: name, profile link, and level, class and rank when known.
+    Rows without a usable character ID, and repeats, are skipped."""
+    import capped_dkp_publish as publish
+    members, seen = [], set()
+    for row in rows if isinstance(rows, list) else []:
+        character = row.get("character") if isinstance(row, dict) else None
+        identifier = character.get("_id") if isinstance(character, dict) else None
+        if not isinstance(identifier, str) or not identifier.startswith(ARMORY_REGION + "-"):
+            continue
+        slug = urllib.parse.quote(identifier[len(ARMORY_REGION) + 1:].lower(), safe="-")
+        name = " ".join(part for part in (text(character.get("name"), 50), text(character.get("surname"), 50))
+                        if part)
+        if not name or not PROFILE_SLUG.fullmatch(slug) or slug in seen:
+            continue
+        seen.add(slug)
+        member = {"name": name, "url": publish.PROFILE_PREFIX + slug}
+        if whole(character.get("level"), 1, publish.LEVEL_MAX):
+            member["level"] = character["level"]
+        klass = character.get("class")
+        if isinstance(klass, dict) and klass.get("name") in publish.CLASSES:
+            member["class"] = klass["name"]
+        rank = row.get("rank")
+        rank = rank.get("rankId") if isinstance(rank, dict) else None
+        if whole(rank) and rank in ARMORY_RANKS:
+            member["rank"] = ARMORY_RANKS[rank]
+        members.append(member)
+    members.sort(key=lambda member: (member["name"].casefold(), member["url"]))
+    return members
+
+
+def fetch_roster(opener, now):
+    """The guild roster from the public Armory, as a document the publisher's roster check accepts."""
+    import capped_dkp_publish as publish
+    body = request(opener, ARMORY_GRAPHQL, "The Armory", payload=ARMORY_QUERY,
+                   headers=(("Accept", "application/json"), ("Referer", ARMORY_GUILD)))
+    answer = decode(body, "The Armory")
+    errors, data = answer.get("errors"), answer.get("data")
+    guild = data.get("Guild") if isinstance(data, dict) else None
+    if errors or not isinstance(guild, dict):
+        first = errors[0] if isinstance(errors, list) and errors and isinstance(errors[0], dict) else {}
+        raise SourceError("The Armory did not send the roster: " + (text(first.get("message"), 80) or "no guild"))
+    members = armory_members(guild.get("roster"))
+    if not members:
+        raise SourceError("The Armory sent no characters")
+    document = {"source": ARMORY_GUILD, "retrievedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
+                "members": members}
+    try:
+        _, _, hidden = publish.armory_roster(document)
+    except ToolError as error:
+        raise SourceError(str(error)) from None
+    return document, hidden
+
+
+def roster_due(path, now):
+    """True unless the saved roster is valid and less than ROSTER_REFRESH_SECONDS old."""
+    import capped_dkp_publish as publish
+    path = Path(path)
+    if not path.is_file():
+        return True
+    try:
+        document = store.read_json(path, publish.ROSTER_BYTES, path.name)
+        publish.armory_roster(document)
+        saved = datetime.fromisoformat(document["retrievedAt"].replace("Z", "+00:00")).timestamp()
+    except ToolError:
+        return True
+    return not 0 <= now - saved < ROSTER_REFRESH_SECONDS
+
+
 def wanted_items(folder):
     """Item IDs named in published history and standings; malformed entries are skipped (render rejects them)."""
     folder, wanted = Path(folder), set()
@@ -545,6 +641,20 @@ def run_fetch(args, opener, environ, now, sleep, say):
     except SourceError as error:
         say("Wowhead items: stopped early. " + redact(str(error), secrets))
 
+    if args.roster:
+        hours = ROSTER_REFRESH_SECONDS // 3600
+        if not roster_due(args.roster, now):
+            say(f"Armory roster: the saved copy is less than {hours} hours old, so it was not checked.")
+        else:
+            try:
+                roster, hidden = fetch_roster(opener, now)
+                store.write_atomic(Path(args.roster), store.indented(roster))
+                say(f"Armory roster: saved {len(roster['members'])} characters ({hidden} at hidden ranks) "
+                    f"to {Path(args.roster).name}.")
+            except SourceError as error:
+                say("Armory roster: could not update; the saved roster was left as it was. "
+                    + redact(str(error), secrets))
+
     document = {"format": DATA_FORMAT, "version": VERSION, "generated": now, "raidHelper": raid}
     check_data(document)
     store.write_atomic(Path(args.out), store.indented(document))
@@ -562,10 +672,12 @@ class Parser(argparse.ArgumentParser):
 def build_parser():
     root = Parser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     commands = root.add_subparsers(dest="command", required=True)
-    fetch = commands.add_parser("fetch", help="download raid sign-up counts and item names")
+    fetch = commands.add_parser("fetch", help="download raid sign-up counts, item names and the Armory roster")
     fetch.add_argument("--config", required=True, metavar="FILE", help="community.json")
     fetch.add_argument("--data", metavar="DIR", help="folder with the published standings.json and history.json")
     fetch.add_argument("--items", metavar="FILE", help="item-cache.json to read and update")
+    fetch.add_argument("--roster", metavar="FILE",
+                       help="armory-roster.json to refresh from the public Armory once it is 3 hours old")
     fetch.add_argument("--out", required=True, metavar="FILE", help="community data file to write")
     return root
 

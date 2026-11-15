@@ -14,7 +14,8 @@ yet: check the first runs under **Actions**.
 | `community.json` | Raid-Helper server, open positions | Officers |
 | `gallery/` | `gallery.json` and its images | Officers |
 | `cache/item-cache.json` | Wowhead item names, saved by the workflow | Only the workflow |
-| `.cdkp/` | Vendored page tools, the guild logo and the Armory roster snapshot | Only the scaffold's `--public --update` |
+| `cache/armory-roster.json` | Latest Armory roster, saved by the workflow | Only the workflow |
+| `.cdkp/` | Vendored page tools, the guild logo and the fallback Armory roster | Only the scaffold's `--public --update` |
 | `.cdkp/TOOLKIT.json` | SHA-256 of every file in `.cdkp/` and of the workflow | Only the scaffold |
 | `.github/workflows/cdkp-site.yml` | Builds and deploys the page | Only the scaffold |
 
@@ -31,6 +32,10 @@ Scheduled runs often start late when GitHub is busy, so raid sign-up counts can 
      Discord IDs are written anywhere.
    - **Wowhead:** names and quality of looted items, at most 50 new lookups per run. They are saved in
      `cache/item-cache.json` so each item is looked up once.
+   - **Blizzard Armory:** the guild's public roster (names, profile links, level, class and rank), asked for
+     only when `cache/armory-roster.json` is missing or at least 3 hours old, then saved there. This uses the
+     Armory page's own undocumented query, which Blizzard can change without notice. If it fails, the saved
+     roster is kept; with none saved, the page shows the roster bundled in `.cdkp/` (read 2026-11-15).
 3. It renders the page from `data/`, `community.json`, `gallery/` and the fetched data, and deploys it.
 
 Until the private ledger first mirrors `data/`, the page says the standings are awaiting their first publication.
@@ -42,7 +47,7 @@ The repository owner does this once. None of it is done for you.
 1. Push the scaffold's output to `main` of this **public** repository.
 2. **Settings → Pages → Build and deployment → Source:** *GitHub Actions*.
 3. **Settings → Actions → General:** allow GitHub Actions. *Workflow permissions* can stay at **Read repository
-   contents**; the workflow asks for write access only to save the item cache.
+   contents**; the workflow asks for write access only to save the item and roster caches.
 4. In the **private ledger repository**, set the variable `CDKP_PUBLIC_REPO` to this repository, `CDKP_PUBLIC_PATH`
    to `data`, and the secret `CDKP_PUBLIC_REPO_TOKEN` to a fine-grained token with **Contents: Read and write** on
    this repository only. Its publish workflow then pushes `data/` here after every approved ledger merge.

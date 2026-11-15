@@ -9,8 +9,8 @@
 
 Only `announce --send` uses the network, and only to the webhook in DISCORD_WEBHOOK_URL. The URL is
 never accepted on the command line and never printed. Nothing here touches the game, SavedVariables,
-Git or Raid-Helper, and no command runs unless you invoke it. Community data (Raid-Helper sign-ups and
-Wowhead item names) is fetched separately by capped_dkp_community.py.
+Git or Raid-Helper, and no command runs unless you invoke it. Community data (Raid-Helper sign-ups,
+Wowhead item names and the refreshed Armory roster) is fetched separately by capped_dkp_community.py.
 
 The public pages show player names, DKP balances, raiding class/spec with its raid role, and awarded
 loot by design. They never show BattleTags, Discord IDs, Discord names, free-text notes, disciplinary
@@ -343,6 +343,8 @@ GUILD_LINKS = (
 )
 DISCORD_INVITE = "https://discord.gg/Cahah6u4yZ"
 PROFILE_PREFIX = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/"
+ROSTER_FILE = "pwb-roster.json"
+ROSTER_BYTES = 1024 * 1024
 
 
 def brand_asset(name):
@@ -352,12 +354,14 @@ def brand_asset(name):
         raise ToolError(f"Cannot read branding asset {name}: {error}") from None
 
 
-def armory_roster():
+def armory_roster(snapshot=None):
     """A dated, public Armory snapshot, separate from DKP membership and authority.
 
+    Uses the given snapshot (such as the one capped_dkp_community.py fetch refreshes) or the bundled one.
     Returns the members to show, the snapshot time and how many members a hidden rank left out."""
     try:
-        snapshot = json.loads(brand_asset("pwb-roster.json"))
+        if snapshot is None:
+            snapshot = json.loads(brand_asset(ROSTER_FILE))
         members = snapshot["members"]
         stamp = datetime.fromisoformat(snapshot["retrievedAt"].replace("Z", "+00:00"))
         if not isinstance(members, list) or not members or stamp.tzinfo is None:
@@ -411,8 +415,8 @@ def roster_detail(member, specs):
     return DOT.join(parts)
 
 
-def guild_sections(specs=None):
-    members, stamp, hidden = armory_roster()
+def guild_sections(specs=None, roster=None):
+    members, stamp, hidden = armory_roster(roster)
     specs = specs or {}
     ranks = " or ".join(sorted(HIDDEN_RANKS))
     left_out = f" Characters at the {esc(ranks)} rank are not listed." if hidden else ""
@@ -1061,7 +1065,7 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
     else:
         body.append(empty_state("Every drop has a story.", "No public records yet.",
                                 "Published loot and DKP changes will appear here, newest first."))
-    body += ["</section>", *guild_sections(roster_specs(standings))]
+    body += ["</section>", *guild_sections(roster_specs(standings), extras.get("roster") if extras else None)]
     joined = "\n".join(body)
     has_items = 'class="item' in joined
     scripted = has_items or " data-carousel" in joined or " data-local" in joined
@@ -1384,6 +1388,10 @@ def run_render(args, opener, environ, sleep):
     items = community.load_items(args.items) if args.items else {}
     gallery = community.load_gallery(args.gallery) if args.gallery else []
     feed = community.load_data(args.community) if args.community else None
+    roster = None
+    if args.roster and Path(args.roster).is_file():
+        roster = store.read_json(args.roster, ROSTER_BYTES, Path(args.roster).name)
+        armory_roster(roster)
     present = [name for name in ("standings.json", "history.json") if (data / name).is_file()]
     if len(present) == 1:
         raise ToolError(f"{data} holds {present[0]} without its partner file; publish both together with `site`")
@@ -1401,7 +1409,8 @@ def run_render(args, opener, environ, sleep):
     recent = [event for event in reversed(events) if event["kind"] in PAGE_ACTIVITY][:RECENT_EVENTS]
     raid = config["raidHelper"]
     extras = {"items": items, "gallery": gallery, "kills": boss_kills(events), "community": feed, "raid": raid,
-              "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": config["recruitment"]}
+              "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": config["recruitment"],
+              "roster": roster}
     page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
                        site_url=site_url, extras=extras)
     files = {"index.html": page.encode("utf-8"), LOGO_FILE: brand_asset(LOGO_FILE), **files}
@@ -1539,6 +1548,8 @@ def build_parser():
     render.add_argument("--community", metavar="FILE", help="community data written by capped_dkp_community.py fetch")
     render.add_argument("--items", metavar="FILE", help="item-cache.json with Wowhead item names")
     render.add_argument("--gallery", metavar="DIR", help="folder with gallery.json and its images")
+    render.add_argument("--roster", metavar="FILE",
+                        help="Armory roster saved by capped_dkp_community.py fetch; if absent, the bundled snapshot")
     render.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews")
     render.add_argument("--source-url", metavar="URL", help="optional https link shown in the page footer")
     render.add_argument("--title", default=DEFAULT_TITLE)
