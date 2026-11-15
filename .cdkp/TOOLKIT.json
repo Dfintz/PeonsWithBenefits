@@ -4,18 +4,18 @@
     "LICENSE": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
     "NOTICE": "c845575867a06f70f6668c40418d45ac1041db01307ddf5fb7053c45076bda7c",
     "tools/capped_dkp_ci.py": "7948f56b14b7af28745eb878ba21454f3a3587d286f56ba645b078ec4b4abe9f",
-    "tools/capped_dkp_community.py": "296b5807999f7018c77c736a82609b72dc9e4ca10deb93059940aacbbe3885f5",
+    "tools/capped_dkp_community.py": "e2eed40e36780623f6c1d65d30a33ed45a0fdc48bfd94d8fa9f54bd0ce0159aa",
     "tools/capped_dkp_github.py": "fc0fcd30729521491b75040ac30010494e90fe4c586f75aabbaffc5ac8423632",
     "tools/capped_dkp_ledger.py": "bac3b236c26e1cff0e9e412a2e3add49a74658c88a82730a1734d9019e0b9d11",
-    "tools/capped_dkp_publish.py": "c50903022eb08f1429826d0c4a6d3f88f76ead52a7e294607725e5eb1f996e74",
+    "tools/capped_dkp_publish.py": "4aa7308ee58f6de609baf7693251d2ebd7d77c516d4ae32d33e72d1229890b07",
     "tools/capped_dkp_raidhelper.py": "924a9824179c81a91ea0e6438a01a79044a7d6b8dd9faa3809efa9ffd0cf5b77",
     "tools/capped_dkp_snapshot.py": "bead97a433d7935561a73311b01d502a3dc1c9d620fa31d77b402867005d604c",
     "tools/pwb-logo.png": "31ca5c9739ee4fd059c7edf869b67a11f94e15569778c08ba92dc403fb58f315",
-    "tools/pwb-roster.json": "1a72e789bb033901516e4eb450c3b9836e6a781ef5454ea41f507d407cab26a8"
+    "tools/pwb-roster.json": "3c5fb01264925ccb506f3fd47d0f279d463db667bd884053fb5628047e1b632a"
   },
   "format": "capped-dkp-toolkit",
   "version": 1,
   "workflows": {
-    ".github/workflows/cdkp-site.yml": "9f4f8cd713e6d51c6a2d59ffdb495869b3bb34338ecb34cf246c564e3c385022"
+    ".github/workflows/cdkp-site.yml": "427060341f772be2eeef00db0c80153eae38f203c04027c133df4e7ccf112d5d"
   }
 }

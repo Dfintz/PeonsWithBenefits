@@ -1,21 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 """Original community-data helper for the Peons with Benefits public page.
 
-  fetch  read community.json, then download upcoming Raid-Helper events (sign-up counts by role only),
-         which listed guild streamers are live on Twitch or YouTube, and Wowhead names for awarded items.
-         Writes the community data file and updates the item cache.
+  fetch  read community.json, then download upcoming Raid-Helper events (sign-up counts by role only)
+         and Wowhead names for awarded items. Writes the community data file and updates the item cache.
 
-Secrets are read only from the environment and are never printed or written to a file:
-RAIDHELPER_API_KEY, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET and YOUTUBE_API_KEY. A source without its
-secret is reported as "unconfigured"; a source that fails is reported as "error", and the page shows
-its empty state instead. Raid sign-up names are never stored. Requests go only to the hosts in
-ALLOWED_HOSTS (plus the Raid-Helper API through capped_dkp_raidhelper) and never follow a redirect.
+The only secret, RAIDHELPER_API_KEY, is read from the environment and is never printed or written to a
+file. Without it the raid calendar is reported as "unconfigured"; if Raid-Helper fails it is reported as
+"error", and the page shows its empty state instead. Raid sign-up names are never stored. Requests go only
+to the hosts in ALLOWED_HOSTS (plus the Raid-Helper API through capped_dkp_raidhelper) and never follow a
+redirect.
 
 The publisher's offline `render` command loads the files written here with the loaders below.
 """
 
 import argparse
-import copy
 import json
 import os
 import re
@@ -48,7 +46,6 @@ PUBLIC_BYTES = 64 * 1024 * 1024
 IMAGE_BYTES = 3 * 1024 * 1024
 RESPONSE_BYTES = 2 * 1024 * 1024
 GALLERY_LIMIT = 40
-STREAMER_LIMIT = 20
 RAID_LIMIT = 8
 RAID_DAYS = 14
 RAID_GRACE_SECONDS = 3 * 3600
@@ -56,19 +53,13 @@ ITEM_LIMIT = 20000
 ITEM_FETCH_LIMIT = 50
 ITEM_DELAY_SECONDS = 0.25
 ITEM_RETRY_SECONDS = 7 * 86400
-YOUTUBE_RECENT = 5
 TIMEOUT_SECONDS = 20
 USER_AGENT = "PWB-Community/1.0"
 ROLES = ("Tank", "Healer", "Melee", "Ranged")
 CATEGORIES = ("memory", "event")
 STATUSES = ("ok", "error", "unconfigured")
-ALLOWED_HOSTS = frozenset({
-    "id.twitch.tv", "api.twitch.tv", "www.youtube.com", "www.googleapis.com", "nether.wowhead.com",
-})
-SECRET_VARIABLES = ("RAIDHELPER_API_KEY", "TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "YOUTUBE_API_KEY")
-TWITCH_LOGIN = re.compile(r"[A-Za-z0-9_]{3,25}")
-YOUTUBE_CHANNEL = re.compile(r"UC[A-Za-z0-9_-]{22}")
-YOUTUBE_VIDEO = re.compile(r"[A-Za-z0-9_-]{11}")
+ALLOWED_HOSTS = frozenset({"nether.wowhead.com"})
+SECRET_VARIABLES = ("RAIDHELPER_API_KEY",)
 DISCORD_SNOWFLAKE = re.compile(r"[0-9]{17,20}")
 DISCORD_MESSAGE = re.compile(r"https://discord\.com/channels/[0-9]{17,20}/[0-9]{17,20}/[0-9]{17,20}")
 ITEM_ID = re.compile(r"[1-9][0-9]{0,8}")
@@ -80,14 +71,23 @@ _TAG = re.compile(r"\w{3,32}#[0-9]{3,8}")
 _LONG_NUMBER = re.compile(r"[0-9]{17,}")
 _MENTION = re.compile(r"<[@#!&:A-Za-z_0-9]*?[0-9]{17,20}>")
 
+PRIORITIES = {"high": "high", "mid": "mid", "medium": "mid", "low": "low"}
+APPLY_LIMIT = 3
+
 DEFAULT_RECRUITMENT = {
-    "source": "https://guildsofwow.com/peons-with-benefits/recruitment",
+    "apply": [
+        "https://guildsforever.com/guilds/peons-with-benefits/apply",
+        "https://guildsofwow.com/peons-with-benefits",
+    ],
     "updated": "2026-11-15",
     "openings": [
-        {"class": "Druid", "specs": ["Guardian", "Restoration"]},
-        {"class": "Paladin", "specs": ["Holy", "Protection"]},
-        {"class": "Priest", "specs": ["Discipline", "Holy"]},
-        {"class": "Warrior", "specs": ["Protection"]},
+        {"class": "Druid", "specs": [{"name": "Guardian", "priority": "high"},
+                                     {"name": "Restoration", "priority": "mid"}]},
+        {"class": "Paladin", "specs": [{"name": "Holy", "priority": "mid"},
+                                       {"name": "Protection", "priority": "high"}]},
+        {"class": "Priest", "specs": [{"name": "Discipline", "priority": "low"},
+                                      {"name": "Holy", "priority": "mid"}]},
+        {"class": "Warrior", "specs": [{"name": "Protection", "priority": "high"}]},
     ],
     "expectations": [
         "Consumables ready before the pull.",
@@ -166,32 +166,58 @@ def calendar_day(value, label):
     return value
 
 
+def check_spec(value, label):
+    """A spec is plain text, or {"name": ..., "priority": "high" | "mid" | "low"}."""
+    if not isinstance(value, dict):
+        return {"name": required_text(value, 24, label)}
+    shape(value, ("name",), ("priority",), label)
+    spec = {"name": required_text(value["name"], 24, f"{label}.name")}
+    if "priority" in value:
+        level = value["priority"]
+        spec["priority"] = PRIORITIES.get(level.strip().lower()) if isinstance(level, str) else None
+        if not spec["priority"]:
+            raise IntegrityError(f"{label}.priority must be high, mid or low")
+    return spec
+
+
+def apply_links(value, label):
+    """Where people apply: `apply` (1 to 3 links, first one leads) or the older single `source` link."""
+    if "apply" in value and "source" in value:
+        raise IntegrityError(f"{label}: use apply or source, not both")
+    if "source" in value:
+        return [https_url(value["source"], f"{label}.source")]
+    if "apply" not in value:
+        return list(DEFAULT_RECRUITMENT["apply"])
+    links = [https_url(link, f"{label}.apply") for link in listing(value["apply"], APPLY_LIMIT, f"{label}.apply")]
+    if not links or len(set(links)) != len(links):
+        raise IntegrityError(f"{label}.apply needs 1 to {APPLY_LIMIT} different links")
+    return links
+
+
 def check_recruitment(value, label="recruitment"):
-    shape(value, ("openings", "expectations"), ("source", "updated"), label)
+    shape(value, ("openings", "expectations"), ("apply", "source", "updated"), label)
     openings = []
     for index, opening in enumerate(listing(value["openings"], 12, f"{label}.openings"), 1):
         where = f"{label}.openings[{index}]"
         shape(opening, ("class", "specs"), (), where)
-        specs = [required_text(spec, 24, f"{where}.specs") for spec in listing(opening["specs"], 6, f"{where}.specs")]
+        specs = [check_spec(spec, f"{where}.specs") for spec in listing(opening["specs"], 6, f"{where}.specs")]
         if not specs:
             raise IntegrityError(f"{where} needs at least one spec")
         openings.append({"class": required_text(opening["class"], 24, f"{where}.class"), "specs": specs})
     expectations = [required_text(line, 160, f"{label}.expectations")
                     for line in listing(value["expectations"], 8, f"{label}.expectations")]
-    result = {"openings": openings, "expectations": expectations}
-    if "source" in value:
-        result["source"] = https_url(value["source"], f"{label}.source")
+    result = {"apply": apply_links(value, label), "openings": openings, "expectations": expectations}
     if "updated" in value:
         result["updated"] = calendar_day(value["updated"], f"{label}.updated")
     return result
 
 
 def empty_config():
-    return {"raidHelper": None, "streamers": [], "recruitment": copy.deepcopy(DEFAULT_RECRUITMENT)}
+    return {"raidHelper": None, "recruitment": check_recruitment(DEFAULT_RECRUITMENT)}
 
 
 def check_config(document, label="community.json"):
-    shape(document, ("format", "version"), ("raidHelper", "streamers", "recruitment"), label)
+    shape(document, ("format", "version"), ("raidHelper", "recruitment"), label)
     header(document, CONFIG_FORMAT, label)
     config = empty_config()
     raid = document.get("raidHelper")
@@ -203,28 +229,6 @@ def check_config(document, label="community.json"):
         if not whole(days, 1, 60):
             raise IntegrityError(f"{label} raidHelper.days must be a whole number from 1 to 60")
         config["raidHelper"] = {"serverId": raid["serverId"], "days": days}
-    seen = set()
-    for index, streamer in enumerate(listing(document.get("streamers", []), STREAMER_LIMIT, f"{label} streamers"), 1):
-        where = f"{label} streamers[{index}]"
-        shape(streamer, ("name",), ("twitch", "youtube"), where)
-        entry = {"name": required_text(streamer["name"], 40, f"{where}.name")}
-        if "twitch" in streamer:
-            if not isinstance(streamer["twitch"], str) or not TWITCH_LOGIN.fullmatch(streamer["twitch"]):
-                raise IntegrityError(f"{where}.twitch must be a Twitch login name")
-            entry["twitch"] = streamer["twitch"].lower()
-        if "youtube" in streamer:
-            if not isinstance(streamer["youtube"], str) or not YOUTUBE_CHANNEL.fullmatch(streamer["youtube"]):
-                raise IntegrityError(f"{where}.youtube must be a YouTube channel ID (UC followed by 22 characters)")
-            entry["youtube"] = streamer["youtube"]
-        if len(entry) == 1:
-            raise IntegrityError(f"{where} needs a twitch or youtube channel")
-        for key in ("name", "twitch", "youtube"):
-            if key in entry:
-                marker = (key, entry[key].lower())
-                if marker in seen:
-                    raise IntegrityError(f"{where} repeats {key} {entry[key]}")
-                seen.add(marker)
-        config["streamers"].append(entry)
     if "recruitment" in document:
         config["recruitment"] = check_recruitment(document["recruitment"], f"{label} recruitment")
     return config
@@ -346,44 +350,21 @@ def check_raid_event(event, where):
     return result
 
 
-def check_stream(stream, where):
-    shape(stream, ("name", "platform", "channel", "title"), ("video",), where)
-    platform, channel = stream["platform"], stream["channel"]
-    pattern = {"twitch": TWITCH_LOGIN, "youtube": YOUTUBE_CHANNEL}.get(platform)
-    if pattern is None or not isinstance(channel, str) or not pattern.fullmatch(channel):
-        raise IntegrityError(f"{where} has an unknown platform or channel")
-    result = {"name": required_text(stream["name"], 40, f"{where}.name"), "platform": platform, "channel": channel,
-              "title": required_text(stream["title"], 140, f"{where}.title")}
-    if "video" in stream:
-        if platform != "youtube" or not isinstance(stream["video"], str) or not YOUTUBE_VIDEO.fullmatch(stream["video"]):
-            raise IntegrityError(f"{where}.video must be a YouTube video ID")
-        result["video"] = stream["video"]
-    return result
-
-
 def check_data(document, label="community data"):
-    shape(document, ("format", "version", "generated", "raidHelper", "streams"), (), label)
+    shape(document, ("format", "version", "generated", "raidHelper"), (), label)
     header(document, DATA_FORMAT, label)
     if not whole(document["generated"]):
         raise IntegrityError(f"{label} generated must be a unix time")
     raid = shape(document["raidHelper"], ("status", "checked", "events"), (), f"{label} raidHelper")
-    streams = shape(document["streams"], ("checked", "twitch", "youtube", "live"), (), f"{label} streams")
-    for value, where in ((raid["status"], "raidHelper.status"), (streams["twitch"], "streams.twitch"),
-                         (streams["youtube"], "streams.youtube")):
-        if value not in STATUSES:
-            raise IntegrityError(f"{label} {where} must be ok, error or unconfigured")
-    for value, where in ((raid["checked"], "raidHelper.checked"), (streams["checked"], "streams.checked")):
-        if value is not None and not whole(value):
-            raise IntegrityError(f"{label} {where} must be a unix time or null")
+    if raid["status"] not in STATUSES:
+        raise IntegrityError(f"{label} raidHelper.status must be ok, error or unconfigured")
+    if raid["checked"] is not None and not whole(raid["checked"]):
+        raise IntegrityError(f"{label} raidHelper.checked must be a unix time or null")
     events = [check_raid_event(event, f"{label} raid {index}")
               for index, event in enumerate(listing(raid["events"], RAID_LIMIT, f"{label} raid events"), 1)]
-    live = [check_stream(stream, f"{label} stream {index}")
-            for index, stream in enumerate(listing(streams["live"], 2 * STREAMER_LIMIT, f"{label} live"), 1)]
     return {
         "generated": document["generated"],
         "raidHelper": {"status": raid["status"], "checked": raid["checked"], "events": events},
-        "streams": {"checked": streams["checked"], "twitch": streams["twitch"], "youtube": streams["youtube"],
-                    "live": live},
     }
 
 
@@ -394,15 +375,13 @@ def load_data(path):
     return check_data(store.read_json(path, DATA_BYTES, path.name), path.name)
 
 
-def request(opener, url, label, *, data=None, headers=None, missing_ok=False):
-    """GET (or POST when data is given) one allowlisted https URL; return the bounded body, or None on an allowed 404."""
+def request(opener, url, label, *, missing_ok=False):
+    """GET one allowlisted https URL; return the bounded body, or None on an allowed 404."""
     parts = urllib.parse.urlsplit(url)
     if parts.scheme != "https" or parts.hostname not in ALLOWED_HOSTS or parts.username or parts.password:
         raise SourceError(f"{label}: refused a host outside the allowlist")
-    outgoing = urllib.request.Request(url, data=data, method="GET" if data is None else "POST")
+    outgoing = urllib.request.Request(url, method="GET")
     outgoing.add_header("User-Agent", USER_AGENT)
-    for name, value in (headers or {}).items():
-        outgoing.add_header(name, value)
     try:
         with opener.open(outgoing, timeout=TIMEOUT_SECONDS) as response:
             body = response.read(RESPONSE_BYTES + 1)
@@ -488,57 +467,6 @@ def fetch_raids(opener, config, key, now):
     return {"status": "ok", "checked": now, "events": raid_summaries(collected, server, start, end)}
 
 
-def fetch_twitch(opener, streamers, client_id, client_secret):
-    """Live Twitch channels among the listed streamers. Returns (live entries, extra secrets to redact)."""
-    by_login = {entry["twitch"]: entry for entry in streamers if "twitch" in entry}
-    form = urllib.parse.urlencode({
-        "client_id": client_id, "client_secret": client_secret, "grant_type": "client_credentials"}).encode("ascii")
-    answer = decode(request(opener, "https://id.twitch.tv/oauth2/token", "Twitch sign-in", data=form,
-                            headers={"Content-Type": "application/x-www-form-urlencoded"}), "Twitch sign-in")
-    token = answer.get("access_token")
-    if not isinstance(token, str) or not re.fullmatch(r"[A-Za-z0-9._-]{8,512}", token):
-        raise SourceError("Twitch sign-in did not return a token")
-    query = urllib.parse.urlencode([("user_login", login) for login in by_login] + [("first", "100")])
-    answer = decode(request(opener, "https://api.twitch.tv/helix/streams?" + query, "Twitch", headers={
-        "Client-Id": client_id, "Authorization": "Bearer " + token}), "Twitch")
-    live = []
-    for stream in answer.get("data") if isinstance(answer.get("data"), list) else []:
-        login = stream.get("user_login") if isinstance(stream, dict) else None
-        login = login.lower() if isinstance(login, str) else None
-        if login in by_login and stream.get("type") == "live":
-            person = by_login.pop(login)
-            live.append({"name": person["name"], "platform": "twitch", "channel": person["twitch"],
-                         "title": text(stream.get("title"), 140) or "Live on Twitch"})
-    return live, [token]
-
-
-def fetch_youtube(opener, streamers, key):
-    """Live YouTube broadcasts: each channel's newest feed entries, then one videos call per 50 IDs."""
-    candidates = []
-    for person in (entry for entry in streamers if "youtube" in entry):
-        feed = request(opener, "https://www.youtube.com/feeds/videos.xml?channel_id=" + person["youtube"],
-                       "YouTube feed", missing_ok=True)
-        if feed is None:
-            continue
-        found = re.findall(r"<yt:videoId>([A-Za-z0-9_-]{11})</yt:videoId>", feed.decode("utf-8", "replace"))
-        candidates += [(video, person) for video in dict.fromkeys(found[:YOUTUBE_RECENT])]
-    live, shown = [], set()
-    for start in range(0, len(candidates), 50):
-        chunk = candidates[start:start + 50]
-        query = urllib.parse.urlencode({"part": "snippet", "id": ",".join(video for video, _ in chunk), "key": key})
-        answer = decode(request(opener, "https://www.googleapis.com/youtube/v3/videos?" + query, "YouTube"), "YouTube")
-        details = {item["id"]: item.get("snippet") for item in answer.get("items") or []
-                   if isinstance(item, dict) and isinstance(item.get("id"), str)}
-        for video, person in chunk:
-            snippet = details.get(video)
-            if (isinstance(snippet, dict) and snippet.get("liveBroadcastContent") == "live"
-                    and snippet.get("channelId") == person["youtube"] and person["name"] not in shown):
-                shown.add(person["name"])
-                live.append({"name": person["name"], "platform": "youtube", "channel": person["youtube"],
-                             "video": video, "title": text(snippet.get("title"), 140) or "Live on YouTube"})
-    return live
-
-
 def fetch_items(opener, cache, wanted, now, sleep):
     """Add Wowhead names for new item IDs (and recheck missing ones weekly). Returns (fetched, waiting)."""
     due = [item for item in sorted(wanted) if str(item) not in cache
@@ -611,41 +539,13 @@ def run_fetch(args, opener, environ, now, sleep, say):
         raid = {"status": "error", "checked": now, "events": []}
         say("Raid sign-ups: could not update. " + redact(str(error), secrets))
 
-    live, statuses = [], {}
-    client_id, client_secret = environ.get("TWITCH_CLIENT_ID", ""), environ.get("TWITCH_CLIENT_SECRET", "")
-    if not any("twitch" in entry for entry in config["streamers"]) or not client_id or not client_secret:
-        statuses["twitch"] = "unconfigured"
-    else:
-        try:
-            found, extra = fetch_twitch(opener, config["streamers"], client_id, client_secret)
-            secrets += extra
-            live += found
-            statuses["twitch"] = "ok"
-        except SourceError as error:
-            statuses["twitch"] = "error"
-            say("Twitch: could not check. " + redact(str(error), secrets))
-    youtube_key = environ.get("YOUTUBE_API_KEY", "")
-    if not any("youtube" in entry for entry in config["streamers"]) or not youtube_key:
-        statuses["youtube"] = "unconfigured"
-    else:
-        try:
-            live += fetch_youtube(opener, config["streamers"], youtube_key)
-            statuses["youtube"] = "ok"
-        except SourceError as error:
-            statuses["youtube"] = "error"
-            say("YouTube: could not check. " + redact(str(error), secrets))
-    checked = now if any(status != "unconfigured" for status in statuses.values()) else None
-    say(f"Live streams: {len(live)} live now (Twitch {statuses['twitch']}, YouTube {statuses['youtube']}).")
-
     try:
         fetched, waiting = fetch_items(opener, cache, wanted, now, sleep)
         say(f"Wowhead items: {fetched} looked up" + (f", {waiting} left for the next run." if waiting else "."))
     except SourceError as error:
         say("Wowhead items: stopped early. " + redact(str(error), secrets))
 
-    document = {"format": DATA_FORMAT, "version": VERSION, "generated": now, "raidHelper": raid,
-                "streams": {"checked": checked, "twitch": statuses["twitch"], "youtube": statuses["youtube"],
-                            "live": live[: 2 * STREAMER_LIMIT]}}
+    document = {"format": DATA_FORMAT, "version": VERSION, "generated": now, "raidHelper": raid}
     check_data(document)
     store.write_atomic(Path(args.out), store.indented(document))
     if args.items and json.dumps(cache, sort_keys=True) != before:
@@ -662,7 +562,7 @@ class Parser(argparse.ArgumentParser):
 def build_parser():
     root = Parser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     commands = root.add_subparsers(dest="command", required=True)
-    fetch = commands.add_parser("fetch", help="download raid sign-up counts, live streams and item names")
+    fetch = commands.add_parser("fetch", help="download raid sign-up counts and item names")
     fetch.add_argument("--config", required=True, metavar="FILE", help="community.json")
     fetch.add_argument("--data", metavar="DIR", help="folder with the published standings.json and history.json")
     fetch.add_argument("--items", metavar="FILE", help="item-cache.json to read and update")

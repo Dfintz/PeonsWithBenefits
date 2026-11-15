@@ -5,15 +5,17 @@
     "serverId": "1561718146769883229",
     "days": 14
   },
-  "streamers": [],
   "recruitment": {
-    "source": "https://guildsofwow.com/peons-with-benefits/recruitment",
+    "apply": [
+      "https://guildsforever.com/guilds/peons-with-benefits/apply",
+      "https://guildsofwow.com/peons-with-benefits"
+    ],
     "updated": "2026-11-15",
     "openings": [
-      {"class": "Druid", "specs": ["Guardian", "Restoration"]},
-      {"class": "Paladin", "specs": ["Holy", "Protection"]},
-      {"class": "Priest", "specs": ["Discipline", "Holy"]},
-      {"class": "Warrior", "specs": ["Protection"]}
+      {"class": "Druid", "specs": [{"name": "Guardian", "priority": "high"}, {"name": "Restoration", "priority": "mid"}]},
+      {"class": "Paladin", "specs": [{"name": "Holy", "priority": "mid"}, {"name": "Protection", "priority": "high"}]},
+      {"class": "Priest", "specs": [{"name": "Discipline", "priority": "low"}, {"name": "Holy", "priority": "mid"}]},
+      {"class": "Warrior", "specs": [{"name": "Protection", "priority": "high"}]}
     ],
     "expectations": [
       "Consumables ready before the pull.",

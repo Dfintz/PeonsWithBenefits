@@ -9,8 +9,8 @@
 
 Only `announce --send` uses the network, and only to the webhook in DISCORD_WEBHOOK_URL. The URL is
 never accepted on the command line and never printed. Nothing here touches the game, SavedVariables,
-Git or Raid-Helper, and no command runs unless you invoke it. Community data (Raid-Helper sign-ups,
-live streams, Wowhead item names) is fetched separately by capped_dkp_community.py.
+Git or Raid-Helper, and no command runs unless you invoke it. Community data (Raid-Helper sign-ups and
+Wowhead item names) is fetched separately by capped_dkp_community.py.
 
 The public pages show player names, DKP balances, raiding class/spec with its raid role, and awarded
 loot by design. They never show BattleTags, Discord IDs, Discord names, free-text notes, disciplinary
@@ -122,14 +122,12 @@ GUILD_SUMMARY = ("We are Peons with Benefits, a guild built on camaraderie, hard
 LOGO_FILE = "pwb-logo.png"
 LOGO_ALT = "Peons with Benefits: red and parchment lettering, a crown and an orc skull"
 LOGO_SIZE = (1024, 887)
-DISCORD_SERVER = "1561718146769883229"
 WOWHEAD_ITEM = "https://www.wowhead.com/forever/item="
 WOWHEAD_SCRIPT = "https://wow.zamimg.com/js/tooltips.js"
 ICON_PREFIX = "https://wow.zamimg.com/images/wow/icons/small/"
 ITEM_MAX = 999_999_999
 LOOT_LIMIT = 200
 KILL_LIMIT = 12
-EMBED_LIMIT = 4
 PUBLIC_JSON_BYTES = 64 * 1024 * 1024
 RAID_DAYS = 14
 MODE_LABELS = {"need": "Need", "greed": "Greed", "progression-need": "Progression", "allocation": "Allocation",
@@ -151,6 +149,10 @@ ROLE_WORDS = {
 }
 GALLERY_LABELS = (("memory", "Memories"), ("event", "Events"), ("kill", "Raid kills"))
 APPLY_LABELS = {"guildsofwow.com": "Apply on Guilds of WoW", "guildsforever.com": "Apply on Guilds Forever"}
+PRIORITY_LABELS = {"high": "High", "mid": "Mid", "low": "Low"}
+# Guild ranks the public roster leaves out; matched exactly against the snapshot's rank names.
+HIDDEN_RANKS = frozenset({"Side Hustle"})
+LEVEL_MAX = 100
 
 # The only script the page runs inline: Wowhead tooltip options, local times and the gallery carousel.
 # It carries no data, so its hash is fixed and the Content-Security-Policy can allow exactly this script.
@@ -178,8 +180,7 @@ CSP = ("default-src 'none'; "
        "connect-src https://nether.wowhead.com https://www.wowhead.com; "
        "img-src 'self' data: https://wow.zamimg.com; "
        "style-src 'unsafe-inline' https://wow.zamimg.com; font-src https://wow.zamimg.com; "
-       "frame-src https://discord.com https://player.twitch.tv https://www.youtube-nocookie.com; "
-       "base-uri 'none'; form-action 'none'")
+       "frame-src 'none'; base-uri 'none'; form-action 'none'")
 CSS = """\
 :root{color-scheme:dark;--bg:#100f0d;--fg:#f3e5cb;--muted:#c1b49e;--line:#443a2e;--head:#211d18;--accent:#efc783;--neg:#ff9d8c;--red:#b52d20;--ember:#241411;--emberline:#66332a}
 *{box-sizing:border-box}
@@ -291,29 +292,27 @@ a.item.q7{color:#00ccff}
 .kill h3 a:hover{text-decoration:underline}
 .kill p{margin:0;color:var(--muted)}
 .gallery:has(#gf-memory:checked) .slide:not(.cat-memory),.gallery:has(#gf-event:checked) .slide:not(.cat-event),.gallery:has(#gf-kill:checked) .slide:not(.cat-kill){display:none}
-.community-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:2.5rem;align-items:start}
 .raids{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
 .raids li{display:grid;grid-template-columns:11rem minmax(0,1fr) auto;gap:.3rem 1.2rem;align-items:baseline;margin:0;padding:1rem 0;border-bottom:1px solid var(--line)}
 .raid-when{color:var(--accent);font-variant-numeric:tabular-nums}
 .raid-title{font-weight:650;overflow-wrap:anywhere}
 .raid-count{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .raid-roles{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:.2rem 1rem;font-size:.88rem}
-.widget h3{font-size:1.15rem}
-.widget iframe{display:block;width:100%;max-width:350px;height:500px;border:0;background:var(--head)}
-.live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr));gap:1.2rem}
-.stream{border:1px solid var(--line);background:var(--head)}
-.stream iframe{display:block;width:100%;height:auto;aspect-ratio:16/9;border:0;background:var(--bg)}
-.stream-body{padding:.9rem 1rem 1rem}
-.stream h3{font-size:1.15rem;margin:0 0 .3rem}
-.stream p{margin:0 0 .5rem;color:var(--muted);overflow-wrap:anywhere}
-.pill.live{margin:0 0 0 .5rem;background:var(--red);border-color:#df6650;color:#fff5e6;font-family:system-ui,sans-serif;font-weight:650;vertical-align:middle}
 .positions{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2.5rem;align-items:start}
 .openings{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2rem;border-top:1px solid var(--line)}
-.openings li{margin:0;padding:1rem 0;border-bottom:1px solid var(--line)}
+.openings>li{margin:0;padding:1rem 0;border-bottom:1px solid var(--line)}
 .cls{display:block;font:700 1.25rem/1.3 Georgia,serif}
-.openings .specs{color:var(--muted)}
+.openings .specs{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.45rem 1.4rem}
+.openings .specs li{margin:0;display:inline-flex;align-items:center;gap:.5rem}
+.prio{display:inline-block;padding:0 .45rem;border:1px solid;font-size:.75rem;font-weight:700;letter-spacing:.08em;line-height:1.6;text-transform:uppercase}
+.prio-high{background:var(--red);border-color:#df6650;color:#fff5e6}
+.prio-mid{border-color:var(--accent);color:var(--accent)}
+.prio-low{border-color:var(--line);color:var(--muted)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.ask{margin:1rem 0 0;color:var(--muted);font-size:.95rem}
 .expect{padding:1.6rem;background:var(--ember);border:1px solid var(--emberline)}
 .expect ul{margin:0 0 1.4rem;padding-left:1.1rem}
+.expect .actions{justify-content:flex-start}
 .guild-links{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2.5rem;padding:2.5rem;background:var(--ember);border-block:1px solid var(--emberline)}
 .guild-links ul{list-style:none;padding:0;margin:0}
 .guild-links li{margin:0}
@@ -321,14 +320,16 @@ a.item.q7{color:#00ccff}
 .guild-links li a:hover{color:#fff5e6;text-decoration:underline}
 .guild-links p{color:var(--muted);font-size:.95rem}
 .roster-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 2rem}
-.roster-list a{display:block;padding:.6rem 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.roster-list li{margin:0;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.roster-list a{display:inline-block;padding:.1rem 0;font-weight:600;overflow-wrap:anywhere;text-underline-offset:3px}
+.who{display:block;color:var(--muted);font-size:.85rem}
 summary{cursor:pointer;min-height:44px;color:var(--accent);padding:.65rem 0}
 .about{border-top:1px solid var(--line);padding-top:2rem}
 .about ul{max-width:75ch;color:var(--muted);font-size:.9rem}
 .skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:2}
 .skip:focus{top:1rem}
-@media (max-width:50rem){.hero{grid-template-columns:1fr 1fr;gap:1rem}.guild-links{grid-template-columns:1fr 1fr}.community{grid-column:1/-1}.roster-list{grid-template-columns:repeat(2,minmax(0,1fr))}.community-grid,.positions{grid-template-columns:1fr}}
-@media (max-width:40rem){.wrap{padding:0 1rem 2rem}.topbar{align-items:flex-start;flex-direction:column;gap:.2rem}.navlinks{gap:0 1.1rem}.hero{grid-template-columns:1fr;padding:2rem 0;gap:.7rem}.hero-art{grid-row:1;max-width:20rem;justify-self:center}.hero-copy{text-align:center}.hero p{margin-left:auto;margin-right:auto}.actions{justify-content:center}.guild-links{grid-template-columns:1fr;padding:1.5rem;gap:2rem}.community{grid-column:auto}.roster-list{grid-template-columns:1fr}section{margin-top:2.5rem}table{min-width:24rem}table.wide{min-width:0}th,td{padding:.5rem .6rem}.col-record{display:none}.raids li{grid-template-columns:minmax(0,1fr) auto}.raid-when,.raid-roles{grid-column:1/-1}.openings{grid-template-columns:1fr}.track{grid-auto-columns:82%}table.standings,table.standings caption,table.standings tbody{display:block;min-width:0}table.standings thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}table.standings tr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;gap:.3rem 1rem;padding:.8rem 1rem;border-top:1px solid var(--line)}table.standings tr:target{background:var(--head)}table.standings tr>*{padding:0;border:0}table.standings td:nth-child(n+4){grid-column:1/-1}table.standings td[data-label]::before{content:attr(data-label);margin-right:.35rem;color:var(--muted);font-size:.8rem}}
+@media (max-width:50rem){.hero{grid-template-columns:1fr 1fr;gap:1rem}.guild-links{grid-template-columns:1fr 1fr}.community{grid-column:1/-1}.roster-list{grid-template-columns:repeat(2,minmax(0,1fr))}.positions{grid-template-columns:1fr}}
+@media (max-width:40rem){.wrap{padding:0 1rem 2rem}.topbar{align-items:flex-start;flex-direction:column;gap:.2rem}.navlinks{gap:0 1.1rem}.hero{grid-template-columns:1fr;padding:2rem 0;gap:.7rem}.hero-art{grid-row:1;max-width:20rem;justify-self:center}.hero-copy{text-align:center}.hero p{margin-left:auto;margin-right:auto}.actions{justify-content:center}.expect .button{width:100%}.guild-links{grid-template-columns:1fr;padding:1.5rem;gap:2rem}.community{grid-column:auto}.roster-list{grid-template-columns:1fr}section{margin-top:2.5rem}table{min-width:24rem}table.wide{min-width:0}th,td{padding:.5rem .6rem}.col-record{display:none}.raids li{grid-template-columns:minmax(0,1fr) auto}.raid-when,.raid-roles{grid-column:1/-1}.openings{grid-template-columns:1fr}.track{grid-auto-columns:82%}table.standings,table.standings caption,table.standings tbody{display:block;min-width:0}table.standings thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}table.standings tr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;gap:.3rem 1rem;padding:.8rem 1rem;border-top:1px solid var(--line)}table.standings tr:target{background:var(--head)}table.standings tr>*{padding:0;border:0}table.standings td:nth-child(n+4){grid-column:1/-1}table.standings td[data-label]::before{content:attr(data-label);margin-right:.35rem;color:var(--muted);font-size:.8rem}}
 """
 
 GUILD_LINKS = (
@@ -343,7 +344,6 @@ GUILD_LINKS = (
     )),
 )
 DISCORD_INVITE = "https://discord.gg/Cahah6u4yZ"
-DISCORD_WIDGET = f"https://discord.com/widget?id={DISCORD_SERVER}&theme=dark"
 PROFILE_PREFIX = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/"
 
 
@@ -355,34 +355,80 @@ def brand_asset(name):
 
 
 def armory_roster():
-    """A dated, public Armory snapshot, separate from DKP membership and authority."""
+    """A dated, public Armory snapshot, separate from DKP membership and authority.
+
+    Returns the members to show, the snapshot time and how many members a hidden rank left out."""
     try:
         snapshot = json.loads(brand_asset("pwb-roster.json"))
         members = snapshot["members"]
         stamp = datetime.fromisoformat(snapshot["retrievedAt"].replace("Z", "+00:00"))
         if not isinstance(members, list) or not members or stamp.tzinfo is None:
             raise ValueError("no members")
-        seen = set()
+        seen, shown = set(), []
         for member in members:
             name, url = member["name"], member["url"]
             if (not isinstance(name, str) or not name.strip() or len(name) > NAME_LIMIT
                     or not isinstance(url, str) or not url.startswith(PROFILE_PREFIX)
                     or not re.fullmatch(r"(?:[a-z0-9-]|%[0-9A-Fa-f]{2})+", url[len(PROFILE_PREFIX):]) or url in seen):
                 raise ValueError("invalid or repeated character")
+            if set(member) - {"name", "url", "level", "class", "spec", "rank"}:
+                raise ValueError(f"unknown field for {name}")
+            if "level" in member and not is_whole(member["level"], 1, LEVEL_MAX):
+                raise ValueError(f"level for {name}")
+            if "class" in member and member["class"] not in CLASSES:
+                raise ValueError(f"class for {name}")
+            for field in ("spec", "rank"):
+                value = member.get(field, "x")
+                if not isinstance(value, str) or not value.strip() or len(value) > 40 or clean(value, 40) != value:
+                    raise ValueError(f"{field} for {name}")
             seen.add(url)
+            if member.get("rank") not in HIDDEN_RANKS:
+                shown.append(member)
+        if not shown:
+            raise ValueError("every member is hidden")
     except (ValueError, KeyError, TypeError, AttributeError) as error:
         raise ToolError(f"Invalid public Armory snapshot: {error}") from None
-    return members, stamp.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    return shown, stamp.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), len(members) - len(shown)
 
 
-def guild_sections():
-    members, stamp = armory_roster()
+def roster_specs(standings):
+    """The ledger's class/spec text by character name without its realm, skipping names that disagree."""
+    found = {}
+    for player in standings["players"]:
+        for character, spec in (player.get("specs") or {}).items():
+            key = character.rsplit("-", 1)[0].casefold()
+            found[key] = spec if found.get(key, spec) == spec else None
+    return {key: spec for key, spec in found.items() if spec}
+
+
+def roster_detail(member, specs):
+    """Level, then the ledger's spec when it fits the Armory class, else the Armory class (or spec) alone."""
+    klass, spec = member.get("class"), specs.get(member["name"].casefold()) or member.get("spec")
+    if spec and klass:
+        named = spec_class(spec)
+        spec = None if named not in (None, klass) else spec if named else f"{spec} {klass}"
+    parts = [f'Level {member["level"]}'] if "level" in member else []
+    if spec or klass:
+        parts.append(spec or klass)
+    return DOT.join(parts)
+
+
+def guild_sections(specs=None):
+    members, stamp, hidden = armory_roster()
+    specs = specs or {}
+    ranks = " or ".join(sorted(HIDDEN_RANKS))
+    left_out = f" Characters at the {esc(ranks)} rank are not listed." if hidden else ""
     page = ['<section aria-labelledby="roster"><h2 id="roster">The guild roster</h2>',
-            f'<p class="note">{len(members)} characters from the public Blizzard Armory. Snapshot: {esc(stamp)}. '
-            'Not a live feed or a DKP eligibility list. Select a name to open its Armory profile.</p>',
+            f'<p class="note">{len(members)} characters from the public Blizzard Armory, coloured by class, with '
+            f'spec where the ledger records one. Snapshot: {esc(stamp)}. Not a live feed or a DKP eligibility list.'
+            f'{left_out} Select a name to open its Armory profile.</p>',
             f'<details><summary>View all {len(members)} characters</summary><ul class="roster-list">']
     for member in members:
-        page.append(f'<li><a href="{esc(member["url"])}" rel="noopener noreferrer">{esc(member["name"])}</a></li>')
+        klass = member.get("class")
+        colour = f' class="c-{klass.lower()}"' if klass else ""
+        detail = roster_detail(member, specs)
+        page.append(f'<li><a href="{esc(member["url"])}"{colour} rel="noopener noreferrer">{esc(member["name"])}</a>'
+                    + (f'<span class="who">{esc(detail)}</span>' if detail else "") + "</li>")
     page += ['</ul></details></section>', '<section id="guild-links" class="guild-links" aria-label="Guild links">']
     for heading, links in GUILD_LINKS:
         page.append(f'<div><h2>{esc(heading)}</h2><ul>')
@@ -871,7 +917,7 @@ def gallery_section(gallery, kills, linked):
 def raids_section(extras):
     community, days = extras["community"], extras["raid_days"]
     raid = community["raidHelper"] if community else None
-    page = ['<section aria-labelledby="raids"><h2 id="raids">Upcoming raids</h2>', '<div class="community-grid"><div>']
+    page = ['<section aria-labelledby="raids"><h2 id="raids">Upcoming raids</h2>']
     if extras["raid"] is None or (raid is not None and raid["status"] == "unconfigured"):
         page.append(empty_state("Raid-Helper isn't connected yet.",
                                 "Upcoming raids and sign-up counts will show here once officers link the guild's "
@@ -897,98 +943,51 @@ def raids_section(extras):
                         f'<span class="raid-roles">{roles}</span></li>')
         page.append("</ul>")
     checked = f" Checked {time_html(raid['checked'])}." if raid and raid["checked"] else ""
-    page += [f'<p class="note">Sign-ups are shown as counts by role; names stay in Discord.{checked}</p>', "</div>",
-             '<aside class="widget" aria-labelledby="discord-now"><h3 id="discord-now">On Discord now</h3>',
-             f'<iframe title="Peons with Benefits Discord server" src="{esc(DISCORD_WIDGET)}" width="350" height="500" '
-             'loading="lazy" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">'
-             "</iframe>",
-             f'<p class="note">Widget blank? <a href="{DISCORD_INVITE}" rel="noopener noreferrer">Join the Discord</a> '
-             "instead.</p>", "</aside>", "</div>", "</section>"]
+    page += [f'<p class="note">Sign-ups are shown as counts by role; names stay in Discord.{checked} '
+             f'<a href="{DISCORD_INVITE}" rel="noopener noreferrer">Join the Discord</a> to sign up.</p>', "</section>"]
     return page
 
 
-def stream_card(stream, host, embed):
-    name, channel = esc(stream["name"]), stream["channel"]
-    if stream["platform"] == "twitch":
-        platform, url = "Twitch", f"https://www.twitch.tv/{channel}"
-        src = f"https://player.twitch.tv/?channel={channel}&parent={host}&muted=true&autoplay=false" if embed and host else None
-    else:
-        video = stream.get("video")
-        platform = "YouTube"
-        url = f"https://www.youtube.com/watch?v={video}" if video else f"https://www.youtube.com/channel/{channel}/live"
-        src = f"https://www.youtube-nocookie.com/embed/{video}" if embed and video else None
-    frame = (f'<iframe title="{name} live on {platform}" src="{esc(src)}" loading="lazy" allowfullscreen '
-             'referrerpolicy="strict-origin-when-cross-origin"></iframe>' if src else "")
-    return (f'<article class="stream">{frame}<div class="stream-body">'
-            f'<h3>{name}<span class="pill live">Live</span></h3><p>{esc(stream["title"])}</p>'
-            f'<a href="{esc(url)}" rel="noopener noreferrer">Watch on {platform} &nearr;</a></div></article>')
-
-
-def live_section(extras, site_url):
-    streamers, community = extras["streamers"], extras["community"]
-    streams = community["streams"] if community else None
-    page = ['<section aria-labelledby="live"><h2 id="live">Live now</h2>']
-    if not streamers:
-        page.append(empty_state("No streamers listed yet.",
-                                "Guild members who stream on Twitch or YouTube can ask an officer to be listed here."))
-        return page + ["</section>"]
-    if streams is None:
-        page.append(empty_state("Live status hasn't been checked yet.",
-                                f"{plural(len(streamers), 'guild streamer is', 'guild streamers are')} listed; "
-                                "the next update shows who is live."))
-        return page + ["</section>"]
-    if streams["checked"] is None:
-        page.append(empty_state("Live checks aren't connected yet.",
-                                "Officers still need to connect Twitch or YouTube for the listed streamers."))
-        return page + ["</section>"]
-    notes = [f"Checked {time_html(streams['checked'])}. Status can lag by about 15 minutes."]
-    if streams["live"]:
-        host = urllib.parse.urlsplit(site_url).hostname if site_url else None
-        page.append('<div class="live-grid">')
-        page += [stream_card(stream, host, index < EMBED_LIMIT) for index, stream in enumerate(streams["live"])]
-        page.append("</div>")
-    else:
-        page.append(empty_state("Nobody is live right now.", notes.pop()))
-    for key, label in (("twitch", "Twitch"), ("youtube", "YouTube")):
-        if streams[key] == "error":
-            notes.append(f"{label} couldn't be checked on the last update.")
-        elif streams[key] == "unconfigured" and any(key in streamer for streamer in streamers):
-            notes.append(f"{label} checks aren't connected yet.")
-    if notes:
-        page.append(f'<p class="note">{" ".join(notes)}</p>')
-    return page + ["</section>"]
-
-
 def positions_section(recruitment):
-    source = recruitment.get("source") or GUILD_LINKS[0][1][0][1]
-    host = (urllib.parse.urlsplit(source).hostname or "").removeprefix("www.")
+    links = recruitment.get("apply") or [GUILD_LINKS[0][1][0][1]]
     updated = (f' Updated <span class="nowrap">{esc(recruitment["updated"])}</span>.'
                if recruitment.get("updated") else "")
+    ranked = any(spec.get("priority") for opening in recruitment["openings"] for spec in opening["specs"])
     page = ['<section aria-labelledby="recruiting"><h2 id="recruiting">Open positions</h2>',
-            f'<p class="note">Roles the raid team is recruiting for.{updated}</p>', '<div class="positions">']
+            f'<p class="note">Roles the raid team is recruiting for{", by priority" if ranked else ""}.{updated}</p>',
+            '<div class="positions">']
     if recruitment["openings"]:
         page.append('<ul class="openings">')
         for opening in recruitment["openings"]:
             klass = class_name(opening["class"])
             colour = f" c-{klass.lower()}" if klass else ""
+            specs = []
+            for spec in opening["specs"]:
+                level = spec.get("priority")
+                tag = (f' <span class="prio prio-{level}">{PRIORITY_LABELS[level]}'
+                       f'<span class="vh"> priority</span></span>' if level in PRIORITY_LABELS else "")
+                specs.append(f"<li>{esc(spec['name'])}{tag}</li>")
             page.append(f'<li><span class="cls{colour}">{esc(opening["class"])}</span>'
-                        f'<span class="specs">{esc(DOT.join(opening["specs"]))}</span></li>')
+                        f'<ul class="specs">{"".join(specs)}</ul></li>')
         page.append("</ul>")
     else:
         page.append(empty_state("No open positions right now.", "Good company is always welcome; say hello on Discord."))
     page.append('<div class="expect"><h3>What we expect</h3>')
     if recruitment["expectations"]:
         page.append("<ul>" + "".join(f"<li>{esc(line)}</li>" for line in recruitment["expectations"]) + "</ul>")
-    page += ['<div class="actions">',
-             f'<a class="button" href="{esc(source)}" rel="noopener noreferrer">'
-             f'{APPLY_LABELS.get(host, "Apply")} &nearr;</a>',
-             f'<a class="button secondary" href="{DISCORD_INVITE}" rel="noopener noreferrer">Ask on Discord &nearr;</a>',
-             "</div>", "</div>", "</div>", "</section>"]
+    page.append('<div class="actions">')
+    for at, link in enumerate(links):
+        host = (urllib.parse.urlsplit(link).hostname or "").removeprefix("www.")
+        label = APPLY_LABELS.get(host) or f"Apply on {esc(host)}"
+        page.append(f'<a class="button{" secondary" if at else ""}" href="{esc(link)}" rel="noopener noreferrer">'
+                    f'{label} &nearr;</a>')
+    page += ["</div>", f'<p class="ask">Questions first? <a href="{DISCORD_INVITE}" rel="noopener noreferrer">'
+             "Ask on Discord</a>.</p>", "</div>", "</div>", "</section>"]
     return page
 
 
 def render_page(title, standings, recent, omitted, source_url=None, *, pending=False, site_url=None, extras=None):
-    """The public page. Community sections (gallery, raids, live streams, open positions) need extras."""
+    """The public page. Community sections (gallery, raids, open positions) need extras."""
     players = standings["players"]
     items = extras["items"] if extras else {}
     if standings["lastEventId"]:
@@ -998,7 +997,7 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
         lede_text = "No events are recorded yet."
     nav = [("standings", "Standings")]
     if extras:
-        nav += [("gallery", "Gallery"), ("raids", "Raids"), ("live", "Live"), ("recruiting", "Recruiting")]
+        nav += [("gallery", "Gallery"), ("raids", "Raids"), ("recruiting", "Recruiting")]
     nav += [("activity", "Activity"), ("roster", "Roster")]
     body = [
         '<!-- THESIS: a guild home built around its loot ledger, not a generic stats dashboard. '
@@ -1048,7 +1047,6 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
     if extras:
         body += gallery_section(extras["gallery"], extras["kills"], linked)
         body += raids_section(extras)
-        body += live_section(extras, site_url)
         body += positions_section(extras["recruitment"])
     body.append('<section aria-labelledby="activity"><h2 id="activity">Recent activity</h2>')
     if recent:
@@ -1063,13 +1061,10 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
     else:
         body.append(empty_state("Every drop has a story.", "No public records yet.",
                                 "Published loot and DKP changes will appear here, newest first."))
-    body += ["</section>", *guild_sections()]
+    body += ["</section>", *guild_sections(roster_specs(standings))]
     joined = "\n".join(body)
     has_items = 'class="item' in joined
     scripted = has_items or " data-carousel" in joined or " data-local" in joined
-    providers = (["Wowhead"] if has_items else []) + (["Discord"] if extras else []) + [
-        name for name, marker in (("Twitch", "https://player.twitch.tv/"), ("YouTube", "https://www.youtube-nocookie.com/"))
-        if marker in joined]
     body += ['<section class="about" aria-labelledby="about"><h2 id="about">About this page</h2>', "<ul>",
              "<li>This page publishes player names, DKP balances, each character's raiding class/spec with its raid "
              "role, and awarded loot from the officers' approved ledger. That is public by design.</li>",
@@ -1088,9 +1083,8 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
     ]
     if extras:
         body.append("<li>Raid sign-ups are shown as counts by role only; who signed up stays in Discord.</li>")
-    if providers:
-        names = providers[0] if len(providers) == 1 else ", ".join(providers[:-1]) + " and " + providers[-1]
-        body.append(f"<li>Parts of this page load from {names}. Those services see your visit and may set their "
+    if has_items:
+        body.append("<li>Item names, icons and tooltips load from Wowhead. Wowhead sees your visit and may set its "
                     "own cookies.</li>")
     if not pending:
         body += [f'<li id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>. Officers compare '
@@ -1183,7 +1177,7 @@ def check_source_url(value):
 
 
 def check_site_url(value):
-    """The page's own address, used for link previews and the Twitch player's parent check."""
+    """The page's own address, used for link previews."""
     if value is None:
         return None
     problem = "--site-url must be the page's own https:// address ending in /, without ? or #"
@@ -1431,8 +1425,7 @@ def run_render(args, opener, environ, sleep):
     recent = [event for event in reversed(events) if event["kind"] in PAGE_ACTIVITY][:RECENT_EVENTS]
     raid = config["raidHelper"]
     extras = {"items": items, "gallery": gallery, "kills": boss_kills(events), "community": feed, "raid": raid,
-              "raid_days": raid["days"] if raid else community.RAID_DAYS, "streamers": config["streamers"],
-              "recruitment": config["recruitment"]}
+              "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": config["recruitment"]}
     page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
                        site_url=site_url, extras=extras)
     files = {"index.html": page.encode("utf-8"), LOGO_FILE: brand_asset(LOGO_FILE), **files}
@@ -1566,11 +1559,11 @@ def build_parser():
     render = commands.add_parser("render", help="build the full guild page from published JSON and community files")
     render.add_argument("--data", required=True, metavar="DIR", help="folder holding standings.json and history.json")
     render.add_argument("--out", required=True, metavar="DIR", help="output folder, separate from --data and --gallery")
-    render.add_argument("--config", metavar="FILE", help="community.json: Raid-Helper server, streamers, open positions")
+    render.add_argument("--config", metavar="FILE", help="community.json: Raid-Helper server and open positions")
     render.add_argument("--community", metavar="FILE", help="community data written by capped_dkp_community.py fetch")
     render.add_argument("--items", metavar="FILE", help="item-cache.json with Wowhead item names")
     render.add_argument("--gallery", metavar="DIR", help="folder with gallery.json and its images")
-    render.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews and Twitch")
+    render.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews")
     render.add_argument("--source-url", metavar="URL", help="optional https link shown in the page footer")
     render.add_argument("--title", default=DEFAULT_TITLE)
 

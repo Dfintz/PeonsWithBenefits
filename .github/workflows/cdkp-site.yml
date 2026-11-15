@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # CappedDKP public site for Peons with Benefits. Builds the page from the standings that the private ledger
 # repository mirrors into data/, plus community.json, gallery/ and community data fetched on every run (Raid-Helper
-# sign-up counts, live Twitch and YouTube streams, Wowhead item names), then deploys it to GitHub Pages.
+# sign-up counts and Wowhead item names), then deploys it to GitHub Pages.
 # Written by tools/capped_dkp_scaffold.py --public; its hash is recorded in .cdkp/TOOLKIT.json.
-# Every secret is optional: a source without its secret shows its empty state on the page.
+# The Raid-Helper secret is optional: without it the raid calendar shows its empty state on the page.
 name: CappedDKP site
 
 on:
@@ -35,12 +35,9 @@ jobs:
       - name: Verify the vendored toolkit
         run: python3 -B .cdkp/tools/capped_dkp_ci.py toolkit
 
-      - name: Fetch raid sign-ups, live streams and item names
+      - name: Fetch raid sign-ups and item names
         env:
           RAIDHELPER_API_KEY: ${{ secrets.RAIDHELPER_API_KEY }}
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: >-
           python3 -B .cdkp/tools/capped_dkp_community.py fetch
           --config community.json --data data --items cache/item-cache.json
