@@ -60,8 +60,10 @@ The repository owner does this once. None of it is done for you.
 Edit these files in a commit to `main`; the page rebuilds within a few minutes.
 
 - **Open positions** (`community.json` → `recruitment`): `openings` (class and specs), `expectations`, `apply`
-  and the date it was `updated`. A spec is plain text or `{"name": "Holy", "priority": "high"}`, with priority
-  `high`, `mid` or `low`, shown as a High/Mid/Low tag. `apply` lists 1 to 3 `https://` links where people apply;
+  and the date it was `updated`. A spec is plain text or `{"name": "Holy", "priority": "low"}`, with priority
+  `high`, `mid` or `low`, shown as High need / Medium need / Low need. These describe recruitment urgency,
+  not DKP loot priority. The supplied openings are all Low need, matching the Guilds of WoW listing confirmed
+  on 2026-11-15; update them here when recruitment changes. `apply` lists 1 to 3 `https://` links where people apply;
   the first is the main button. The older single `source` link still works in place of `apply`.
 - **Raid-Helper** (`community.json` → `raidHelper`): `serverId` is the Discord server ID, written as text; `days`
   is how far ahead to look (1 to 60). Remove the block to hide the raid calendar.

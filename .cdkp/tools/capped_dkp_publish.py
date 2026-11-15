@@ -149,7 +149,7 @@ ROLE_WORDS = {
 }
 GALLERY_LABELS = (("memory", "Memories"), ("event", "Events"), ("kill", "Raid kills"))
 APPLY_LABELS = {"guildsofwow.com": "Apply on Guilds of WoW", "guildsforever.com": "Apply on Guilds Forever"}
-PRIORITY_LABELS = {"high": "High", "mid": "Mid", "low": "Low"}
+PRIORITY_LABELS = {"high": "High need", "mid": "Medium need", "low": "Low need"}
 # Guild ranks the public roster leaves out; matched exactly against the snapshot's rank names.
 HIDDEN_RANKS = frozenset({"Side Hustle"})
 LEVEL_MAX = 100
@@ -953,8 +953,10 @@ def positions_section(recruitment):
     updated = (f' Updated <span class="nowrap">{esc(recruitment["updated"])}</span>.'
                if recruitment.get("updated") else "")
     ranked = any(spec.get("priority") for opening in recruitment["openings"] for spec in opening["specs"])
+    note = ("Recruitment need reflects urgency, not DKP loot priority."
+            if ranked else "Roles the raid team is recruiting for.")
     page = ['<section aria-labelledby="recruiting"><h2 id="recruiting">Open positions</h2>',
-            f'<p class="note">Roles the raid team is recruiting for{", by priority" if ranked else ""}.{updated}</p>',
+            f'<p class="note">{note}{updated}</p>',
             '<div class="positions">']
     if recruitment["openings"]:
         page.append('<ul class="openings">')
@@ -964,8 +966,8 @@ def positions_section(recruitment):
             specs = []
             for spec in opening["specs"]:
                 level = spec.get("priority")
-                tag = (f' <span class="prio prio-{level}">{PRIORITY_LABELS[level]}'
-                       f'<span class="vh"> priority</span></span>' if level in PRIORITY_LABELS else "")
+                tag = (f' <span class="prio prio-{level}">{PRIORITY_LABELS[level]}</span>'
+                       if level in PRIORITY_LABELS else "")
                 specs.append(f"<li>{esc(spec['name'])}{tag}</li>")
             page.append(f'<li><span class="cls{colour}">{esc(opening["class"])}</span>'
                         f'<ul class="specs">{"".join(specs)}</ul></li>')
