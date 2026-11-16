@@ -185,12 +185,49 @@ GUILD_FACTS = {
     "source": "https://guildsforever.com/guilds/peons-with-benefits", "updated": "2026-11-16",
 }
 
-# The only script the page runs inline: Wowhead tooltip options, local times, the gallery carousel and the photo viewer.
+# The only script the page runs inline: tabs, Wowhead options, local times, the carousel and the photo viewer.
 # It carries no data, so its hash is fixed and the Content-Security-Policy can allow exactly this script.
 INLINE_SCRIPT = (
     'window.whTooltips={colorLinks:false,iconizeLinks:false,renameLinks:true};'
     '(function(){var d=document;'
     'function still(){return !!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);}'
+    'var nav=d.querySelector("[data-tabs]");'
+    'if(nav){var tabs=Array.from(nav.querySelectorAll("[data-panel]")),'
+    'panels=tabs.map(function(t){return d.getElementById(t.dataset.panel);});'
+    'function target(hash){try{return d.getElementById(decodeURIComponent(hash.slice(1)));}'
+    'catch(e){if(!(e instanceof URIError))throw e;console.warn("Invalid page fragment; showing Overview.");return null;}}'
+    'function select(hash,scroll,focus){var el=target(hash),'
+    'panel=el&&el.closest(".tab-panel"),at=panels.indexOf(panel);if(at<0)at=0;'
+    'var lost=panels.some(function(p,i){return i!==at&&p.contains(d.activeElement);});'
+    'panels.forEach(function(p,i){p.hidden=i!==at;tabs[i].setAttribute("aria-selected",String(i===at));'
+    'tabs[i].tabIndex=i===at?0:-1;});'
+    'd.dispatchEvent(new Event("guild-tab-change"));'
+    'if(lost)tabs[at].focus({preventScroll:true});'
+    'if(scroll==="top")window.scrollTo(0,0);'
+    'else if(scroll&&el){'
+    'for(var parent=el.parentElement;parent;parent=parent.parentElement){'
+    'if(parent.tagName==="DETAILS")parent.open=true;}'
+    'el.scrollIntoView({block:"start"});'
+    'if(focus){if(!el.hasAttribute("tabindex"))el.setAttribute("tabindex","-1");el.focus({preventScroll:true});}}}'
+    'nav.setAttribute("role","tablist");'
+    'tabs.forEach(function(t,i){t.setAttribute("role","tab");t.setAttribute("aria-controls",panels[i].id);'
+    'panels[i].setAttribute("role","tabpanel");panels[i].setAttribute("aria-labelledby",t.id);panels[i].tabIndex=0;'
+    't.addEventListener("keydown",function(e){if(e.altKey||e.ctrlKey||e.metaKey)return;var at=i;'
+    'if(e.key==="ArrowRight")at=(i+1)%tabs.length;else if(e.key==="ArrowLeft")at=(i+tabs.length-1)%tabs.length;'
+    'else if(e.key==="Home")at=0;else if(e.key==="End")at=tabs.length-1;'
+    'else if(e.key!==" "&&e.key!=="Enter")return;'
+    'e.preventDefault();tabs[at].focus({preventScroll:true});tabs[at].click();});});'
+    'd.addEventListener("click",function(e){var a=e.target.closest?e.target.closest("a[href^=\\"#\\"]"):null;'
+    'if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.hasAttribute("download")'
+    '||(a.target&&a.target!=="_self"))return;'
+    'var hash=a.getAttribute("href");if(hash!=="#"&&!target(hash))return;'
+    'e.preventDefault();if(location.hash!==hash)history.pushState(null,"",hash);'
+    'select(hash,a.hasAttribute("data-panel")||hash==="#"?"top":"target",!a.hasAttribute("data-panel"));});'
+    'function restore(){select(location.hash,location.hash?"target":"top",false);}'
+    'window.addEventListener("hashchange",restore);window.addEventListener("popstate",restore);'
+    'function headerSize(){d.documentElement.style.setProperty("--nav-height",nav.parentElement.offsetHeight+"px");}'
+    'headerSize();if(window.ResizeObserver)new ResizeObserver(headerSize).observe(nav.parentElement);'
+    'select(location.hash,false,false);if(location.hash)requestAnimationFrame(restore);}'
     'try{var f=new Intl.DateTimeFormat(undefined,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",'
     'minute:"2-digit"});d.querySelectorAll("time[data-local]").forEach(function(t){'
     'var w=new Date(t.getAttribute("datetime"));if(!isNaN(w))t.textContent=f.format(w);});}catch(e){}'
@@ -202,6 +239,7 @@ INLINE_SCRIPT = (
     'b.forEach(function(x){x.addEventListener("click",function(){'
     'k.scrollBy({left:k.clientWidth*.9*Number(x.getAttribute("data-dir")),behavior:still()?"auto":"smooth"});});});'
     'k.addEventListener("scroll",sync,{passive:true});window.addEventListener("resize",sync);'
+    'd.addEventListener("guild-tab-change",sync);'
     'c.querySelectorAll("input[name=gf]").forEach(function(r){r.addEventListener("change",function(){'
     'k.scrollLeft=0;sync();});});sync();});'
     'd.querySelectorAll("dialog.lightbox").forEach(function(z){'
@@ -235,15 +273,22 @@ CSS = """\
 :root{color-scheme:dark;--bg:#100f0d;--fg:#f3e5cb;--muted:#c1b49e;--line:#443a2e;--head:#211d18;--accent:#efc783;--neg:#ff9d8c;--red:#b52d20;--ember:#241411;--emberline:#66332a}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html{scroll-padding-top:1rem}
+html{scroll-padding-top:calc(var(--nav-height,80px) + 1rem)}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
 .wrap{max-width:76rem;margin:0 auto;padding:0 2rem 3rem}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:.8rem 0;border-bottom:1px solid var(--line)}
+.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--line);background:var(--bg)}
 .wordmark{display:inline-flex;align-items:center;gap:.7rem;min-height:44px;font-family:Georgia,serif;font-size:1.2rem;font-weight:bold;letter-spacing:.08em;text-decoration:none}
 .wordmark img{display:block;width:48px;height:auto}
-.navlinks{display:flex;gap:0 1.3rem;flex-wrap:wrap;font-size:.9rem}
-.navlinks a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:var(--muted)}
-.navlinks a:hover{color:var(--fg)}
+.navlinks{display:flex;gap:.2rem;flex-wrap:wrap;font-size:.9rem}
+.navlinks a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.55rem .85rem;border-bottom:2px solid transparent;text-decoration:none;color:var(--muted)}
+.navlinks a:hover{color:var(--fg);background:var(--head)}
+.navlinks a[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);background:var(--head)}
+.navlinks a:focus-visible{outline-offset:-3px}
+.tab-panel{padding-top:2rem}
+.tab-panel>section:first-child{margin-top:0}
+.tab-panel:focus-visible{outline-offset:3px}
+@media (max-width:50rem){.topbar{align-items:flex-start;flex-direction:column;gap:.2rem}.navlinks{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media print{.topbar{position:static}.tab-panel[hidden]{display:block!important}.navlinks,.skip{display:none!important}}
 .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;gap:2.5rem;padding:3rem 0}
 h1{font:700 clamp(2.8rem,6vw,5.2rem)/1.02 Georgia,serif;margin:0 0 1.2rem;letter-spacing:-.03em}
 .hero p{color:var(--muted);max-width:46ch;margin:0 0 1.5rem}
@@ -447,7 +492,7 @@ summary{cursor:pointer;min-height:44px;color:var(--accent);padding:.65rem 0}
 .roster-stats>details>summary{margin-top:.7rem}
 @media (max-width:50rem){.stat-classes{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:40rem){.roster-stats{padding:1rem}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-tile img{display:block;margin:0 0 .3rem}}
-.skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:2}
+.skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:20}
 .skip:focus{top:1rem}
 @media (max-width:50rem){.hero{grid-template-columns:1fr 1fr;gap:1rem}.guild-links{grid-template-columns:1fr 1fr}.community{grid-column:1/-1}.roster-list{grid-template-columns:repeat(2,minmax(0,1fr))}.positions{grid-template-columns:1fr}}
 @media (max-width:40rem){.wrap{padding:0 1rem 2rem}.topbar{align-items:flex-start;flex-direction:column;gap:.2rem}.navlinks{gap:0 1.1rem}.hero{grid-template-columns:1fr;padding:2rem 0;gap:.7rem}.hero-art{grid-row:1;max-width:20rem;justify-self:center}.hero-copy{text-align:center}.hero p{margin-left:auto;margin-right:auto}.actions{justify-content:center}.expect .button{width:100%}.guild-links{grid-template-columns:1fr;padding:1.5rem;gap:2rem}.community{grid-column:auto}.roster-list{grid-template-columns:1fr}section{margin-top:2.5rem}table{min-width:24rem}table.wide{min-width:0}th,td{padding:.5rem .6rem}.col-record{display:none}.raids li{grid-template-columns:minmax(0,1fr) auto}.raid-when,.raid-roles{grid-column:1/-1}.openings{grid-template-columns:1fr}.track{grid-auto-columns:82%}table.standings,table.standings caption,table.standings tbody{display:block;min-width:0}table.standings thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}table.standings tr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;gap:.3rem 1rem;padding:.8rem 1rem;border-top:1px solid var(--line)}table.standings tr:target{background:var(--head)}table.standings tr>*{padding:0;border:0}table.standings td:nth-child(n+4){grid-column:1/-1}table.standings td[data-label]::before{content:attr(data-label);margin-right:.35rem;color:var(--muted);font-size:.8rem}}
@@ -694,7 +739,11 @@ def guild_sections(specs=None, roster=None, profiles=None):
                  f'{"Warcraft Logs" if logs else "Guild logs"} &nearr;</a></span>')
         page.append(f'<li><a href="{esc(member["url"])}"{colour} rel="noopener noreferrer">{esc(member["name"])}</a>'
                     + (f'<span class="who">{esc(detail)}</span>' if detail else "") + links + "</li>")
-    page += ['</ul></details></section>', '<section id="guild-links" class="guild-links" aria-label="Guild links">']
+    return page + ['</ul></details></section>']
+
+
+def guild_links():
+    page = ['<section id="guild-links" class="guild-links" aria-label="Guild links">']
     for heading, links in GUILD_LINKS:
         page.append(f'<div><h2>{esc(heading)}</h2><ul>')
         for label, url in links:
@@ -1541,8 +1590,10 @@ def discovery_files(title, site_url, pending, recruitment):
 
 def render_page(title, standings, recent, omitted, source_url=None, *, pending=False, site_url=None, extras=None,
                 verification=None, history_events=None):
-    """The public page. Community sections (gallery, raids, open positions) need extras. With site_url the page asks
-    to be indexed and carries its canonical address; verification is a Google Search Console HTML-tag token."""
+    """Six progressively enhanced tabs; all content remains in the HTML for crawlers and no-script readers.
+
+    With site_url the page asks to be indexed and carries its canonical address; verification is a Google
+    Search Console HTML-tag token. Existing section, player and event fragments remain intact."""
     players = standings["players"]
     items = extras["items"] if extras else {}
     if standings["lastEventId"]:
@@ -1550,30 +1601,22 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
                      f'recorded {utc_text(standings["lastEventTime"])}.')
     else:
         lede_text = "No events are recorded yet."
-    nav = [("guild", "Guild"), ("standings", "Standings"), ("progress", "Progress"),
-           ("attendance", "Attendance"), ("rules", "Loot rules")]
-    if extras:
-        nav += [("gallery", "Gallery"), ("raids", "Raids"), ("recruiting", "Recruiting")]
-    nav += [("activity", "Activity"), ("roster", "Roster")]
-    body = [
-        '<!-- THESIS: a guild home built around its loot ledger, not a generic stats dashboard. '
-        'OWN-WORLD: Horde red, iron charcoal, parchment type and the supplied guild crest. '
-        'STORY: inspect DKP and loot, relive kills, find a raid, join the guild. '
-        'FIRST VIEWPORT: guild name and short info beside the uncropped crest, then publication status. '
-        'FORM: user-pinned Horde identity; read-only ledger, native disclosure, one small hashed script. -->',
-        '<a class="skip" href="#standings">Skip to standings</a>', '<div class="wrap">',
-        f'<header class="topbar"><a class="wordmark" href="#" aria-label="{GUILD_NAME}">'
-        f'<img src="{LOGO_FILE}" alt="" width="48" height="42">PWB</a>',
-        '<nav class="navlinks" aria-label="Page navigation">'
-        + "".join(f'<a href="#{anchor}">{label}</a>' for anchor, label in nav) + "</nav></header>",
-        '<main><div class="hero"><div class="hero-copy">',
+    nav = [("overview", "Overview"), ("raids", "Raids"), ("roster", "Roster"),
+           ("standings", "DKP & loot"), ("rules", "Loot rules"), ("gallery", "Gallery")]
+    overview = [
+        '<div class="hero" id="overview"><div class="hero-copy">',
         f"<h1>{esc(title)}</h1>", '<p class="realm">WoW: Forever &nbsp;/&nbsp; Horde &nbsp;/&nbsp; EU PvP</p>',
         f"<p>{esc(GUILD_SUMMARY)}</p>",
-        '<div class="actions"><a class="button" href="#standings">View standings &darr;</a>'
+        '<div class="actions"><a class="button" href="#standings">View standings &rarr;</a>'
         f'<a class="button secondary" href="{DISCORD_INVITE}" rel="noopener noreferrer">Join Discord &nearr;</a></div></div>',
         f'<div class="hero-art"><img class="guild-logo" src="{LOGO_FILE}" width="{LOGO_SIZE[0]}" height="{LOGO_SIZE[1]}" '
         f'alt="{esc(LOGO_ALT)}"></div></div>',
         *guild_overview(extras.get("guild", {}) if extras else {}),
+    ]
+    if extras:
+        overview += positions_section(extras["recruitment"])
+    overview += guild_links()
+    loot = [
         '<div class="ledger-status">',
         '<strong>Awaiting first publication</strong>' if pending else '<strong>Public ledger</strong>',
         f'<p class="lede">{esc(lede_text)}</p></div>',
@@ -1590,26 +1633,16 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
                 f'<td class="num" data-label="Cap">{cap}</td>'
                 f'<td>{esc(player["status"])}</td><td>{characters_html(player)}</td>'
                 f'<td>{loot_html(player, items)}</td></tr>')
-        body.append(table("Active players by DKP balance",
+        loot.append(table("Active players by DKP balance",
                           [("Player", ""), ("DKP", "num"), ("Cap", "num"), ("Status", ""), ("Characters", ""),
                            ("Loot", "")], rows, kind="standings"))
     else:
-        body.append(empty_state("The first standings are still to come.", "No active players are recorded yet.",
+        loot.append(empty_state("The first standings are still to come.", "No active players are recorded yet.",
                                 "DKP balances appear here after an officer-reviewed ledger is published."))
     if standings["departedCount"]:
-        body.append(f'<p class="note">{plural(standings["departedCount"], "departed player is", "departed players are")}'
+        loot.append(f'<p class="note">{plural(standings["departedCount"], "departed player is", "departed players are")}'
                     " not listed.</p>")
-    body.append("</section>")
-    body += progression_section(history_events if history_events is not None else recent,
-                                extras.get("reports", []) if extras else [])
-    body += attendance_section(players)
-    body += loot_rules_section()
-    linked = {event["id"] for event in recent}
-    if extras:
-        body += gallery_section(extras["gallery"], extras["kills"], linked)
-        body += raids_section(extras)
-        body += positions_section(extras["recruitment"])
-    body.append('<section aria-labelledby="activity"><h2 id="activity">Recent activity</h2>')
+    loot.append('</section><section aria-labelledby="activity"><h2 id="activity">Recent activity</h2>')
     if recent:
         rows = [
             f'<tr id="e-{event["id"]}"><td class="num"><a href="#e-{event["id"]}" '
@@ -1617,27 +1650,53 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
             f'<td>{esc(utc_text(event["time"])).replace(" UTC", "&nbsp;UTC")}</td>'
             f'<td class="col-record">{esc(event["label"])}</td><td>{linked_summary(event, items)}</td></tr>'
             for event in recent]
-        body.append(table(f"Latest {plural(len(recent), 'public record', 'public records')}, newest first",
+        loot.append(table(f"Latest {plural(len(recent), 'public record', 'public records')}, newest first",
                           [("Event", "num"), ("When", ""), ("Record", "col-record"), ("Details", "")], rows, wide=True))
     else:
-        body.append(empty_state("Every drop has a story.", "No public records yet.",
+        loot.append(empty_state("Every drop has a story.", "No public records yet.",
                                 "Published loot and DKP changes will appear here, newest first."))
-    body += ["</section>", *guild_sections(roster_specs(standings), extras.get("roster") if extras else None,
-                                          extras.get("profiles") if extras else None)]
-    joined = "\n".join(body)
-    has_items = 'class="item' in joined
-    scripted = has_items or " data-carousel" in joined or " data-local" in joined
-    body.append('<footer class="foot">')
+    loot.append("</section>")
     if not pending:
-        body += [f'<p id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>.</p>',
-                 '<p>Raw data: <a href="standings.json">standings.json</a>, <a href="history.json">history.json</a>.</p>']
+        loot += ['<footer class="foot ledger-footer">',
+                 f'<p id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>.</p>',
+                 '<p>Raw data: <a href="standings.json">standings.json</a>, <a href="history.json">history.json</a>.</p>',
+                 '</footer>']
+    all_events = history_events if history_events is not None else recent
+    raids = raids_section(extras or {"community": None, "raid": None, "raid_days": RAID_DAYS})
+    raids += progression_section(all_events, extras.get("reports", []) if extras else [])
+    raids += attendance_section(players)
+    panels = {
+        "overview": overview, "raids": raids,
+        "roster": guild_sections(roster_specs(standings), extras.get("roster") if extras else None,
+                                 extras.get("profiles") if extras else None),
+        "standings": loot, "rules": loot_rules_section(),
+        "gallery": gallery_section(extras["gallery"] if extras else [],
+                                   extras["kills"] if extras else boss_kills(all_events),
+                                   {event["id"] for event in recent}),
+    }
+    body = [
+        '<!-- THESIS: one guild destination at a time, not an endless feed. '
+        'OWN-WORLD: Horde red, iron charcoal, parchment type and the supplied guild crest. '
+        'STORY: choose the guild overview, raid plans, roster, DKP, rules or memories. '
+        'FIRST VIEWPORT: compact tab navigation above the Overview hero; other tabs begin with their content. '
+        'FORM: existing Horde identity, accessible hash-linked tabs, native disclosures and one hashed script. -->',
+        '<a class="skip" href="#standings">Skip to standings</a>', '<div class="wrap">',
+        f'<header class="topbar"><a class="wordmark" href="#" aria-label="{GUILD_NAME}">'
+        f'<img src="{LOGO_FILE}" alt="" width="48" height="42">PWB</a>',
+        '<nav class="navlinks" aria-label="Guild sections" data-tabs>'
+        + "".join(f'<a id="tab-{anchor}" href="#{anchor}" data-panel="panel-{anchor}">{esc(label)}</a>'
+                  for anchor, label in nav) + "</nav></header>", '<main>',
+    ]
+    for anchor, _ in nav:
+        body += [f'<div class="tab-panel" id="panel-{anchor}">', *panels[anchor], "</div>"]
+    has_items = 'class="item' in "\n".join(body)
+    body.append('<footer class="foot">')
     if source_url:
         body.append(f'<p>Source: <a href="{esc(source_url)}" rel="noopener noreferrer">'
                     f"{esc(urllib.parse.urlsplit(source_url).hostname)}</a></p>")
     body += [f'<p>{GUILD_NAME} &middot; WoW: Forever &middot; For the Horde.</p></footer>', "</main>",
              "</div>"]
-    if scripted:
-        body.append(f"<script>{INLINE_SCRIPT}</script>")
+    body.append(f"<script>{INLINE_SCRIPT}</script>")
     if has_items:
         body.append(f'<script src="{WOWHEAD_SCRIPT}"></script>')
     head = [
