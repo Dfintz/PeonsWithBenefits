@@ -512,6 +512,7 @@ GUILD_LINKS = (
 )
 DISCORD_INVITE = "https://discord.gg/Cahah6u4yZ"
 ADDON_URL = "https://www.curseforge.com/wow/addons/pwb-dkp"
+UPLOADER_URL = "https://github.com/Dfintz/PeonsWithBenefits/releases/latest"
 PROFILE_PREFIX = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/"
 ROSTER_FILE = "pwb-roster.json"
 ROSTER_BYTES = 1024 * 1024
@@ -756,8 +757,37 @@ def guild_links():
              '<div class="actions">',
              f'<a class="button" href="{DISCORD_INVITE}" rel="noopener noreferrer">Join our Discord &nearr;</a>',
              f'<a class="button secondary" href="{ADDON_URL}" rel="noopener noreferrer">Get the DKP addon &nearr;</a>',
-             '</div></div></section>']
+             '</div><p class="note">Officers and Loot Masters: '
+             '<a href="#uploader">get the desktop uploader</a> to submit saved raid and loot records.</p>',
+             '</div></section>']
     return page
+
+
+def uploader_section():
+    return [
+        '<section aria-labelledby="uploader"><h2 id="uploader">Officer uploader</h2>',
+        '<p><strong>For officers and Loot Masters.</strong> The PWB DKP Uploader reads the CappedDKP addon\'s '
+        'saved raid, DKP and loot records and submits them to the guild\'s private ledger for review. '
+        'Approved records keep this page\'s standings and loot history up to date.</p>',
+        '<p>Regular raiders do not need this tool to view standings or receive loot. '
+        'It is a separate Windows desktop app, not the in-game addon.</p>',
+        f'<div class="actions"><a class="button" href="{UPLOADER_URL}" rel="noopener noreferrer">'
+        'Download officer uploader &nearr;</a></div>',
+        '<p class="note">Windows 10 or 11 (64-bit). Opens the latest GitHub release; choose the '
+        '<code>CappedDKP-Uploader-...-win64.zip</code> asset, not the source-code archives. '
+        'No Git or Python installation is required.</p>',
+        '<details><summary>Setup &amp; updates</summary>',
+        '<p>Extract the whole ZIP and open <code>CappedDKP Uploader.exe</code>. '
+        'It looks for your addon\'s SavedVariables file automatically; confirm the correct account in Settings. '
+        'Ask guild leadership for the ledger settings and a guild-provided access token. '
+        'Enter the token only in the desktop app, never on this public page or in public chat.</p>',
+        '<p>The uploader checks for newer releases and keeps your settings and saved token when updating. '
+        'Upgrading from 0.1.43.1 or earlier needs one manual update: close the app, back up its folder, replace '
+        'the program files in the same location and keep your existing <code>data</code> folder unchanged. '
+        'The Windows executable is not code-signed; only download releases you trust.</p>',
+        '</details></section>',
+    ]
+
 
 _TAG = re.compile(r"\w{3,32}#[0-9]{3,8}")
 _LONG_NUMBER = re.compile(r"[0-9]{17,}")
@@ -1558,7 +1588,9 @@ def llms_text(title, site_url, pending, recruitment):
         lines += [f"- [Capped DKP standings]({md_url(site_url)}standings.json): public DKP balances and loot, as JSON",
                   f"- [Loot and DKP history]({md_url(site_url)}history.json): the public ledger records, as JSON"]
     lines += ["", "## Join", "", f"- [Discord]({DISCORD_INVITE}): questions and raid sign-ups",
-              f"- [PWB DKP addon]({ADDON_URL}): the guild's DKP addon on CurseForge"]
+              f"- [PWB DKP addon]({ADDON_URL}): the guild's DKP addon on CurseForge",
+              f"- [Officer uploader]({UPLOADER_URL}): Windows desktop tool for officers and Loot Masters to "
+              "submit saved addon records for review; not required for regular raiders"]
     listed = {DISCORD_INVITE}
     for link in recruitment.get("apply") or [GUILD_LINKS[0][1][0][1]]:
         host = (urllib.parse.urlsplit(link).hostname or "").removeprefix("www.")
@@ -1662,6 +1694,7 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
         loot.append(empty_state("Every drop has a story.", "No public records yet.",
                                 "Published loot and DKP changes will appear here, newest first."))
     loot.append("</section>")
+    loot += uploader_section()
     if not pending:
         loot += ['<footer class="foot ledger-footer">',
                  f'<p id="fingerprint">Ledger fingerprint: <code>{esc(standings["chainHead"])}</code>.</p>',
