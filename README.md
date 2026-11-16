@@ -27,15 +27,18 @@ Scheduled runs often start late when GitHub is busy, so raid sign-up counts can 
 1. It checks `.cdkp/` against `.cdkp/TOOLKIT.json`.
 2. It fetches the community data. Without its secret the raid calendar is shown as not set up; a source that fails
    shows its empty state, and the rest of the page still builds.
-   - **Raid-Helper:** upcoming events for the next `raidHelper.days` days, saved only as sign-up counts by role
-     (Tank, Healer, Melee, Ranged). Absence, tentative, bench and declined sign-ups are not counted. No names or
-     Discord IDs are written anywhere.
+   - **Raid-Helper:** upcoming events for the next `raidHelper.days` days, saved as sign-up counts by role
+     (Tank, Healer, Melee, Ranged). Absence, tentative, bench and declined sign-ups are not counted. When a sign-up
+     matches exactly one visible roster character, its declared role/spec can also inform that character's roster
+     summary; sign-up names and Discord IDs are not copied into the published event data.
    - **Wowhead:** names and quality of looted items, at most 50 new lookups per run. They are saved in
      `cache/item-cache.json` so each item is looked up once.
    - **Blizzard Armory:** the guild's public roster (names, profile links, level, class and rank), asked for
-     only when `cache/armory-roster.json` is missing or at least 3 hours old, then saved there. This uses the
-     Armory page's own undocumented query, which Blizzard can change without notice. If it fails, the saved
-     roster is kept; with none saved, the page shows the roster bundled in `.cdkp/` (read 2026-11-15).
+     only when `cache/armory-roster.json` is missing or at least 3 hours old, then saved there. Because the roster
+     query has no specs, the workflow also reads character profile pages for their leading talent tree, up to 30
+     profiles per run and at most once per character per day. Both Armory sources are undocumented and can change
+     without notice. If a refresh fails, the saved roster and specs are kept; with none saved, the page shows the
+     roster bundled in `.cdkp/` (read 2026-11-15).
 3. It renders the page from `data/`, `community.json`, `gallery/` and the fetched data, and deploys it.
 
 Until the private ledger first mirrors `data/`, the page says the standings are awaiting their first publication.
@@ -102,15 +105,18 @@ The public page keeps this guidance here instead of displaying an "About this pa
   the page; older ones are in `history.json`.
 - Once a ledger is published, the footer links to `standings.json` and `history.json` and shows its fingerprint.
   Officers compare that fingerprint with their own ledger copy; it cannot be recomputed from the public page.
-- Raid sign-ups publish counts by role only; names stay in Discord. The dated Armory roster is separate from
-  the ledger and does not imply DKP balances or eligibility. Before the first approved publication, standings
-  remain explicitly empty.
-- Roster statistics count visible characters, not accounts or raid sign-ups: every class, level bands, and
-  Tanks / Healers / Melee DPS / Ranged DPS / Unknown. Side Hustle characters are excluded from all totals.
-  Roles use class-compatible recorded specs, never class alone; plain Feral and other ambiguous roles stay
-  Unknown. The Armory roster feed has no specs, so roles populate when ledger specs are published. Expand
-  **View recorded specs** for counts of the saved spec labels. Missing class or level is shown as Unknown;
-  any level above 60 is shown separately as 61+.
+- The raid calendar publishes counts by role; sign-up names and Discord IDs are not published. A current sign-up's
+  role/spec may be attached to a unique matching visible roster character, but the dated Armory roster remains
+  separate from the ledger and does not imply DKP balances or eligibility. Before the first approved publication,
+  standings remain explicitly empty.
+- Roster statistics count visible characters, not accounts or raid sign-ups: each class and Tanks / Healers /
+  Melee DPS / Ranged DPS / Unknown. Select a raid-role count to see its class breakdown; class counts are not
+  broken down by level. Levels remain on individual character entries. Side Hustle characters are excluded from
+  every total. Specs prefer the published ledger, then the current Raid-Helper sign-up for a unique matching roster
+  character, then the character's Armory talent tree. A declared raid role fills in when its spec is not decisive.
+  Mages and Warlocks are always Ranged, Rogues are always Melee, and Survival Hunters are Melee. Other missing,
+  conflicting or ambiguous roles stay Unknown, including Feral Druids without Bear/Cat. Expand **View spec counts**
+  for saved spec labels.
 
 ## When something fails
 

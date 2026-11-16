@@ -136,14 +136,14 @@ AWARD_KINDS = ("award", "progression", "disenchant", "tradeaward")
 CHANGE_KINDS = ("reverse", "improper", "repair")
 SPEC_KINDS = ("account", "rosteradd", "alt", "spec")
 CLASSES = ("Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior")
+CLASS_WORDS = frozenset(name.lower() for name in CLASSES)
 ROLES = ("Tank", "Healer", "Melee", "Ranged")
 ROLE_ICONS = {"Tank": "pwb-role-tank.png", "Healer": "pwb-role-healer.png",
               "Melee": "pwb-role-melee.png", "Ranged": "pwb-role-ranged.png"}
 PAGE_ASSETS = (LOGO_FILE, *ROLE_ICONS.values())
 ROLE_LABELS = {"Tank": "Tanks", "Healer": "Healers", "Melee": "Melee DPS", "Ranged": "Ranged DPS",
                "Unknown": "Unknown"}
-LEVEL_BANDS = (("60", 60, 60), ("50-59", 50, 59), ("40-49", 40, 49), ("30-39", 30, 39),
-               ("20-29", 20, 29), ("1-19", 1, 19), ("61+", 61, 100))
+CLASS_ROLES = {"Mage": "Ranged", "Warlock": "Ranged", "Rogue": "Melee"}
 ROLE_WORDS = {
     "Tank": frozenset({"prot", "protection", "tank", "bear", "guardian", "blood", "brewmaster", "vengeance"}),
     "Healer": frozenset({"holy", "disc", "discipline", "resto", "restoration", "heal", "healer", "healing",
@@ -155,13 +155,21 @@ ROLE_WORDS = {
                          "beast", "survival", "ranged", "caster", "devastation", "augmentation"}),
 }
 GALLERY_LABELS = (("memory", "Memories"), ("event", "Events"), ("kill", "Raid kills"))
+# The enlarged-photo viewer. The page script fills in the photo and its caption, so without one it stays closed
+# and each thumbnail is a plain link to the full image.
+LIGHTBOX = ('<dialog class="lightbox" aria-label="Enlarged photo">'
+            '<button class="step lb-close" type="button" aria-label="Close enlarged photo">&times;</button>'
+            '<button class="step lb-step lb-prev" type="button" data-step="-1" aria-label="Previous photo" hidden>'
+            '&larr;</button>'
+            '<button class="step lb-step lb-next" type="button" data-step="1" aria-label="Next photo" hidden>'
+            '&rarr;</button><figure class="lb-figure"></figure></dialog>')
 APPLY_LABELS = {"guildsofwow.com": "Apply on Guilds of WoW", "guildsforever.com": "Apply on Guilds Forever"}
 PRIORITY_LABELS = {"high": "High need", "mid": "Medium need", "low": "Low need"}
 # Guild ranks the public roster leaves out; matched exactly against the snapshot's rank names.
 HIDDEN_RANKS = frozenset({"Side Hustle"})
 LEVEL_MAX = 100
 
-# The only script the page runs inline: Wowhead tooltip options, local times and the gallery carousel.
+# The only script the page runs inline: Wowhead tooltip options, local times, the gallery carousel and the photo viewer.
 # It carries no data, so its hash is fixed and the Content-Security-Policy can allow exactly this script.
 INLINE_SCRIPT = (
     'window.whTooltips={colorLinks:false,iconizeLinks:false,renameLinks:true};'
@@ -179,7 +187,26 @@ INLINE_SCRIPT = (
     'k.scrollBy({left:k.clientWidth*.9*Number(x.getAttribute("data-dir")),behavior:still()?"auto":"smooth"});});});'
     'k.addEventListener("scroll",sync,{passive:true});window.addEventListener("resize",sync);'
     'c.querySelectorAll("input[name=gf]").forEach(function(r){r.addEventListener("change",function(){'
-    'k.scrollLeft=0;sync();});});sync();});})();'
+    'k.scrollLeft=0;sync();});});sync();});'
+    'd.querySelectorAll("dialog.lightbox").forEach(function(z){'
+    'if(typeof z.showModal!=="function")return;'
+    'var g=z.querySelector(".lb-figure"),s=z.querySelectorAll(".lb-step"),u=null;'
+    'function list(){return Array.prototype.filter.call(d.querySelectorAll("a[data-zoom]"),function(a){'
+    'return a.getClientRects().length>0;});}'
+    'function show(a){var l=list(),m=a.querySelector("img"),c=a.parentNode.querySelector("figcaption"),'
+    'p=d.createElement("img");u=a;p.src=a.getAttribute("href");p.alt=m?m.alt:"";g.textContent="";g.appendChild(p);'
+    'if(c){c=c.cloneNode(true);if(l.length>1){var n=d.createElement("span");n.className="meta";'
+    'n.textContent=(l.indexOf(a)+1)+" of "+l.length;c.appendChild(n);}g.appendChild(c);}'
+    'for(var i=0;i<s.length;i++)s[i].hidden=l.length<2;if(!z.open)z.showModal();}'
+    'function step(o){var l=list(),i=l.indexOf(u);if(i>=0&&l.length>1)show(l[(i+o+l.length)%l.length]);}'
+    'd.addEventListener("click",function(e){var t=e.target,a=t.closest?t.closest("a[data-zoom]"):null;'
+    'if(!a||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();show(a);});'
+    'z.addEventListener("click",function(e){var t=e.target,b=t.closest?t.closest(".lb-step"):null;'
+    'if(b)step(Number(b.getAttribute("data-step")));'
+    'else if(t===z||(t.closest&&t.closest(".lb-close")))z.close();});'
+    'z.addEventListener("keydown",function(e){if(e.key==="ArrowLeft")step(-1);else if(e.key==="ArrowRight")step(1);});'
+    'z.addEventListener("close",function(){if(u&&u.getClientRects().length)u.focus();u=null;});});'
+    '})();'
 )
 SCRIPT_HASH = base64.b64encode(hashlib.sha256(INLINE_SCRIPT.encode("utf-8")).digest()).decode("ascii")
 CSP = ("default-src 'none'; "
@@ -298,6 +325,27 @@ a.item.q7{color:#00ccff}
 .kill h3 a{color:var(--fg);text-decoration:none}
 .kill h3 a:hover{text-decoration:underline}
 .kill p{margin:0;color:var(--muted)}
+.zoom{display:block;position:relative;cursor:zoom-in;color:inherit}
+.zoom::after{content:"Enlarge";position:absolute;right:.6rem;bottom:.6rem;padding:.15rem .65rem;background:rgba(16,15,13,.88);border:1px solid var(--line);color:var(--fg);font-size:.78rem;line-height:1.6}
+.zoom:hover::after,.zoom:focus-visible::after{border-color:var(--accent);color:var(--accent)}
+.zoom:focus-visible{outline-offset:-4px}
+.lightbox{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:3.5rem 5rem 1.5rem;border:0;background:transparent;color:var(--fg);overflow:hidden}
+.lightbox[open]{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.lightbox::backdrop{background:rgba(8,7,6,.98)}
+html:has(.lightbox[open]){overflow:hidden}
+.lb-figure{display:flex;flex-direction:column;align-items:center;gap:.9rem;max-width:100%;margin:0}
+.lb-figure img{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100vh - 10rem);max-height:calc(100dvh - 10rem);object-fit:contain;border:1px solid var(--line);background:var(--head);box-shadow:0 1.5rem 4rem rgba(0,0,0,.55)}
+.lb-figure figcaption{padding:0;text-align:center;font:600 1.1rem/1.4 Georgia,serif}
+.lb-figure .meta{font:400 .85rem/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.lb-close,.lb-step{position:absolute}
+.lb-close{top:.9rem;right:.9rem;font-size:1.5rem;line-height:1}
+.lb-step{top:50%;margin-top:-22px}
+.lb-prev{left:.9rem}
+.lb-next{right:.9rem}
+@media (prefers-reduced-motion:no-preference){.lightbox[open]{animation:lb-in .24s cubic-bezier(.16,1,.3,1)}.lightbox[open]::backdrop{animation:lb-fade .24s ease-out}}
+@keyframes lb-in{from{opacity:0;transform:scale(.985)}}
+@keyframes lb-fade{from{opacity:0}}
+@media (max-width:40rem){.lightbox{padding:3.5rem .75rem 5rem}.lb-figure img{max-height:calc(100vh - 13rem);max-height:calc(100dvh - 13rem)}.lb-step{top:auto;bottom:.9rem;margin-top:0}}
 .gallery:has(#gf-memory:checked) .slide:not(.cat-memory),.gallery:has(#gf-event:checked) .slide:not(.cat-event),.gallery:has(#gf-kill:checked) .slide:not(.cat-kill){display:none}
 .raids{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
 .raids li{display:grid;grid-template-columns:11rem minmax(0,1fr) auto;gap:.3rem 1.2rem;align-items:baseline;margin:0;padding:1rem 0;border-bottom:1px solid var(--line)}
@@ -331,25 +379,36 @@ a.item.q7{color:#00ccff}
 .roster-list a{display:inline-block;padding:.1rem 0;font-weight:600;overflow-wrap:anywhere;text-underline-offset:3px}
 .who{display:block;color:var(--muted);font-size:.85rem}
 .roster-stats{padding:1.4rem;background:var(--head);border:1px solid var(--line);margin:1.5rem 0}
-.roster-stats h3{font:600 .95rem/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;margin:1.7rem 0 .7rem}
+.roster-stats h3{font:600 .95rem/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;margin:1.7rem 0 .25rem}
 .roster-stats h3:first-child{margin-top:0}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.65rem;margin:0}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.65rem;align-items:start;margin:0;padding:0;list-style:none}
 .stat-classes{grid-template-columns:repeat(5,minmax(0,1fr))}
-.stat-tile{position:relative;min-width:0;padding:.85rem .9rem 1rem;border:1px solid var(--line);border-radius:.4rem;background:var(--bg)}
-.stat-tile dt{font-size:.85rem;font-weight:600}
-.stat-tile dd{margin:.15rem 0 0;font-size:1.7rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--fg)}
+.stat-tile{min-width:0;margin:0;border:1px solid var(--line);border-radius:.4rem;background:var(--bg)}
+.stat-main{display:block;position:relative;padding:.85rem .9rem 1rem}
+.stat-tile summary.stat-main{min-height:44px;margin:0;color:inherit;cursor:pointer;list-style:none}
+.stat-tile summary.stat-main::-webkit-details-marker{display:none}
+.stat-tile summary.stat-main::after{content:"";position:absolute;top:1.1rem;right:.95rem;width:.45rem;height:.45rem;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.stat-tile summary.stat-main:hover::after{border-color:var(--accent)}
+.stat-tile details[open]>summary.stat-main::after{top:1.3rem;transform:rotate(-135deg)}
+.stat-tile summary.stat-main:focus-visible{outline-offset:2px}
+.stat-label{display:block;padding-right:1.2rem;font-size:.85rem;font-weight:600}
+.stat-count{display:block;margin:.15rem 0 0;font-size:1.7rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--fg)}
 .stat-tile img{width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:.4rem}
-.stat-bar{height:4px;background:var(--line);margin-top:.65rem}
+.stat-bar{display:block;height:4px;background:var(--line);margin-top:.65rem}
 .stat-bar span{display:block;height:100%;background:currentColor}
 .stat-zero{color:var(--muted)}
 .stat-neutral{color:var(--muted)}
+.stat-detail{margin:0;padding:.35rem .9rem .75rem;border-top:1px solid var(--line);list-style:none;font-size:.85rem;color:var(--muted)}
+.stat-detail li{display:flex;justify-content:space-between;gap:.75rem;margin:0;padding:.3rem 0}
+.stat-detail strong{font-variant-numeric:tabular-nums;color:var(--fg)}
 .roster-stats .note{margin:.7rem 0 0}
+.roster-stats .stat-hint{margin:0 0 .7rem}
 .spec-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.3rem 1.5rem;margin:.6rem 0;padding:0;list-style:none}
 .spec-counts li{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding:.35rem 0;margin:0}
 .spec-counts span{overflow-wrap:anywhere}
 .spec-counts strong{font-variant-numeric:tabular-nums}
 summary{cursor:pointer;min-height:44px;color:var(--accent);padding:.65rem 0}
-.roster-stats summary{margin-top:.7rem}
+.roster-stats>details>summary{margin-top:.7rem}
 @media (max-width:50rem){.stat-classes{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:40rem){.roster-stats{padding:1rem}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-tile img{display:block;margin:0 0 .3rem}}
 .skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:2}
@@ -373,6 +432,10 @@ DISCORD_INVITE = "https://discord.gg/Cahah6u4yZ"
 PROFILE_PREFIX = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/"
 ROSTER_FILE = "pwb-roster.json"
 ROSTER_BYTES = 1024 * 1024
+# What capped_dkp_community.py fetch may save for a character. specChecked and signupSeen are its bookkeeping and are
+# never shown; signupRole and signupSpec are the role and spec the player declared in a Raid-Helper sign-up.
+ROSTER_FIELDS = frozenset({"name", "url", "level", "class", "spec", "rank", "specChecked", "signupRole", "signupSpec",
+                           "signupSeen"})
 
 
 def brand_asset(name):
@@ -401,13 +464,18 @@ def armory_roster(snapshot=None):
                     or not isinstance(url, str) or not url.startswith(PROFILE_PREFIX)
                     or not re.fullmatch(r"(?:[a-z0-9-]|%[0-9A-Fa-f]{2})+", url[len(PROFILE_PREFIX):]) or url in seen):
                 raise ValueError("invalid or repeated character")
-            if set(member) - {"name", "url", "level", "class", "spec", "rank"}:
+            if set(member) - ROSTER_FIELDS:
                 raise ValueError(f"unknown field for {name}")
             if "level" in member and not is_whole(member["level"], 1, LEVEL_MAX):
                 raise ValueError(f"level for {name}")
             if "class" in member and member["class"] not in CLASSES:
                 raise ValueError(f"class for {name}")
-            for field in ("spec", "rank"):
+            if "signupRole" in member and member["signupRole"] not in ROLES:
+                raise ValueError(f"signupRole for {name}")
+            for field in ("specChecked", "signupSeen"):
+                if field in member and not is_whole(member[field]):
+                    raise ValueError(f"{field} for {name}")
+            for field in ("spec", "signupSpec", "rank"):
                 value = member.get(field, "x")
                 if not isinstance(value, str) or not value.strip() or len(value) > 40 or clean(value, 40) != value:
                     raise ValueError(f"{field} for {name}")
@@ -431,18 +499,56 @@ def roster_specs(standings):
     return {key: spec for key, spec in found.items() if spec}
 
 
-def roster_spec(member, specs):
-    """The recorded spec, shared by character details and counts; never substitute an Armory class."""
-    klass, spec = member.get("class"), specs.get(member["name"].casefold()) or member.get("spec")
-    if spec and klass:
-        named = {name for name in CLASSES if name.lower() in spec_words(spec)}
-        spec = None if named and named != {klass} else spec if named else f"{spec} {klass}"
-    return spec
+def compatible_spec(text, klass):
+    """A spec text that fits the Armory class, with the class added when the text lacks it. None when it names another
+    class or no spec at all: a class alone says nothing about a spec, so it never substitutes for one."""
+    if not text:
+        return None
+    named = {name for name in CLASSES if name.lower() in spec_words(text)}
+    if klass:
+        if named and named != {klass}:
+            return None
+        text = text if named else f"{text} {klass}"
+    return text if spec_words(text) - CLASS_WORDS else None
+
+
+def named_role(spec):
+    """The raid role a spec text names, or None, including the fixed class/spec roles."""
+    klass = spec_class(spec)
+    if klass in CLASS_ROLES:
+        return CLASS_ROLES[klass]
+    tokens = spec_words(spec) - CLASS_WORDS
+    named = spec_role(" ".join(tokens))
+    if "survival" in tokens and klass == "Hunter":
+        return "Melee"
+    return named
+
+
+def roster_choice(member, specs):
+    """A member's spec text and raid role, shared by character details and counts.
+
+    The first source with anything to say decides the role: the officers' ledger, then the spec or role the player
+    declared in a raid sign-up, then the talent tree read from the Armory profile. Mage and Warlock are always
+    Ranged, Rogue is always Melee, and Survival Hunter is Melee. The spec shown is the first source's own spec.
+    A source that names another class is skipped."""
+    klass = member.get("class")
+    sources = ((specs.get(member["name"].casefold()), None),
+               (member.get("signupSpec"), member.get("signupRole")),
+               (member.get("spec"), None))
+    spec, role, decided = None, None, False
+    for text, declared in sources:
+        text = compatible_spec(text, klass)
+        spec = spec or text
+        if not decided and (text or declared):
+            decided, role = True, declared or (named_role(text) if text else None)
+    if klass in CLASS_ROLES:
+        role = CLASS_ROLES[klass]
+    return spec, role
 
 
 def roster_detail(member, specs):
-    """Level, then a compatible recorded spec, else the Armory class alone."""
-    klass, spec = member.get("class"), roster_spec(member, specs)
+    """Level, then a compatible spec, else the Armory class alone."""
+    klass, spec = member.get("class"), roster_choice(member, specs)[0]
     parts = [f'Level {member["level"]}'] if "level" in member else []
     if spec or klass:
         parts.append(spec or klass)
@@ -450,60 +556,77 @@ def roster_detail(member, specs):
 
 
 def roster_breakdown(members, specs):
-    """Counts over the already-filtered roster. Unrecorded or ambiguous roles stay Unknown."""
+    """Counts over the already-filtered roster: characters by class and classes inside each raid role.
+    Unrecorded or ambiguous roles stay Unknown."""
     classes = dict.fromkeys((*CLASSES, "Unknown"), 0)
-    levels = dict.fromkeys((*[label for label, _, _ in LEVEL_BANDS], "Unknown"), 0)
-    roles, recorded = dict.fromkeys((*ROLES, "Unknown"), 0), {}
-    unknown_specs = 0
+    roles = dict.fromkeys((*ROLES, "Unknown"), 0)
+    role_classes = {name: dict.fromkeys(classes, 0) for name in roles}
+    recorded, unknown_specs = {}, 0
     for member in members:
-        classes[member.get("class", "Unknown")] += 1
-        level = member.get("level")
-        band = next((label for label, low, high in LEVEL_BANDS if level is not None and low <= level <= high),
-                    "Unknown")
-        levels[band] += 1
-        spec = roster_spec(member, specs)
-        spec_tokens = spec_words(spec) - {name.lower() for name in CLASSES} if spec else set()
-        named_role = spec_role(" ".join(spec_tokens))
-        if "frost" in spec_tokens and spec_class(spec) == "Mage":
-            named_role = "Ranged"
-        roles[(spec_role(spec) if named_role else None) or "Unknown"] += 1
-        if spec_tokens:
+        klass = member.get("class", "Unknown")
+        spec, role = roster_choice(member, specs)
+        role = role or "Unknown"
+        classes[klass] += 1
+        roles[role] += 1
+        role_classes[role][klass] += 1
+        if spec:
             key = " ".join(spec.split()).casefold()
             label, count = recorded.get(key, (" ".join(spec.split()), 0))
             recorded[key] = (label, count + 1)
         else:
             unknown_specs += 1
-    return {"classes": classes, "levels": levels, "roles": roles,
+    return {"classes": classes, "roles": roles, "role_classes": role_classes,
             "specs": sorted(recorded.values(), key=lambda entry: entry[0].casefold()), "unknown_specs": unknown_specs}
+
+
+def stat_tile(title, count, total, colour, rows, panel, icon=""):
+    """One breakdown tile. A tile that counts anyone opens, without script, into its own breakdown: rows of
+    (label, count, colour class) named by the panel label. An empty tile stays plain."""
+    width = count * 100 / total if total else 0
+    face = (f'<span class="stat-label">{icon}{esc(title)}</span><span class="stat-count">{count}</span>'
+            f'<span class="stat-bar" aria-hidden="true"><span style="width:{width:.2f}%"></span></span>')
+    if not count:
+        return f'<li class="stat-tile {colour} stat-zero"><div class="stat-main">{face}</div></li>'
+    if not rows:
+        return f'<li class="stat-tile {colour}"><div class="stat-main">{face}</div></li>'
+    items = []
+    for label, number, css in rows:
+        attribute = f' class="{css}"' if css else ""
+        items.append(f'<li><span{attribute}>{esc(label)}</span><strong>{number}</strong></li>')
+    return (f'<li class="stat-tile {colour}"><details><summary class="stat-main">{face}</summary>'
+            f'<ul class="stat-detail" aria-label="{esc(panel)}">{"".join(items)}</ul></details></li>')
 
 
 def roster_statistics(members, specs):
     stats = roster_breakdown(members, specs)
     total = len(members)
-    page = ['<div class="roster-stats">']
-    for heading, counts in (("Classes", stats["classes"]), ("Levels", stats["levels"]), ("Raid roles", stats["roles"])):
-        grid = "stat-grid stat-classes" if heading == "Classes" else "stat-grid"
-        page += [f'<h3>{heading}</h3>', f'<dl class="{grid}" aria-label="{heading} breakdown">']
-        for label, count in counts.items():
-            if not count and (label == "61+" or (label == "Unknown" and heading != "Raid roles")):
-                continue
-            colour = f"c-{label.lower()}" if heading == "Classes" and label in CLASSES else (
-                f"role-{label.lower()}" if heading == "Raid roles" and label in ROLES else "stat-neutral")
-            icon = (f'<img src="{ROLE_ICONS[label]}" alt="" width="32" height="32" loading="lazy">'
-                    if heading == "Raid roles" and label in ROLE_ICONS else "")
-            title = ROLE_LABELS[label] if heading == "Raid roles" else label
-            width = count * 100 / total if total else 0
-            page.append(f'<div class="stat-tile {colour}{" stat-zero" if not count else ""}">'
-                        f'<dt>{icon}{esc(title)}</dt><dd>{count}</dd>'
-                        f'<div class="stat-bar" aria-hidden="true"><span style="width:{width:.2f}%"></span></div></div>')
-        page.append("</dl>")
-        if heading == "Raid roles":
-            known = total - stats["roles"]["Unknown"]
-            dps = stats["roles"]["Melee"] + stats["roles"]["Ranged"]
-            page.append(f'<p class="note">{known} of {total} characters have a known role &middot; {dps} DPS total. '
-                        'Roles use recorded specs, not class alone. Missing or ambiguous specs stay Unknown. '
-                        'The automatic Armory roster feed does not include specs.</p>')
-    page += ['<details><summary>View recorded specs</summary><ul class="spec-counts">']
+    declared = any("signupRole" in member or "signupSpec" in member for member in members)
+    page = ['<div class="roster-stats">', '<h3>Classes</h3>',
+            '<ul class="stat-grid stat-classes" aria-label="Classes breakdown">']
+    for name, count in stats["classes"].items():
+        if count or name != "Unknown":
+            page.append(stat_tile(name, count, total, f"c-{name.lower()}" if name in CLASSES else "stat-neutral",
+                                  (), ""))
+    page += ['</ul>', '<h3>Raid roles</h3>', '<p class="note stat-hint">Select a role to see its classes.</p>',
+             '<ul class="stat-grid" aria-label="Raid roles breakdown">']
+    for role, count in stats["roles"].items():
+        mix = [("Unknown class" if name == "Unknown" else name, number, f"c-{name.lower()}" if name in CLASSES else "")
+               for name, number in stats["role_classes"][role].items() if number]
+        icon = (f'<img src="{ROLE_ICONS[role]}" alt="" width="32" height="32" loading="lazy">'
+                if role in ROLE_ICONS else "")
+        page.append(stat_tile(ROLE_LABELS[role], count, total, f"role-{role.lower()}" if role in ROLES else "stat-neutral",
+                              mix, f"{ROLE_LABELS[role]} by class", icon))
+    known = total - stats["roles"]["Unknown"]
+    dps = stats["roles"]["Melee"] + stats["roles"]["Ranged"]
+    sources = ", then ".join(["the ledger's recorded spec",
+                              *(["a role or spec declared in a raid sign-up"] if declared else []),
+                              "the talent tree with the most points on the Armory profile"])
+    page += ['</ul>',
+             f'<p class="note">{known} of {total} characters have a known role &middot; {dps} DPS total. '
+             f'Roles come from {sources}. Mage and Warlock are always Ranged, Rogue is always Melee, '
+             'and Survival Hunters are Melee; other missing or ambiguous specs stay Unknown. '
+             'Feral Druids do too, because Bear and Cat share a talent tree.</p>',
+             '<details><summary>View spec counts</summary><ul class="spec-counts">']
     for label, count in [*stats["specs"], ("Unknown / not recorded", stats["unknown_specs"])]:
         page.append(f'<li><span>{esc(label)}</span><strong>{count}</strong></li>')
     page.append('</ul></details></div>')
@@ -517,7 +640,7 @@ def guild_sections(specs=None, roster=None):
     left_out = f" Characters at the {esc(ranks)} rank are not listed." if hidden else ""
     page = ['<section aria-labelledby="roster"><h2 id="roster">The guild roster</h2>',
             f'<p class="note">{len(members)} characters from the public Blizzard Armory, coloured by class, with '
-            f'spec where the ledger records one. Snapshot: {esc(stamp)}. Not a live feed or a DKP eligibility list.'
+            f'their spec where one is known. Snapshot: {esc(stamp)}. Not a live feed or a DKP eligibility list.'
             f'{left_out} Select a name to open its Armory profile.</p>']
     page += roster_statistics(members, specs)
     page.append(f'<details><summary>View all {len(members)} characters</summary><ul class="roster-list">')
@@ -979,8 +1102,11 @@ def gallery_section(gallery, kills, linked):
     slides, present = [], set()
     for entry in gallery:
         date = f'<span class="meta">{esc(entry["date"])}</span>' if entry.get("date") else ""
+        image = f'gallery/{esc(entry["image"])}'
         slides.append(f'<li class="slide cat-{entry["category"]}"><figure>'
-                      f'<img src="gallery/{esc(entry["image"])}" alt="{esc(entry["alt"])}" loading="lazy">'
+                      f'<a class="zoom" href="{image}" data-zoom target="_blank" rel="noopener" '
+                      f'aria-label="Enlarge photo: {esc(entry["caption"])}">'
+                      f'<img src="{image}" alt="{esc(entry["alt"])}" loading="lazy"></a>'
                       f'<figcaption>{esc(entry["caption"])}{date}</figcaption></figure></li>')
         present.add(entry["category"])
     for kill in kills:
@@ -1009,7 +1135,7 @@ def gallery_section(gallery, kills, linked):
                '<button class="step" type="button" data-dir="1" aria-label="Next slides">&rarr;</button></div>')
     return page + ['<div class="carousel" data-carousel>', '<div class="carousel-bar">' + "".join(bar) + "</div>",
                    '<ul class="track" tabindex="0" aria-label="Gallery slides">', *slides, "</ul>", "</div>",
-                   "</section>"]
+                   *([LIGHTBOX] if gallery else []), "</section>"]
 
 
 def raids_section(extras):

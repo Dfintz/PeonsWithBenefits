@@ -3,26 +3,35 @@
 
   fetch  read community.json, then download upcoming Raid-Helper events (sign-up counts by role only)
          and Wowhead names for awarded items. Writes the community data file and updates the item cache.
-         With --roster it also refreshes the saved public Armory roster once it is ROSTER_REFRESH_SECONDS old.
+         With --roster it also keeps the saved public Armory roster up to date: the character list is refreshed
+         once it is ROSTER_REFRESH_SECONDS old, each character's spec is read from their public Armory profile
+         page, and the role a player declared in a Raid-Helper sign-up is remembered on the roster character
+         with the same name.
 
 The only secret, RAIDHELPER_API_KEY, is read from the environment and is never printed or written to a
 file. Without it the raid calendar is reported as "unconfigured"; if Raid-Helper fails it is reported as
-"error", and the page shows its empty state instead. Raid sign-up names are never stored. Requests go only
-to the hosts in ALLOWED_HOSTS (plus the Raid-Helper API through capped_dkp_raidhelper) and never follow a
-redirect.
+"error", and the page shows its empty state instead. Raid sign-up names and Discord IDs are never stored:
+a sign-up's role and spec are kept only on the roster character whose name matches, for at most
+SIGNUP_KEEP_SECONDS after the sign-up was last seen. Requests go only to the hosts in ALLOWED_HOSTS (plus the
+Raid-Helper API through capped_dkp_raidhelper) and never follow a redirect.
 
-The Armory roster comes from the same undocumented query the Armory's own guild page sends. Blizzard can
-change it without notice; when a refresh fails, the saved roster is left as it was.
+The Armory roster comes from the same undocumented query the Armory's own guild page sends, which carries no
+specs. A spec is the talent tree with the most points on the character's profile page. That page's data is
+undocumented too, so Blizzard can change either without notice; when a refresh fails, the saved roster and specs
+are left as they were.
 
 The publisher's offline `render` command loads the files written here with the loaders below.
 """
 
 import argparse
+import collections
+import http.client
 import json
 import os
 import re
 import sys
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -80,6 +89,22 @@ ARMORY_QUERY = {
 # a rank missing here is saved without a name.
 ARMORY_RANKS = {0: "Benefits Admin", 1: "Head Peon", 4: "Peon Plus", 5: "Side Hustle", 6: "Fresh Peon"}
 PROFILE_SLUG = re.compile(r"(?:[a-z0-9-]|%[0-9A-F]{2})+")
+# The spec pass reads at most SPEC_FETCH_LIMIT character pages per run, SPEC_DELAY_SECONDS apart, and each character
+# at most once per SPEC_REFRESH_SECONDS. It stops early after SPEC_FAILURE_LIMIT failures in a row. Characters below
+# SPEC_MIN_LEVEL have no talents to read. A declared role is forgotten SIGNUP_KEEP_SECONDS after it was last seen.
+SPEC_REFRESH_SECONDS = 24 * 3600
+SPEC_FETCH_LIMIT = 30
+SPEC_DELAY_SECONDS = 0.4
+SPEC_FAILURE_LIMIT = 5
+SPEC_MIN_LEVEL = 10
+SIGNUP_KEEP_SECONDS = 30 * 86400
+# The profile page assigns its data to this variable as one JSON object; "specs" lists the talent trees with points.
+PROFILE_STATE = re.compile(r"characterProfileInitialState\s*=\s*")
+SPEC_LABEL = re.compile(r"[A-Za-z]+(?:[ '-][A-Za-z]+){0,3}")
+# Talent trees the Armory names differently from the spec players use.
+TREE_NAMES = {"feral combat": "Feral", "elemental combat": "Elemental", "shadow magic": "Shadow"}
+# What earlier runs learned about a character, kept when the character list is refreshed.
+KEPT_FIELDS = ("spec", "specChecked", "signupRole", "signupSpec", "signupSeen")
 SECRET_VARIABLES = ("RAIDHELPER_API_KEY",)
 DISCORD_SNOWFLAKE = re.compile(r"[0-9]{17,20}")
 DISCORD_MESSAGE = re.compile(r"https://discord\.com/channels/[0-9]{17,20}/[0-9]{17,20}/[0-9]{17,20}")
@@ -120,6 +145,11 @@ DEFAULT_RECRUITMENT = {
 
 class SourceError(Exception):
     """One community source failed; the others still run."""
+
+
+# What one spec pass did: pages read, pages that failed, characters still waiting, the last failure, and whether the
+# failure breaker stopped the pass.
+SpecPass = collections.namedtuple("SpecPass", "read failed waiting problem stopped")
 
 
 def text(value, limit):
@@ -416,7 +446,7 @@ def request(opener, url, label, *, missing_ok=False, payload=None, headers=()):
         if missing_ok and error.code == 404:
             return None
         raise SourceError(f"{label} answered HTTP {error.code}") from None
-    except (urllib.error.URLError, OSError) as error:
+    except (urllib.error.URLError, OSError, http.client.HTTPException) as error:
         raise SourceError(f"Could not reach {label}: {type(error).__name__}") from None
     if len(body) > RESPONSE_BYTES:
         raise SourceError(f"{label} sent more than {RESPONSE_BYTES} bytes")
@@ -443,24 +473,39 @@ def signup_role(signup):
     return None
 
 
-def raid_summaries(rows, server, start, end):
-    """Upcoming events with sign-up counts by role. Names and Discord IDs are read but never kept."""
-    events = []
+def counted(signup):
+    """False for a sign-up that is an absence, tentative, benched or declined."""
+    labels = {signup.get(key).strip().lower() for key in ("className", "roleName", "status")
+              if isinstance(signup.get(key), str)}
+    return not labels & EXCLUDED_SIGNUPS
+
+
+def signups_of(entry):
+    signups = entry.get("signUps", entry.get("signups"))
+    return [signup for signup in signups if isinstance(signup, dict)] if isinstance(signups, list) else []
+
+
+def upcoming(rows, start, end):
+    """(start, ID, event) for each event that begins inside the window, soonest first."""
+    found = []
     for entry in rows:
         if not isinstance(entry, dict):
             continue
         identifier = raidhelper.event_id(entry.get("id", entry.get("eventId")))
         begins = raidhelper.unix_seconds(entry.get("startTime", entry.get("startTimeUnix", entry.get("start"))))
-        if identifier is None or begins is None or not start <= begins <= end:
-            continue
+        if identifier is not None and begins is not None and start <= begins <= end:
+            found.append((begins, identifier, entry))
+    found.sort(key=lambda item: (item[0], item[1]))
+    return found
+
+
+def raid_summaries(rows, server, start, end):
+    """Upcoming events with sign-up counts by role. Names and Discord IDs are read but never kept."""
+    events = []
+    for begins, identifier, entry in upcoming(rows, start, end):
         roles, total = dict.fromkeys(ROLES, 0), 0
-        signups = entry.get("signUps", entry.get("signups"))
-        for signup in signups if isinstance(signups, list) else []:
-            if not isinstance(signup, dict):
-                continue
-            labels = {signup.get(key).strip().lower() for key in ("className", "roleName", "status")
-                      if isinstance(signup.get(key), str)}
-            if labels & EXCLUDED_SIGNUPS:
+        for signup in signups_of(entry):
+            if not counted(signup):
                 continue
             total += 1
             role = signup_role(signup)
@@ -473,11 +518,37 @@ def raid_summaries(rows, server, start, end):
         if DISCORD_SNOWFLAKE.fullmatch(channel) and DISCORD_SNOWFLAKE.fullmatch(identifier):
             row["url"] = f"https://discord.com/channels/{server}/{channel}/{identifier}"
         events.append(row)
-    events.sort(key=lambda row: (row["start"], row["id"]))
     return events[:RAID_LIMIT]
 
 
-def fetch_raids(opener, config, key, now):
+def spec_label(name):
+    """A talent tree or sign-up spec as the label saved and shown, or None when it is not a plain spec name."""
+    label = " ".join(name.split())
+    label = TREE_NAMES.get(label.casefold(), label)
+    return label if len(label) <= 40 and SPEC_LABEL.fullmatch(label) else None
+
+
+def raid_declarations(rows, start, end):
+    """The role, spec and class each counted sign-up declared, soonest event first. They stay in memory:
+    apply_signups keeps only the role and spec of the roster character whose name matches."""
+    import capped_dkp_publish as publish
+    found = []
+    for _, _, entry in upcoming(rows, start, end):
+        for signup in signups_of(entry):
+            name, role = text(signup.get("name"), 60), signup_role(signup)
+            if not name or not role or not counted(signup):
+                continue
+            klass, spec = signup.get("className"), signup.get("specName")
+            klass = klass.strip().title() if isinstance(klass, str) else None
+            # Raid-Helper numbers a spec that repeats within a template: "Holy1".
+            spec = spec_label(spec.rstrip("0123456789")) if isinstance(spec, str) else None
+            found.append({"name": name, "role": role, "spec": spec, "class": klass if klass in publish.CLASSES else None})
+    return found
+
+
+def fetch_raids(opener, config, key, now, declared=None):
+    """Upcoming events as counts by role. When a list is given, the roles players declared in their sign-ups are
+    added to it, in memory only, once every page was read."""
     settings = config["raidHelper"]
     if not settings or not key:
         return {"status": "unconfigured", "checked": None, "events": []}
@@ -491,7 +562,10 @@ def fetch_raids(opener, config, key, now):
         collected.extend(raidhelper.rows_of(page, "postedEvents", "events"))
         pages = page.get("pages", 1) if isinstance(page, dict) and whole(page.get("pages"), 1) else 1
         current += 1
-    return {"status": "ok", "checked": now, "events": raid_summaries(collected, server, start, end)}
+    events = raid_summaries(collected, server, start, end)
+    if declared is not None:
+        declared.extend(raid_declarations(collected, start, end))
+    return {"status": "ok", "checked": now, "events": events}
 
 
 def fetch_items(opener, cache, wanted, now, sleep):
@@ -575,19 +649,192 @@ def fetch_roster(opener, now):
     return document, hidden
 
 
-def roster_due(path, now):
-    """True unless the saved roster is valid and less than ROSTER_REFRESH_SECONDS old."""
+def saved_roster(path):
+    """The saved roster as a document the publisher accepts, or None when it is missing, unreadable or invalid."""
     import capped_dkp_publish as publish
     path = Path(path)
     if not path.is_file():
-        return True
+        return None
     try:
         document = store.read_json(path, publish.ROSTER_BYTES, path.name)
         publish.armory_roster(document)
-        saved = datetime.fromisoformat(document["retrievedAt"].replace("Z", "+00:00")).timestamp()
     except ToolError:
-        return True
-    return not 0 <= now - saved < ROSTER_REFRESH_SECONDS
+        return None
+    return document
+
+
+def roster_age(document, now):
+    """Seconds since the roster's character list was refreshed; negative when its clock is ahead of ours."""
+    return now - datetime.fromisoformat(document["retrievedAt"].replace("Z", "+00:00")).timestamp()
+
+
+def parse_profile_spec(body, klass):
+    """The spec on a character's profile page: the talent tree with the most points spent, or None when no tree leads
+    (no talents yet, or a tie). Raises SourceError when the page is not in the expected shape, so that a change to the
+    page is reported instead of silently erasing the saved specs."""
+    try:
+        page = body.decode("utf-8")
+        marker = PROFILE_STATE.search(page)
+        if not marker:
+            raise ValueError("no character data")
+        state, _ = json.JSONDecoder(parse_constant=raidhelper.reject_constant).raw_decode(page, marker.end())
+    except (UnicodeDecodeError, ValueError, RecursionError):
+        raise SourceError("The Armory profile page has no readable character data") from None
+    character = state.get("character") if isinstance(state, dict) else None
+    if not isinstance(character, dict):
+        raise SourceError("The Armory profile page has no character")
+    kind = character.get("class")
+    if not isinstance(kind, dict) or kind.get("name") != klass:
+        raise SourceError("The Armory profile page is not for a " + klass)
+    trees = character.get("specs")
+    if not isinstance(trees, list):
+        raise SourceError("The Armory profile page lists no talent trees")
+    shaped = [(tree["spentPoints"], tree["name"], tree.get("active") is not False) for tree in trees
+              if isinstance(tree, dict) and isinstance(tree.get("name"), str) and whole(tree.get("spentPoints"), 0, 1000)]
+    if trees and not shaped:
+        raise SourceError("The Armory profile page's talent trees are not in the expected form")
+    ranked = sorted(((points, name) for points, name, active in shaped if active), reverse=True)
+    if not ranked or ranked[0][0] == 0 or len(ranked) > 1 and ranked[1][0] == ranked[0][0]:
+        return None
+    label = spec_label(ranked[0][1])
+    if label is None:
+        raise SourceError("The Armory profile page named a talent tree in an unexpected form")
+    return label
+
+
+def profile_spec(opener, member):
+    return parse_profile_spec(request(opener, member["url"], "The Armory profile"), member["class"])
+
+
+def spec_due(member, now):
+    """True when the character's page should be read now: its class is known, it is at least SPEC_MIN_LEVEL (or its
+    level is unknown), and it was never read or last read SPEC_REFRESH_SECONDS ago. Hidden ranks are never read."""
+    import capped_dkp_publish as publish
+    if "class" not in member or member.get("rank") in publish.HIDDEN_RANKS:
+        return False
+    if member.get("level", SPEC_MIN_LEVEL) < SPEC_MIN_LEVEL:
+        return False
+    checked = member.get("specChecked")
+    return checked is None or not 0 <= now - checked < SPEC_REFRESH_SECONDS
+
+
+def refresh_specs(opener, members, now, sleep):
+    """Read the profile page of each character that is due, never-read ones first and then the longest ago, at most
+    SPEC_FETCH_LIMIT per run. Updates the members in place. A character is marked as read whether or not its page
+    could be, so one that keeps failing cannot starve the rest; it keeps its earlier spec and is tried again after
+    SPEC_REFRESH_SECONDS. The pass stops early after SPEC_FAILURE_LIMIT failures in a row."""
+    due = sorted((member for member in members if spec_due(member, now)),
+                 key=lambda member: (member.get("specChecked", 0), member["name"].casefold(), member["url"]))
+    read = failed = streak = 0
+    problem, stopped = None, False
+    for member in due[:SPEC_FETCH_LIMIT]:
+        if read + failed:
+            sleep(SPEC_DELAY_SECONDS)
+        member["specChecked"] = now
+        try:
+            spec = profile_spec(opener, member)
+        except SourceError as error:
+            failed, streak, problem = failed + 1, streak + 1, error
+            if streak >= SPEC_FAILURE_LIMIT:
+                stopped = True
+                break
+            continue
+        read, streak = read + 1, 0
+        if spec:
+            member["spec"] = spec
+        else:
+            member.pop("spec", None)
+    return SpecPass(read, failed, len(due) - read - failed, problem, stopped)
+
+
+def carry_over(fresh, saved):
+    """Copy what earlier runs learned about each character (its spec, when it was read, and any declared role) from the
+    saved roster onto the freshly fetched members. A character whose class changed starts over."""
+    earlier = {member["url"]: member for member in saved["members"]}
+    for member in fresh:
+        old = earlier.get(member["url"])
+        if old is not None and old.get("class") == member.get("class"):
+            member.update({field: old[field] for field in KEPT_FIELDS if field in old})
+
+
+def fold(name):
+    """A character name for comparing: accents, case and spacing ignored."""
+    plain = "".join(ch for ch in unicodedata.normalize("NFKD", name) if not unicodedata.combining(ch))
+    return " ".join(plain.casefold().split())
+
+
+def apply_signups(members, declared, now):
+    """Remember, on each roster character whose full name matches a sign-up, the role and spec its player declared;
+    the soonest event decides. A name shared by several characters, a class that disagrees with the roster's, and
+    hidden ranks are skipped. What is not declared again is forgotten after SIGNUP_KEEP_SECONDS. Sign-up names are
+    never stored. Returns how many characters matched."""
+    import capped_dkp_publish as publish
+    names = {}
+    for member in members:
+        if member.get("rank") not in publish.HIDDEN_RANKS:
+            names.setdefault(fold(member["name"]), []).append(member)
+    seen, matched = now - now % 86400, set()
+    for item in declared:
+        found = names.get(fold(item["name"]), [])
+        if len(found) != 1 or found[0]["url"] in matched:
+            continue
+        member = found[0]
+        if item["class"] and member.get("class") and item["class"] != member["class"]:
+            continue
+        matched.add(member["url"])
+        member.pop("signupSpec", None)
+        member["signupRole"], member["signupSeen"] = item["role"], seen
+        if item["spec"]:
+            member["signupSpec"] = item["spec"]
+    for member in members:
+        age = now - member["signupSeen"] if "signupSeen" in member else None
+        if member["url"] not in matched and (age is None or not 0 <= age <= SIGNUP_KEEP_SECONDS):
+            for field in ("signupRole", "signupSpec", "signupSeen"):
+                member.pop(field, None)
+    return len(matched)
+
+
+def update_roster(path, opener, now, sleep, declared, say, secrets):
+    """Keep the saved roster current: refresh the character list when it is old, read the specs that are due and
+    remember the declared sign-up roles. The file is written only when something changed."""
+    path = Path(path)
+    roster = saved = saved_roster(path)
+    before = json.dumps(saved, sort_keys=True)
+    hours = ROSTER_REFRESH_SECONDS // 3600
+    if saved is not None and 0 <= roster_age(saved, now) < ROSTER_REFRESH_SECONDS:
+        say(f"Armory roster: the saved copy is less than {hours} hours old, so the character list was not checked.")
+    else:
+        try:
+            fresh, hidden = fetch_roster(opener, now)
+        except SourceError as error:
+            say("Armory roster: could not update; the saved roster was left as it was. " + redact(str(error), secrets))
+        else:
+            if saved is not None:
+                carry_over(fresh["members"], saved)
+            roster = fresh
+            say(f"Armory roster: {len(fresh['members'])} characters ({hidden} at hidden ranks).")
+    if roster is None:
+        return
+    members = roster["members"]
+    outcome = refresh_specs(opener, members, now, sleep)
+    if outcome.read or outcome.failed:
+        line = (f"Armory specs: {outcome.read} read, {outcome.failed} failed, {outcome.waiting} left for a later run; "
+                f"characters with a spec: {sum('spec' in member for member in members)}.")
+        if outcome.failed:
+            line += f" Last problem: {redact(str(outcome.problem), secrets)}."
+        if outcome.stopped:
+            line += f" Stopped after {SPEC_FAILURE_LIMIT} failures in a row; the profile pages may have changed."
+        say(line)
+    else:
+        say("Armory specs: nothing to read; every character was read within the last "
+            f"{SPEC_REFRESH_SECONDS // 3600} hours or has no talents to read.")
+    matched = apply_signups(members, declared, now)
+    if declared:
+        say(f"Raid sign-up roles: roster characters matched by name: {matched}."
+            + ("" if matched else " A sign-up's name has to equal the character's name."))
+    if json.dumps(roster, sort_keys=True) != before:
+        store.write_atomic(path, store.indented(roster))
+        say(f"Updated {path.name}.")
 
 
 def wanted_items(folder):
@@ -624,9 +871,10 @@ def run_fetch(args, opener, environ, now, sleep, say):
     opener = opener or raidhelper.default_opener()
     secrets = [environ.get(name, "") for name in SECRET_VARIABLES]
     key = environ.get("RAIDHELPER_API_KEY", "")
+    declared = []
 
     try:
-        raid = fetch_raids(opener, config, key, now)
+        raid = fetch_raids(opener, config, key, now, declared)
         if raid["status"] == "ok":
             say(f"Raid sign-ups: {len(raid['events'])} upcoming events saved as counts by role (no names).")
         else:
@@ -642,18 +890,7 @@ def run_fetch(args, opener, environ, now, sleep, say):
         say("Wowhead items: stopped early. " + redact(str(error), secrets))
 
     if args.roster:
-        hours = ROSTER_REFRESH_SECONDS // 3600
-        if not roster_due(args.roster, now):
-            say(f"Armory roster: the saved copy is less than {hours} hours old, so it was not checked.")
-        else:
-            try:
-                roster, hidden = fetch_roster(opener, now)
-                store.write_atomic(Path(args.roster), store.indented(roster))
-                say(f"Armory roster: saved {len(roster['members'])} characters ({hidden} at hidden ranks) "
-                    f"to {Path(args.roster).name}.")
-            except SourceError as error:
-                say("Armory roster: could not update; the saved roster was left as it was. "
-                    + redact(str(error), secrets))
+        update_roster(args.roster, opener, now, sleep, declared, say, secrets)
 
     document = {"format": DATA_FORMAT, "version": VERSION, "generated": now, "raidHelper": raid}
     check_data(document)
@@ -677,7 +914,8 @@ def build_parser():
     fetch.add_argument("--data", metavar="DIR", help="folder with the published standings.json and history.json")
     fetch.add_argument("--items", metavar="FILE", help="item-cache.json to read and update")
     fetch.add_argument("--roster", metavar="FILE",
-                       help="armory-roster.json to refresh from the public Armory once it is 3 hours old")
+                       help="armory-roster.json to keep up to date: the character list once it is 3 hours old, "
+                            "each character's spec from its Armory profile page, and declared sign-up roles")
     fetch.add_argument("--out", required=True, metavar="FILE", help="community data file to write")
     return root
 
