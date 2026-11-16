@@ -250,7 +250,7 @@
     },
     {
       "class": "Warrior",
-      "level": 43,
+      "level": 44,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -311,7 +311,7 @@
     },
     {
       "class": "Druid",
-      "level": 34,
+      "level": 35,
       "name": "Moist Pasture",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -536,7 +536,7 @@
     },
     {
       "class": "Hunter",
-      "level": 56,
+      "level": 57,
       "name": "Tealiz Dapwn",
       "rank": "Fresh Peon",
       "spec": "Marksmanship",
@@ -648,6 +648,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-16T05:27:55Z",
+  "retrievedAt": "2026-11-16T08:32:38Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
