@@ -44,14 +44,14 @@
     },
     {
       "class": "Druid",
-      "level": 36,
+      "level": 37,
       "name": "Cat Pants",
       "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/cat-pants"
     },
     {
       "class": "Druid",
-      "level": 37,
+      "level": 38,
       "name": "Catriel Agartha",
       "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/catriel-agartha"
@@ -128,7 +128,7 @@
     },
     {
       "class": "Hunter",
-      "level": 34,
+      "level": 35,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/fintzgar-trapstampler"
@@ -156,7 +156,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 31,
       "name": "Gork Dreadmaul",
       "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/gork-dreadmaul"
@@ -233,7 +233,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 31,
       "name": "Mauri Kreth",
       "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/mauri-kreth"
@@ -359,7 +359,7 @@
     },
     {
       "class": "Warrior",
-      "level": 47,
+      "level": 48,
       "name": "Scurrius Theratking",
       "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/scurrius-theratking"
@@ -512,6 +512,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-16T02:20:54Z",
+  "retrievedAt": "2026-11-16T05:27:55Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
