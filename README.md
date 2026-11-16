@@ -39,7 +39,9 @@ Scheduled runs often start late when GitHub is busy, so raid sign-up counts can 
      profiles per run and at most once per character per day. Both Armory sources are undocumented and can change
      without notice. If a refresh fails, the saved roster and specs are kept; with none saved, the page shows the
      roster bundled in `.cdkp/` (read 2026-11-15).
-3. It renders the page from `data/`, `community.json`, `gallery/` and the fetched data, and deploys it.
+3. It renders the page from `data/`, `community.json`, `gallery/` and the fetched data, and deploys it. When
+   `CDKP_SITE_URL` is set, the page carries its canonical address and schema.org guild details, asks search engines
+   to index it, and is deployed with `sitemap.xml` and `llms.txt` (a plain-text guide for AI assistants).
 
 Until the private ledger first mirrors `data/`, the page says the standings are awaiting their first publication.
 
@@ -59,7 +61,8 @@ The repository owner does this once. None of it is done for you.
 | Name | Kind | Needed for | Value |
 |---|---|---|---|
 | `RAIDHELPER_API_KEY` | Secret | Raid calendar | Server API key from Raid-Helper's `/apikey` command |
-| `CDKP_SITE_URL` | Variable | Link previews | The page's address ending in `/`, such as `https://owner.github.io/repo/` |
+| `CDKP_SITE_URL` | Variable | Search and link previews | The page's address ending in `/`, such as `https://owner.github.io/repo/`. With it the page asks to be indexed and also publishes `sitemap.xml` and `llms.txt`; without it the page stays `noindex` |
+| `CDKP_GOOGLE_SITE_VERIFICATION` | Variable | Google Search Console (optional) | The `content` value of Search Console's *HTML tag* verification for the `CDKP_SITE_URL` prefix |
 | `CDKP_PAGE_TITLE` | Variable | Page (optional) | Page title; default *Peons with Benefits* |
 | `CDKP_SOURCE_URL` | Variable | Page (optional) | `https://` link shown in the page footer |
 

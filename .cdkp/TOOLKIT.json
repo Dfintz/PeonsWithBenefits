@@ -7,7 +7,7 @@
     "tools/capped_dkp_community.py": "39077f67d51ed9bc9f58c8b60932a0fa7beb627bc3db3cd27c1a85dbc3062f1b",
     "tools/capped_dkp_github.py": "fc0fcd30729521491b75040ac30010494e90fe4c586f75aabbaffc5ac8423632",
     "tools/capped_dkp_ledger.py": "bac3b236c26e1cff0e9e412a2e3add49a74658c88a82730a1734d9019e0b9d11",
-    "tools/capped_dkp_publish.py": "4cc7a671a45c82dcf8ffadfb56153a8085cdba61fcec0d354f560d75574f48e3",
+    "tools/capped_dkp_publish.py": "e4f0398d130cc15ac0d881dca8ad3266c6d9116b07abe8e140fd4d8e7754b6e5",
     "tools/capped_dkp_raidhelper.py": "924a9824179c81a91ea0e6438a01a79044a7d6b8dd9faa3809efa9ffd0cf5b77",
     "tools/capped_dkp_snapshot.py": "bead97a433d7935561a73311b01d502a3dc1c9d620fa31d77b402867005d604c",
     "tools/pwb-logo.png": "31ca5c9739ee4fd059c7edf869b67a11f94e15569778c08ba92dc403fb58f315",
@@ -20,6 +20,6 @@
   "format": "capped-dkp-toolkit",
   "version": 1,
   "workflows": {
-    ".github/workflows/cdkp-site.yml": "590a171db5359f3f48faa2a12b4c6dc4da027efe6b72cb872d29fe88dbcb2ab4"
+    ".github/workflows/cdkp-site.yml": "32d5583144074c6b01c270833a9d98fb3f4ae99431461fc3a699d1bebfe1b06c"
   }
 }

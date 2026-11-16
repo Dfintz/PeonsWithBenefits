@@ -164,6 +164,10 @@ LIGHTBOX = ('<dialog class="lightbox" aria-label="Enlarged photo">'
             '<button class="step lb-step lb-next" type="button" data-step="1" aria-label="Next photo" hidden>'
             '&rarr;</button><figure class="lb-figure"></figure></dialog>')
 APPLY_LABELS = {"guildsofwow.com": "Apply on Guilds of WoW", "guildsforever.com": "Apply on Guilds Forever"}
+# A page that knows its public address invites search engines and AI crawlers; previews without one stay unlisted.
+INDEX_ROBOTS = "index, follow, max-image-preview:large"
+PRIVATE_ROBOTS = "noindex, nofollow"
+VERIFICATION_TOKEN = re.compile(r"[A-Za-z0-9_-]{10,100}")
 PRIORITY_LABELS = {"high": "High need", "mid": "Medium need", "low": "Low need"}
 # Guild ranks the public roster leaves out; matched exactly against the snapshot's rank names.
 HIDDEN_RANKS = frozenset({"Side Hustle"})
@@ -1212,8 +1216,78 @@ def positions_section(recruitment):
     return page
 
 
-def render_page(title, standings, recent, omitted, source_url=None, *, pending=False, site_url=None, extras=None):
-    """The public page. Community sections (gallery, raids, open positions) need extras."""
+def structured_data(title, site_url):
+    """schema.org JSON-LD naming the guild and its official profiles. It is inert data, so the CSP need not allow it."""
+    guild = f"{site_url}#guild"
+    data = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebSite", "@id": f"{site_url}#website", "url": site_url, "name": title, "inLanguage": "en",
+         "description": GUILD_SUMMARY, "publisher": {"@id": guild}},
+        {"@type": "Organization", "@id": guild, "name": GUILD_NAME, "url": site_url, "logo": site_url + LOGO_FILE,
+         "description": GUILD_SUMMARY,
+         "sameAs": [url for _, links in GUILD_LINKS for _, url in links] + [DISCORD_INVITE]},
+    ]}
+    text = json.dumps(data, ensure_ascii=True, separators=(",", ":"))
+    return text.replace("&", "\\u0026").replace("<", "\\u003c").replace(">", "\\u003e")
+
+
+def md_text(value):
+    return re.sub(r"([\\`*_\[\]<>])", r"\\\1", " ".join(str(value).split()))
+
+
+def md_url(url):
+    return "".join(f"%{ord(ch):02X}" if ch in "()<> " else ch for ch in url)
+
+
+def llms_text(title, site_url, pending, recruitment):
+    """llms.txt (llmstxt.org): a plain-text guide to the public page for AI assistants. Public facts and links only."""
+    lines = [f"# {md_text(title)}", "", f"> {md_text(GUILD_SUMMARY)}", "",
+             f"{GUILD_NAME} is a Horde guild in World of Warcraft: Forever (EU). The guild page shows the open "
+             "positions, the raid calendar, the roster with class and raid-role counts, a screenshot gallery and the "
+             "guild's Capped DKP loot standings and history.", "", "## Guild page", "",
+             f"- [{md_text(title)}]({md_url(site_url)}): the guild's home page"]
+    if not pending:
+        lines += [f"- [Capped DKP standings]({md_url(site_url)}standings.json): public DKP balances and loot, as JSON",
+                  f"- [Loot and DKP history]({md_url(site_url)}history.json): the public ledger records, as JSON"]
+    lines += ["", "## Join", "", f"- [Discord]({DISCORD_INVITE}): questions and raid sign-ups"]
+    listed = {DISCORD_INVITE}
+    for link in recruitment.get("apply") or [GUILD_LINKS[0][1][0][1]]:
+        host = (urllib.parse.urlsplit(link).hostname or "").removeprefix("www.")
+        lines.append(f"- [{md_text(APPLY_LABELS.get(host) or f'Apply on {host}')}]({md_url(link)})")
+        listed.add(link)
+    if recruitment["openings"]:
+        updated = f" (updated {md_text(recruitment['updated'])})" if recruitment.get("updated") else ""
+        lines += ["", f"## Open positions{updated}", ""]
+        for opening in recruitment["openings"]:
+            specs = ", ".join(md_text(spec["name"]) + (f" ({PRIORITY_LABELS[spec['priority']]})"
+                                                       if spec.get("priority") in PRIORITY_LABELS else "")
+                              for spec in opening["specs"])
+            lines.append(f"- {md_text(opening['class'])}" + (f": {specs}" if specs else ""))
+    lines += ["", "## Optional", ""]
+    lines += [f"- [{md_text(name)}]({md_url(url)})" for _, links in GUILD_LINKS for name, url in links
+              if url not in listed]
+    return "\n".join(lines) + "\n"
+
+
+def discovery_files(title, site_url, pending, recruitment):
+    """sitemap.xml and llms.txt for the served page, plus robots.txt when the page is the root of its host: crawlers
+    read robots.txt only from there, and a project page under a shared host is already allowed by its absence."""
+    if not site_url:
+        return {}
+    files = {
+        "sitemap.xml": ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                        f"<url><loc>{esc(site_url)}</loc></url>\n</urlset>\n").encode("utf-8"),
+        "llms.txt": llms_text(title, site_url, pending, recruitment).encode("utf-8"),
+    }
+    if urllib.parse.urlsplit(site_url).path == "/":
+        files["robots.txt"] = f"User-agent: *\nAllow: /\n\nSitemap: {site_url}sitemap.xml\n".encode("utf-8")
+    return files
+
+
+def render_page(title, standings, recent, omitted, source_url=None, *, pending=False, site_url=None, extras=None,
+                verification=None):
+    """The public page. Community sections (gallery, raids, open positions) need extras. With site_url the page asks
+    to be indexed and carries its canonical address; verification is a Google Search Console HTML-tag token."""
     players = standings["players"]
     items = extras["items"] if extras else {}
     if standings["lastEventId"]:
@@ -1308,14 +1382,16 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
         "<!doctype html>", '<html lang="en">', "<head>", '<meta charset="utf-8">',
         '<meta name="viewport" content="width=device-width, initial-scale=1">',
         '<meta name="color-scheme" content="dark">', '<meta name="theme-color" content="#b52d20">',
-        '<meta name="referrer" content="no-referrer">', '<meta name="robots" content="noindex, nofollow">',
+        '<meta name="referrer" content="no-referrer">',
+        f'<meta name="robots" content="{INDEX_ROBOTS if site_url else PRIVATE_ROBOTS}">',
         f'<meta name="description" content="{esc(GUILD_SUMMARY)}">',
         '<meta property="og:type" content="website">', f'<meta property="og:site_name" content="{GUILD_NAME}">',
         f'<meta property="og:title" content="{esc(title)}">',
         f'<meta property="og:description" content="{esc(GUILD_SUMMARY)}">',
     ]
     if site_url:
-        head += [f'<meta property="og:url" content="{esc(site_url)}">',
+        head += [f'<link rel="canonical" href="{esc(site_url)}">',
+                 f'<meta property="og:url" content="{esc(site_url)}">',
                  f'<meta property="og:image" content="{esc(site_url + LOGO_FILE)}">',
                  f'<meta property="og:image:width" content="{LOGO_SIZE[0]}">',
                  f'<meta property="og:image:height" content="{LOGO_SIZE[1]}">',
@@ -1323,9 +1399,14 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
                  '<meta name="twitter:card" content="summary_large_image">']
     else:
         head.append('<meta name="twitter:card" content="summary">')
+    if verification:
+        head.append(f'<meta name="google-site-verification" content="{esc(verification)}">')
     head += [f'<meta http-equiv="Content-Security-Policy" content="{CSP}">',
              f'<link rel="icon" type="image/png" href="{LOGO_FILE}">',
-             f"<title>{esc(title)}</title>", f"<style>\n{CSS}</style>", "</head>", "<body>"]
+             f"<title>{esc(title)}</title>", f"<style>\n{CSS}</style>"]
+    if site_url:
+        head.append(f'<script type="application/ld+json">{structured_data(title, site_url)}</script>')
+    head += ["</head>", "<body>"]
     return "\n".join(head + body + ["</body>", "</html>"]) + "\n"
 
 
@@ -1379,7 +1460,7 @@ def check_source_url(value):
 
 
 def check_site_url(value):
-    """The page's own address, used for link previews."""
+    """The page's own address, used for link previews, the canonical link and search discovery."""
     if value is None:
         return None
     problem = "--site-url must be the page's own https:// address ending in /, without ? or #"
@@ -1392,6 +1473,16 @@ def check_site_url(value):
             or port is not None or not re.fullmatch(r"[a-z0-9.-]+", parts.hostname) or not value.endswith("/")
             or "?" in value or "#" in value or any(ch.isspace() or not ch.isprintable() for ch in value)):
         raise ToolError(problem)
+    return value
+
+
+def check_verification(value):
+    """The content value of Google Search Console's HTML-tag verification, for a page that cannot use DNS."""
+    if value is None:
+        return None
+    if not VERIFICATION_TOKEN.fullmatch(value):
+        raise ToolError("--google-site-verification must be the content value from Google's HTML tag: "
+                        "10 to 100 letters, digits, - or _")
     return value
 
 
@@ -1602,6 +1693,7 @@ def run_render(args, opener, environ, sleep):
     import capped_dkp_community as community
     title, source_url = check_title(args.title), check_source_url(args.source_url)
     site_url = check_site_url(args.site_url)
+    verification = check_verification(args.google_site_verification)
     data = Path(args.data)
     separate_folders(data, args.out, "published data")
     if args.gallery:
@@ -1634,8 +1726,9 @@ def run_render(args, opener, environ, sleep):
               "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": config["recruitment"],
               "roster": roster}
     page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
-                       site_url=site_url, extras=extras)
-    files = {"index.html": page.encode("utf-8"), **{name: brand_asset(name) for name in PAGE_ASSETS}, **files}
+                       site_url=site_url, extras=extras, verification=verification)
+    files = {"index.html": page.encode("utf-8"), **{name: brand_asset(name) for name in PAGE_ASSETS},
+             **discovery_files(title, site_url, not present, config["recruitment"]), **files}
     for entry in gallery:
         files[f"gallery/{entry['image']}"] = entry["data"]
     for name, content in files.items():
@@ -1761,7 +1854,8 @@ def build_parser():
     site.add_argument("--out", required=True, metavar="DIR", help="public site folder, separate from the ledger")
     site.add_argument("--title", default=DEFAULT_TITLE)
     site.add_argument("--source-url", metavar="URL", help="optional https link shown in the page footer")
-    site.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews")
+    site.add_argument("--site-url", metavar="URL",
+                      help="the page's own https address, for link previews and search engines")
 
     render = commands.add_parser("render", help="build the full guild page from published JSON and community files")
     render.add_argument("--data", required=True, metavar="DIR", help="folder holding standings.json and history.json")
@@ -1772,7 +1866,10 @@ def build_parser():
     render.add_argument("--gallery", metavar="DIR", help="folder with gallery.json and its images")
     render.add_argument("--roster", metavar="FILE",
                         help="Armory roster saved by capped_dkp_community.py fetch; if absent, the bundled snapshot")
-    render.add_argument("--site-url", metavar="URL", help="the page's own https address, for link previews")
+    render.add_argument("--site-url", metavar="URL",
+                        help="the page's own https address: link previews, search indexing, sitemap.xml and llms.txt")
+    render.add_argument("--google-site-verification", metavar="TOKEN",
+                        help="content value of Google Search Console's HTML-tag verification")
     render.add_argument("--source-url", metavar="URL", help="optional https link shown in the page footer")
     render.add_argument("--title", default=DEFAULT_TITLE)
 

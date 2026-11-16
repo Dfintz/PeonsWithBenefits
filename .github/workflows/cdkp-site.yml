@@ -50,6 +50,7 @@ jobs:
           PAGE_TITLE: ${{ vars.CDKP_PAGE_TITLE }}
           SITE_URL: ${{ vars.CDKP_SITE_URL }}
           SOURCE_URL: ${{ vars.CDKP_SOURCE_URL }}
+          GOOGLE_SITE_VERIFICATION: ${{ vars.CDKP_GOOGLE_SITE_VERIFICATION }}
         run: |
           set -- --data data --out "$RUNNER_TEMP/site" --config community.json --gallery gallery
           set -- "$@" --items cache/item-cache.json --community "$RUNNER_TEMP/community-data.json"
@@ -57,6 +58,9 @@ jobs:
           set -- "$@" --title "${PAGE_TITLE:-Peons with Benefits}"
           if [ -n "$SITE_URL" ]; then set -- "$@" --site-url "$SITE_URL"; fi
           if [ -n "$SOURCE_URL" ]; then set -- "$@" --source-url "$SOURCE_URL"; fi
+          if [ -n "$GOOGLE_SITE_VERIFICATION" ]; then
+            set -- "$@" --google-site-verification "$GOOGLE_SITE_VERIFICATION"
+          fi
           python3 -B .cdkp/tools/capped_dkp_publish.py render "$@"
 
       - name: Upload the page for GitHub Pages
