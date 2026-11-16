@@ -38,7 +38,7 @@
     },
     {
       "class": "Shaman",
-      "level": 38,
+      "level": 39,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -47,7 +47,7 @@
     },
     {
       "class": "Shaman",
-      "level": 59,
+      "level": 60,
       "name": "Caro Kann",
       "rank": "Fresh Peon",
       "spec": "Elemental",
@@ -81,7 +81,7 @@
     },
     {
       "class": "Shaman",
-      "level": 37,
+      "level": 38,
       "name": "Dark Tuga",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -99,7 +99,7 @@
     },
     {
       "class": "Priest",
-      "level": 27,
+      "level": 28,
       "name": "Detroit Ishorde",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -250,7 +250,7 @@
     },
     {
       "class": "Warrior",
-      "level": 44,
+      "level": 45,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -268,7 +268,7 @@
     },
     {
       "class": "Paladin",
-      "level": 52,
+      "level": 53,
       "name": "Lorilath Macabre",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -335,15 +335,6 @@
       "spec": "Arms",
       "specChecked": 1794815818,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/mystoklin-teknoklin"
-    },
-    {
-      "class": "Paladin",
-      "level": 27,
-      "name": "Numbe Oathkeeper",
-      "rank": "Fresh Peon",
-      "spec": "Retribution",
-      "specChecked": 1794815818,
-      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/numbe-oathkeeper"
     },
     {
       "class": "Hunter",
@@ -545,7 +536,7 @@
     },
     {
       "class": "Warlock",
-      "level": 50,
+      "level": 51,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -622,7 +613,7 @@
     },
     {
       "class": "Mage",
-      "level": 45,
+      "level": 46,
       "name": "Voldemorph Jenkins",
       "rank": "Peon Plus",
       "spec": "Frost",
@@ -648,6 +639,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-16T17:55:13Z",
+  "retrievedAt": "2026-11-16T21:14:10Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
