@@ -436,6 +436,7 @@ html:has(.lightbox[open]){overflow:hidden}
 .guild-links li a{display:block;padding:.65rem 0;border-bottom:1px solid #53372e;text-decoration:none}
 .guild-links li a:hover{color:#fff5e6;text-decoration:underline}
 .guild-links p{color:var(--muted);font-size:.95rem}
+.community .actions{display:grid;grid-template-columns:1fr;gap:.75rem}
 .roster-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 2rem}
 .roster-list li{margin:0;padding:.55rem 0;border-bottom:1px solid var(--line)}
 .roster-list a{display:inline-block;padding:.1rem 0;font-weight:600;overflow-wrap:anywhere;text-underline-offset:3px}
@@ -510,6 +511,7 @@ GUILD_LINKS = (
     )),
 )
 DISCORD_INVITE = "https://discord.gg/Cahah6u4yZ"
+ADDON_URL = "https://www.curseforge.com/wow/addons/pwb-dkp"
 PROFILE_PREFIX = "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/"
 ROSTER_FILE = "pwb-roster.json"
 ROSTER_BYTES = 1024 * 1024
@@ -751,8 +753,10 @@ def guild_links():
         page.append('</ul></div>')
     page += ['<div class="community"><h2>Meet the peons.</h2><p>Peons with Benefits on WoW: Forever. '
              'Find us, apply, or come say hello.</p>',
+             '<div class="actions">',
              f'<a class="button" href="{DISCORD_INVITE}" rel="noopener noreferrer">Join our Discord &nearr;</a>',
-             '</div></section>']
+             f'<a class="button secondary" href="{ADDON_URL}" rel="noopener noreferrer">Get the DKP addon &nearr;</a>',
+             '</div></div></section>']
     return page
 
 _TAG = re.compile(r"\w{3,32}#[0-9]{3,8}")
@@ -1512,6 +1516,7 @@ def loot_rules_section():
         '</details>',
         f'<p class="note">Summary checked 2026-11-16. Ask in <a href="{DISCORD_INVITE}" '
         'rel="noopener noreferrer">Discord</a> for the full policy, tier matrix and appeal process. '
+        f'The guild\'s <a href="{ADDON_URL}" rel="noopener noreferrer">PWB DKP addon</a> is on CurseForge. '
         'This page does not itself enforce in-game loot.</p></section>',
     ]
 
@@ -1552,7 +1557,8 @@ def llms_text(title, site_url, pending, recruitment):
     if not pending:
         lines += [f"- [Capped DKP standings]({md_url(site_url)}standings.json): public DKP balances and loot, as JSON",
                   f"- [Loot and DKP history]({md_url(site_url)}history.json): the public ledger records, as JSON"]
-    lines += ["", "## Join", "", f"- [Discord]({DISCORD_INVITE}): questions and raid sign-ups"]
+    lines += ["", "## Join", "", f"- [Discord]({DISCORD_INVITE}): questions and raid sign-ups",
+              f"- [PWB DKP addon]({ADDON_URL}): the guild's DKP addon on CurseForge"]
     listed = {DISCORD_INVITE}
     for link in recruitment.get("apply") or [GUILD_LINKS[0][1][0][1]]:
         host = (urllib.parse.urlsplit(link).hostname or "").removeprefix("www.")
