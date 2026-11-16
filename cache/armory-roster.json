@@ -29,7 +29,7 @@
     },
     {
       "class": "Warrior",
-      "level": 35,
+      "level": 36,
       "name": "Bird Ironhoof",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -135,7 +135,7 @@
     },
     {
       "class": "Shaman",
-      "level": 21,
+      "level": 22,
       "name": "Eh Eh",
       "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
@@ -268,7 +268,7 @@
     },
     {
       "class": "Paladin",
-      "level": 51,
+      "level": 52,
       "name": "Lorilath Macabre",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -482,7 +482,7 @@
     },
     {
       "class": "Priest",
-      "level": 24,
+      "level": 25,
       "name": "Soinier Allied",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -648,6 +648,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-16T08:32:38Z",
+  "retrievedAt": "2026-11-16T11:41:50Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
