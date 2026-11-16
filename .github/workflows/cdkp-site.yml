@@ -63,6 +63,12 @@ jobs:
           fi
           python3 -B .cdkp/tools/capped_dkp_publish.py render "$@"
 
+      - name: Include Google Search Console verification files
+        run: |
+          for file in google*.html; do
+            if [ -f "$file" ]; then cp -- "$file" "$RUNNER_TEMP/site/"; fi
+          done
+
       - name: Upload the page for GitHub Pages
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

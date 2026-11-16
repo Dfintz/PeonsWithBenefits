@@ -74,6 +74,11 @@ The repository owner does this once. None of it is done for you.
 | `CDKP_PAGE_TITLE` | Variable | Page (optional) | Page title; default *Peons with Benefits* |
 | `CDKP_SOURCE_URL` | Variable | Page (optional) | `https://` link shown in the page footer |
 
+For Search Console's **HTML file** method instead, commit the downloaded `google*.html` file unchanged at the
+repository root. Each deployment copies it to the site's root alongside `index.html`. Verify the URL under
+your site prefix (for example `https://owner.github.io/repo/googleTOKEN.html`), then select **Verify** in
+Search Console. Keep the file committed after verification so later deployments preserve ownership.
+
 ## Changing the page
 
 Edit these files in a commit to `main`; the page rebuilds within a few minutes.

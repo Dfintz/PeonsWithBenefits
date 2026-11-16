@@ -20,6 +20,6 @@
   "format": "capped-dkp-toolkit",
   "version": 1,
   "workflows": {
-    ".github/workflows/cdkp-site.yml": "32d5583144074c6b01c270833a9d98fb3f4ae99431461fc3a699d1bebfe1b06c"
+    ".github/workflows/cdkp-site.yml": "a20e10d6d57c155c15dbb005f7d23fecf5eeec86c9d04b619eeeb0bd05b5fc21"
   }
 }
