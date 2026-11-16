@@ -1,6 +1,17 @@
 {
   "format": "pwb-community-config",
   "version": 1,
+  "guild": {
+    "language": "English",
+    "voice": "Discord required",
+    "raidSize": "20-player raid focus",
+    "attendance": "No attendance target published",
+    "atmosphere": "Friendly company, focused raids. Come prepared; new and returning players welcome.",
+    "source": "https://guildsforever.com/guilds/peons-with-benefits",
+    "updated": "2026-11-16"
+  },
+  "reports": [],
+  "profiles": {},
   "raidHelper": {
     "serverId": "1561718146769883229",
     "days": 14

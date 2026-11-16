@@ -264,11 +264,50 @@ def check_recruitment(value, label="recruitment"):
 
 
 def empty_config():
-    return {"raidHelper": None, "recruitment": check_recruitment(DEFAULT_RECRUITMENT)}
+    return {"raidHelper": None, "recruitment": check_recruitment(DEFAULT_RECRUITMENT),
+            "guild": {}, "reports": [], "profiles": {}}
+
+
+def logs_url(value, path, label):
+    value = https_url(value, label)
+    parts = urllib.parse.urlsplit(value)
+    if parts.netloc != "forever.warcraftlogs.com" or not re.fullmatch(path, parts.path) or parts.query:
+        raise IntegrityError(f"{label} must be a public WoW: Forever Warcraft Logs link")
+    return value
+
+
+def guild_settings(document, config, label):
+    """Officer-maintained public facts and explicit logs links, never scraped from private evidence."""
+    guild = document.get("guild", {})
+    shape(guild, (), ("language", "voice", "raidSize", "attendance", "atmosphere", "source", "updated"),
+          f"{label} guild")
+    for key, value in guild.items():
+        where = f"{label} guild.{key}"
+        config["guild"][key] = (https_url(value, where) if key == "source" else calendar_day(value, where)
+                                if key == "updated" else required_text(value, 160, where))
+    runs = set()
+    for entry in listing(document.get("reports", []), 100, f"{label} reports"):
+        shape(entry, ("run", "url"), (), f"{label} report")
+        run = required_text(entry["run"], 80, f"{label} report.run")
+        if run in runs:
+            raise IntegrityError(f"{label} reports repeats run {run}")
+        runs.add(run)
+        config["reports"].append({"run": run, "url": logs_url(entry["url"], r"/reports/[A-Za-z0-9]{16}",
+                                                            f"{label} report.url")})
+    profiles = document.get("profiles", {})
+    if not isinstance(profiles, dict) or len(profiles) > 500:
+        raise IntegrityError(f"{label} profiles must be an object with at most 500 characters")
+    for slug, entry in profiles.items():
+        if not isinstance(slug, str) or not PROFILE_SLUG.fullmatch(slug):
+            raise IntegrityError(f"{label} profile key must be the character's Armory URL slug")
+        shape(entry, ("warcraftLogs",), (), f"{label} profile")
+        config["profiles"][slug] = {
+            "warcraftLogs": logs_url(entry["warcraftLogs"], r"/character/(?:id/[0-9]+|[A-Za-z0-9%/_-]+)",
+                                    f"{label} profile.warcraftLogs")}
 
 
 def check_config(document, label="community.json"):
-    shape(document, ("format", "version"), ("raidHelper", "recruitment"), label)
+    shape(document, ("format", "version"), ("raidHelper", "recruitment", "guild", "reports", "profiles"), label)
     header(document, CONFIG_FORMAT, label)
     config = empty_config()
     raid = document.get("raidHelper")
@@ -282,6 +321,7 @@ def check_config(document, label="community.json"):
         config["raidHelper"] = {"serverId": raid["serverId"], "days": days}
     if "recruitment" in document:
         config["recruitment"] = check_recruitment(document["recruitment"], f"{label} recruitment")
+    guild_settings(document, config, label)
     return config
 
 

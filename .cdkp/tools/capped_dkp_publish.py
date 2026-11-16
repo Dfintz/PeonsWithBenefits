@@ -172,6 +172,18 @@ PRIORITY_LABELS = {"high": "High need", "mid": "Medium need", "low": "Low need"}
 # Guild ranks the public roster leaves out; matched exactly against the snapshot's rank names.
 HIDDEN_RANKS = frozenset({"Side Hustle"})
 LEVEL_MAX = 100
+# Raid identities and boss counts match CappedDKP/Rules.lua; these are not inferred from loot drops.
+RAID_INFO = {"Deeps": ("Barrow Deeps", 8), "Hyjal": ("Hyjal Summit", 13), "Onyxia": ("Onyxia's Lair", 1)}
+RAID_ALIASES = {name: key for key, (name, _) in RAID_INFO.items()} | {"Mount Hyjal": "Hyjal"}
+GUILD_LOGS = "https://forever.warcraftlogs.com/guild/id/833455"
+RAIDER_CHARACTER = "https://forever.raider.io/characters/eu/pvp/"
+# Public listing checked 2026-11-16; community.json can override these facts as the guild changes.
+GUILD_FACTS = {
+    "language": "English", "voice": "Discord required", "raidSize": "20-player raid focus",
+    "attendance": "No attendance target published",
+    "atmosphere": "Friendly company, focused raids. Come prepared; new and returning players welcome.",
+    "source": "https://guildsforever.com/guilds/peons-with-benefits", "updated": "2026-11-16",
+}
 
 # The only script the page runs inline: Wowhead tooltip options, local times, the gallery carousel and the photo viewer.
 # It carries no data, so its hash is fixed and the Content-Security-Policy can allow exactly this script.
@@ -256,6 +268,7 @@ section{margin-top:3.5rem;min-width:0}
 :focus-visible{outline:2px solid var(--accent);outline-offset:5px}
 table{width:100%;border-collapse:collapse;min-width:30rem}
 table.wide{min-width:44rem}
+table.attendance{min-width:0;overflow-wrap:anywhere}
 caption{text-align:left;padding:.8rem 1rem;color:var(--muted);font-size:.9rem}
 th,td{padding:.8rem 1rem;text-align:left;vertical-align:top;border-top:1px solid var(--line)}
 thead th{background:var(--head);font-weight:600}
@@ -382,6 +395,25 @@ html:has(.lightbox[open]){overflow:hidden}
 .roster-list li{margin:0;padding:.55rem 0;border-bottom:1px solid var(--line)}
 .roster-list a{display:inline-block;padding:.1rem 0;font-weight:600;overflow-wrap:anywhere;text-underline-offset:3px}
 .who{display:block;color:var(--muted);font-size:.85rem}
+.profile-links{display:flex;flex-wrap:wrap;gap:.2rem 1rem;margin-top:.25rem;font-size:.85rem}
+.profile-links a{min-height:44px;display:inline-flex;align-items:center;font-weight:400}
+.guild-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 2rem;margin:0}
+.guild-facts div{padding:1rem 0;border-bottom:1px solid var(--line);min-width:0}
+.guild-facts dt{color:var(--muted);font-size:.85rem}
+.guild-facts dd{margin:.35rem 0 0;font-weight:600;overflow-wrap:anywhere}
+.progress-list{list-style:none;padding:0;border-top:1px solid var(--line)}
+.progress-list>li{padding:1rem 0;margin:0;border-bottom:1px solid var(--line)}
+.progress-heading{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.progress-heading h3{margin:0}
+.progress-heading p{margin:0;color:var(--muted);font-variant-numeric:tabular-nums}
+.kill-records{list-style:none;padding:0}
+.kill-records li{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.3rem 0}
+.rules-intro,.rules-detail{max-width:72ch}
+.rules-detail{border-bottom:1px solid var(--line)}
+.rules-detail summary{font-weight:600}
+.rules-detail p{margin:.4rem 0 1rem}
+.rules-detail ol{padding-left:1.4rem}
+@media (max-width:40rem){.guild-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1rem}}
 .roster-stats{padding:1.4rem;background:var(--head);border:1px solid var(--line);margin:1.5rem 0}
 .roster-stats h3{font:600 .95rem/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;margin:1.7rem 0 .25rem}
 .roster-stats h3:first-child{margin-top:0}
@@ -637,7 +669,7 @@ def roster_statistics(members, specs):
     return page
 
 
-def guild_sections(specs=None, roster=None):
+def guild_sections(specs=None, roster=None, profiles=None):
     members, stamp, hidden = armory_roster(roster)
     specs = specs or {}
     ranks = " or ".join(sorted(HIDDEN_RANKS))
@@ -647,13 +679,21 @@ def guild_sections(specs=None, roster=None):
             f'their spec where one is known. Snapshot: {esc(stamp)}. Not a live feed or a DKP eligibility list.'
             f'{left_out} Select a name to open its Armory profile.</p>']
     page += roster_statistics(members, specs)
+    page.append('<p class="note">Raider.IO profiles may not be indexed yet. Warcraft Logs opens a verified '
+                'character link where supplied; otherwise it opens the guild logs, not a character profile.</p>')
     page.append(f'<details><summary>View all {len(members)} characters</summary><ul class="roster-list">')
     for member in members:
         klass = member.get("class")
         colour = f' class="c-{klass.lower()}"' if klass else ""
         detail = roster_detail(member, specs)
+        logs = (profiles or {}).get(member["url"][len(PROFILE_PREFIX):], {}).get("warcraftLogs")
+        links = (f'<span class="profile-links"><a href="{esc(RAIDER_CHARACTER + urllib.parse.quote(member["name"], safe=""))}" '
+                 f'aria-label="Raider.IO for {esc(member["name"])}" rel="noopener noreferrer">Raider.IO &nearr;</a>'
+                 f'<a href="{esc(logs or GUILD_LOGS)}" rel="noopener noreferrer" '
+                 f'aria-label="{esc("Warcraft Logs for " + member["name"] if logs else "Guild logs for Peons with Benefits")}">'
+                 f'{"Warcraft Logs" if logs else "Guild logs"} &nearr;</a></span>')
         page.append(f'<li><a href="{esc(member["url"])}"{colour} rel="noopener noreferrer">{esc(member["name"])}</a>'
-                    + (f'<span class="who">{esc(detail)}</span>' if detail else "") + "</li>")
+                    + (f'<span class="who">{esc(detail)}</span>' if detail else "") + links + "</li>")
     page += ['</ul></details></section>', '<section id="guild-links" class="guild-links" aria-label="Guild links">']
     for heading, links in GUILD_LINKS:
         page.append(f'<div><h2>{esc(heading)}</h2><ul>')
@@ -979,12 +1019,55 @@ def anchor_ids(names):
     return ids
 
 
+def raid_attendance(ledger):
+    """Public counts only: one opportunity per raid/reset, not per group, run, character or boss.
+
+    A registered account is eligible when a recorded kill occurred during its membership. Presence at any such
+    kill counts as attendance, even at the DKP cap. Wipes, bench time and unrecorded raids cannot be measured.
+    Membership intervals use event times so late-entered boss records still respect joining and departure."""
+    owners = {row["character"]: row["account"] for row in ledger.rows}
+    windows, active, runs, kills = {}, {}, {}, []
+    week = None
+    for event in ledger.events:
+        kind, data, stamp = event["kind"], event["data"], event["time"]
+        account = owners.get(data.get("character"))
+        if kind in ("account", "rosteradd") and account and account not in windows:
+            windows[account], active[account] = [], stamp
+        elif kind == "depart" and account in active:
+            windows[account].append((active.pop(account), stamp))
+        elif kind == "returned" and account in windows and account not in active:
+            active[account] = stamp
+        elif kind == "week":
+            start, finish = data.get("start"), data.get("finish")
+            week = ((start, finish) if is_whole(start) and is_whole(finish, start + 1) else None)
+        elif kind == "run" and week and isinstance(data.get("id"), str) and isinstance(data.get("raid"), str):
+            runs[data["id"]] = (RAID_ALIASES.get(data["raid"], data["raid"]), week)
+        elif kind == "boss" and data.get("run") in runs and isinstance(data.get("present"), list):
+            raid, (start, finish) = runs[data["run"]]
+            killed = data.get("killed", stamp)
+            if is_number(killed) and start <= killed < finish:
+                present = {owners[name] for name in data["present"] if isinstance(name, str) and name in owners}
+                kills.append(((start, raid), killed, present))
+    for account, start in active.items():
+        windows[account].append((start, math.inf))
+    counts = {}
+    for account, periods in windows.items():
+        eligible, attended = set(), set()
+        for key, killed, present in kills:
+            if any(start <= killed < finish for start, finish in periods):
+                eligible.add(key)
+                if account in present:
+                    attended.add(key)
+        counts[account] = {"attended": len(attended), "eligible": len(eligible)}
+    return counts
+
+
 def standings_document(ledger):
     """One public row per active account. Returns the document and how many names needed cleaning."""
     accounts = {}
     for row in ledger.rows:
         accounts.setdefault(row["account"], []).append(row)
-    specs, loot = projected_specs(ledger), loot_records(ledger)
+    specs, loot, attendance = projected_specs(ledger), loot_records(ledger), raid_attendance(ledger)
     players, departed, changed = [], 0, 0
     for name, rows in accounts.items():
         first = rows[0]
@@ -998,6 +1081,8 @@ def standings_document(ledger):
             "account": shown, "balance": first["balance"], "cap": first["activeCap"],
             "characters": sorted(names, key=lambda text: (text.lower(), text)), "status": status_text(first),
         }
+        if name in attendance:
+            player["attendance"] = attendance[name]
         shown_specs = {text: specs[row["character"]] for text, row in zip(names, rows) if row["character"] in specs}
         if shown_specs:
             player["specs"] = dict(sorted(shown_specs.items()))
@@ -1216,6 +1301,172 @@ def positions_section(recruitment):
     return page
 
 
+def guild_overview(guild):
+    facts = GUILD_FACTS | guild
+    fields = [("Loot system", '<a href="#rules">Capped DKP</a>'),
+              *[(label, esc(facts[key])) for key, label in (
+                  ("raidSize", "Raid focus"), ("language", "Language"), ("voice", "Voice chat"),
+                  ("attendance", "Attendance expectation"), ("atmosphere", "Atmosphere"))]]
+    page = ['<section aria-labelledby="guild"><h2 id="guild">Guild at a glance</h2><dl class="guild-facts">']
+    page += [f"<div><dt>{label}</dt><dd>{value}</dd></div>" for label, value in fields]
+    page += ['</dl><p class="note">Our raid focus is not a limit: the loot rules cover 10-player Deeps, '
+             '20-player Hyjal and 40-player Onyxia.</p>']
+    if facts.get("source"):
+        page.append(f'<p class="note"><a href="{esc(facts["source"])}" rel="noopener noreferrer">'
+                    f'Guild listing</a> &middot; Details checked {esc(facts["updated"])}.</p>')
+    return page + ["</section>"]
+
+
+def progression_section(events, reports):
+    """All recorded bosses, not the gallery's newest twelve or the activity table's newest 250."""
+    raids = {key: {} for key in RAID_INFO}
+    run_raids = {}
+    for event in events:
+        fields = event["fields"]
+        raid = fields.get("raid")
+        if event["kind"] != "boss" or not isinstance(raid, str) or not is_whole(fields.get("boss"), 1):
+            continue
+        key = RAID_ALIASES.get(raid, raid)
+        total = RAID_INFO.get(key, (key, None))[1]
+        if total and fields["boss"] > total:
+            continue
+        killed = fields.get("killed", event["time"])
+        if not is_number(killed):
+            killed = event["time"]
+        bosses = raids.setdefault(key, {})
+        previous = bosses.get(fields["boss"])
+        if previous is None or killed > previous["time"]:
+            bosses[fields["boss"]] = {
+                "name": fields.get("encounterName") or f'Boss {fields["boss"]}', "time": killed}
+        if isinstance(fields.get("run"), str):
+            run_raids[fields["run"]] = key
+    page = ['<section aria-labelledby="progress"><h2 id="progress">Raid progression</h2>',
+            '<p class="note">Unique bosses in the published ledger, across all recorded resets and groups. '
+            'Repeated kills count once. Missing records do not mean a boss is undefeated; this is not live '
+            'Armory or Warcraft Logs progression.</p><ul class="progress-list">']
+    for raid, bosses in raids.items():
+        name, total = RAID_INFO.get(raid, (raid, None))
+        count = (f'{len(bosses)} / {total} bosses recorded' if total else f'{len(bosses)} bosses recorded')
+        page.append(f'<li><div class="progress-heading"><h3>{esc(name)}</h3><p>'
+                    f'{count if bosses else "No kills recorded"}</p></div>')
+        if bosses:
+            page.append('<details><summary>Recorded kills &amp; reports</summary><ul class="kill-records">')
+            for _, boss in sorted(bosses.items()):
+                page.append(f'<li><span>{esc(boss["name"])}</span>'
+                            f'<span class="meta">Last recorded {time_html(boss["time"])}</span></li>')
+            page.append("</ul>")
+            matched = [report for report in reports if run_raids.get(report["run"]) == raid]
+            for report in matched:
+                page.append(f'<p><a href="{esc(report["url"])}" rel="noopener noreferrer">'
+                            f'Warcraft Logs report &middot; {esc(report["run"])}</a></p>')
+            if not matched:
+                page.append('<p class="note">No Warcraft Logs report linked to these runs yet.</p>')
+            page.append("</details>")
+        page.append("</li>")
+    return page + [f'</ul><p><a href="{GUILD_LOGS}" rel="noopener noreferrer">'
+                    'Browse the guild on Warcraft Logs &nearr;</a></p></section>']
+
+
+def attendance_section(players):
+    page = ['<section aria-labelledby="attendance"><h2 id="attendance">Recorded raid attendance</h2>',
+            '<p class="rules-intro">The share of recorded raids an account attended while registered in the '
+            'ledger. Each raid counts once per official weekly reset, even with multiple groups or nights. '
+            'Presence at any confirmed boss kill counts; linked characters count as one account.</p>',
+            '<p class="note">This is participation, not full-night attendance or a guild requirement. '
+            'It excludes time before registration and while departed. Wipes, bench time, cancelled raids and '
+            'unrecorded raids are not measured. Being at the DKP cap does not reduce attendance.</p>']
+    recorded = [player for player in players if player.get("attendance", {}).get("eligible")]
+    if not recorded:
+        page.append(empty_state("Attendance is not available yet.",
+                                "It appears after the ledger publishes membership, reset and boss-presence records. "
+                                "No records is not 0% attendance."))
+    else:
+        rows = []
+        for player in sorted(recorded, key=lambda value: value["account"].casefold()):
+            counts = player["attendance"]
+            percentage = 100 * counts["attended"] / counts["eligible"]
+            rows.append(f'<tr><th scope="row"><a href="#{esc(player["anchor"])}">{esc(player["account"])}</a></th>'
+                        f'<td class="num">{counts["attended"]} / {counts["eligible"]}</td>'
+                        f'<td class="num">{percentage:.0f}%</td></tr>')
+        page.append(table("Since each account's ledger registration; recorded raids only",
+                          [("Account", ""), ("Attended / recorded", "num"), ("Attendance", "num")], rows,
+                          kind="attendance"))
+        if len(recorded) < len(players):
+            page.append('<p class="note">Accounts without a recorded opportunity are not assigned a percentage.</p>')
+    return page + ["</section>"]
+
+
+def loot_rules_section():
+    """Member-facing summary of the authoritative Capped DKP Loot Rules, checked 2026-11-16."""
+    return [
+        '<section aria-labelledby="rules"><h2 id="rules">How our loot works</h2>',
+        '<p class="rules-intro">One person, one DKP balance across linked characters and raids. '
+        'Fixed prices, not bidding. This is a member guide: the guild\'s formal Capped DKP Loot Rules and '
+        'published tier class/spec matrix control eligibility and exceptions.</p>',
+        '<details class="rules-detail" open><summary>Earn DKP &amp; spend at fixed prices</summary>',
+        '<p>Earn 5 DKP per boss, 10 for the final boss instead, and a 5-DKP non-farm full-clear bonus once per '
+        'raid per reset. Full-clear credit requires every boss with one group. Late arrivals earn from their '
+        'next kill; bench time does not earn boss credit. Credit the kill before its loot.</p>',
+        '<p>Full members have a 280-DKP cap; Trials have a 100-DKP cap. Excess earnings are permanently '
+        'forfeited, not saved for later. New accounts start at 0; there is no DKP decay.</p>',
+        table("Fixed item prices in DKP", [("Item", ""), ("Need", "num"), ("Greed", "num")], [
+            f'<tr><th scope="row">{name}</th><td class="num">{need}</td><td class="num">{greed}</td></tr>'
+            for name, need, greed in (("Normal gear", 50, 10), ("Trinket or tier token", 75, 15),
+                                     ("Weapon or major BiS item (including top BiS trinkets)", 100, 20))]),
+        '<p>Unlisted gear uses 50 / 10 unless publicly preclassified. Losing a claim costs nothing. '
+        'Resolve items in the announced loot-window order (ascending item ID if unavailable), updating balances '
+        'and Need status before the next item.</p></details>',
+        '<details class="rules-detail"><summary>Need: five priority groups, then highest DKP</summary>',
+        '<p>Only Full members may Need, using an eligible linked character/spec in the published matrix. '
+        'A missing or unconfirmed matrix entry cannot qualify. Duplicate tier items are not legitimate Need. '
+        'Use the first eligible group in this order:</p><ol>',
+        '<li>Nonnegative DKP, no Need win this week, can afford the full price.</li>',
+        '<li>Nonnegative DKP, no Need win this week, cannot afford the full price.</li>',
+        '<li>Nonnegative DKP, already won Need this week, can afford the full price.</li>',
+        '<li>Nonnegative DKP, already won Need this week, cannot afford the full price.</li>',
+        '<li>Negative DKP, regardless of earlier Need wins.</li></ol>',
+        '<p>Within that group, the highest current balance wins; in debt, that means the least negative. '
+        'Only exact balance ties roll. Zero is nonnegative. Priority group always comes before balance.</p>',
+        '<p>Ordinary Need may reach &minus;100 DKP. A confirmed matrix major-upgrade/catch-up exception may reach '
+        '&minus;200, never below, and retains priority over Greed. Skip withdrawn or floor-blocked claims. '
+        'A Need win lowers priority account-wide until the official weekly reset; it does not forbid another '
+        'Need win. Trials cannot Need.</p></details>',
+        '<details class="rules-detail"><summary>Greed, rolls &amp; unclaimed items</summary>',
+        '<p>After awardable Need, resolve eligible off-spec Greed. Need-eligible items cannot be claimed as Greed. '
+        'Full members resolve before Trials: affordable Full claims roll. If none can afford it, the '
+        'highest-balance eligible Full claimant wins fallback, provided the charge stays at or above '
+        '&minus;100; exact balance ties roll. Only if no Full award is possible do affordable Trials roll. '
+        'Trials must stay at or above 0 and have no fallback. Greed never changes weekly Need status.</p>',
+        '<p>Rolls use /roll 1-100 with a shared 30-second window. Winning ties reroll among the tied players. '
+        'Missed claimants get one extra shared 30-second call; existing valid rolls stand. A second miss or '
+        'an explicit pass withdraws the claim. Reapply priority after withdrawals.</p>',
+        '<p>Never force an award. Unclaimed gear is disenchanted or vendored for the guild bank; '
+        'disenchanting costs 0 and does not change Need status. Unlisted non-gear is free and rolled among '
+        'eligible claimants unless a bank rule was announced before claims.</p></details>',
+        '<details class="rules-detail"><summary>Farm raids, progression exceptions &amp; safeguards</summary>',
+        '<p>Farm status needs one week\'s notice. Farm raids give no full-clear bonus: halve each account\'s '
+        'weekly boss-credit total for that raid and round up, crediting the increase before each loot award. '
+        'Two 5-DKP bosses give +3 then +2, not +3 each. First earning group locks raid/reset credit; approved '
+        'reassignment must not double-count it.</p>',
+        '<p>A rare Progression Exception needs an announced encounter/role reason and approval from an '
+        'uninvolved officer. Full members only: legitimate Need pays full price, may reach &minus;200 and sets '
+        'Need status. A non-Need Progression Allocation pays half the Need price rounded up, may reach '
+        '&minus;150 and leaves Need status unchanged.</p>',
+        '<p>Improper Greed is corrected to the full Need charge and Need status through the next reset, '
+        'even if that correction crosses a floor; the item is not taken back. Honest mistakes receive the '
+        'correction only. Disciplinary decisions and appeals follow the formal rules; private disciplinary records '
+        'are not published here.</p>',
+        '<p>An uninvolved officer verifies Loot Master claims. Unknown membership is not silently treated as '
+        'Trial: paid awards wait for verification and reconciliation of pending credits. The spreadsheet '
+        'remains authoritative until formal addon cutover. If the addon is unavailable, the same rules and '
+        'independent checks apply; if Master Loot or its equivalent is unavailable, pause for an approved process.</p>',
+        '</details>',
+        f'<p class="note">Summary checked 2026-11-16. Ask in <a href="{DISCORD_INVITE}" '
+        'rel="noopener noreferrer">Discord</a> for the full policy, tier matrix and appeal process. '
+        'This page does not itself enforce in-game loot.</p></section>',
+    ]
+
+
 def structured_data(title, site_url):
     """schema.org JSON-LD naming the guild and its official profiles. It is inert data, so the CSP need not allow it."""
     guild = f"{site_url}#guild"
@@ -1244,7 +1495,11 @@ def llms_text(title, site_url, pending, recruitment):
              f"{GUILD_NAME} is a Horde guild in World of Warcraft: Forever (EU). The guild page shows the open "
              "positions, the raid calendar, the roster with class and raid-role counts, a screenshot gallery and the "
              "guild's Capped DKP loot standings and history.", "", "## Guild page", "",
-             f"- [{md_text(title)}]({md_url(site_url)}): the guild's home page"]
+             f"- [{md_text(title)}]({md_url(site_url)}): the guild's home page",
+             f"- [Guild at a glance]({md_url(site_url)}#guild): language, voice, raid focus and expectations",
+             f"- [Loot rules]({md_url(site_url)}#rules): the Capped DKP member guide, not in-game enforcement",
+             f"- [Recorded progression]({md_url(site_url)}#progress): unique bosses in the published ledger",
+             f"- [Recorded attendance]({md_url(site_url)}#attendance): account participation by raid and weekly reset"]
     if not pending:
         lines += [f"- [Capped DKP standings]({md_url(site_url)}standings.json): public DKP balances and loot, as JSON",
                   f"- [Loot and DKP history]({md_url(site_url)}history.json): the public ledger records, as JSON"]
@@ -1285,7 +1540,7 @@ def discovery_files(title, site_url, pending, recruitment):
 
 
 def render_page(title, standings, recent, omitted, source_url=None, *, pending=False, site_url=None, extras=None,
-                verification=None):
+                verification=None, history_events=None):
     """The public page. Community sections (gallery, raids, open positions) need extras. With site_url the page asks
     to be indexed and carries its canonical address; verification is a Google Search Console HTML-tag token."""
     players = standings["players"]
@@ -1295,7 +1550,8 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
                      f'recorded {utc_text(standings["lastEventTime"])}.')
     else:
         lede_text = "No events are recorded yet."
-    nav = [("standings", "Standings")]
+    nav = [("guild", "Guild"), ("standings", "Standings"), ("progress", "Progress"),
+           ("attendance", "Attendance"), ("rules", "Loot rules")]
     if extras:
         nav += [("gallery", "Gallery"), ("raids", "Raids"), ("recruiting", "Recruiting")]
     nav += [("activity", "Activity"), ("roster", "Roster")]
@@ -1317,6 +1573,7 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
         f'<a class="button secondary" href="{DISCORD_INVITE}" rel="noopener noreferrer">Join Discord &nearr;</a></div></div>',
         f'<div class="hero-art"><img class="guild-logo" src="{LOGO_FILE}" width="{LOGO_SIZE[0]}" height="{LOGO_SIZE[1]}" '
         f'alt="{esc(LOGO_ALT)}"></div></div>',
+        *guild_overview(extras.get("guild", {}) if extras else {}),
         '<div class="ledger-status">',
         '<strong>Awaiting first publication</strong>' if pending else '<strong>Public ledger</strong>',
         f'<p class="lede">{esc(lede_text)}</p></div>',
@@ -1343,6 +1600,10 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
         body.append(f'<p class="note">{plural(standings["departedCount"], "departed player is", "departed players are")}'
                     " not listed.</p>")
     body.append("</section>")
+    body += progression_section(history_events if history_events is not None else recent,
+                                extras.get("reports", []) if extras else [])
+    body += attendance_section(players)
+    body += loot_rules_section()
     linked = {event["id"] for event in recent}
     if extras:
         body += gallery_section(extras["gallery"], extras["kills"], linked)
@@ -1361,7 +1622,8 @@ def render_page(title, standings, recent, omitted, source_url=None, *, pending=F
     else:
         body.append(empty_state("Every drop has a story.", "No public records yet.",
                                 "Published loot and DKP changes will appear here, newest first."))
-    body += ["</section>", *guild_sections(roster_specs(standings), extras.get("roster") if extras else None)]
+    body += ["</section>", *guild_sections(roster_specs(standings), extras.get("roster") if extras else None,
+                                          extras.get("profiles") if extras else None)]
     joined = "\n".join(body)
     has_items = 'class="item' in joined
     scripted = has_items or " data-carousel" in joined or " data-local" in joined
@@ -1419,7 +1681,8 @@ def build_site(ledger, title, source_url=None, site_url=None):
     }
     recent = [event for event in reversed(events) if event["kind"] in PAGE_ACTIVITY][:RECENT_EVENTS]
     files = {
-        "index.html": render_page(title, standings, recent, omitted, source_url, site_url=site_url).encode("utf-8"),
+        "index.html": render_page(title, standings, recent, omitted, source_url, site_url=site_url,
+                                  history_events=events).encode("utf-8"),
         "standings.json": store.indented(standings),
         "history.json": (store.canonical(history) + "\n").encode("ascii"),
         **{name: brand_asset(name) for name in PAGE_ASSETS},
@@ -1512,13 +1775,19 @@ def check_public(standings, history):
     need(isinstance(standings["players"], list) and isinstance(history["events"], list), "players or events list")
     anchors, statuses = set(), set(STATUS_TEXT.values()) | {"Not set", "Unverified"}
     for player in standings["players"]:
-        keys(player, ("account", "balance", "cap", "characters", "status", "anchor"), ("specs", "loot", "lootTotal"),
+        keys(player, ("account", "balance", "cap", "characters", "status", "anchor"),
+             ("specs", "loot", "lootTotal", "attendance"),
              "player fields")
         need(text(player["account"]) and is_number(player["balance"])
              and (player["cap"] is None or is_number(player["cap"])) and player["status"] in statuses, "player row")
         need(isinstance(player["anchor"], str) and re.fullmatch(r"p-[a-z0-9-]{1,140}", player["anchor"])
              and player["anchor"] not in anchors, "player anchor")
         anchors.add(player["anchor"])
+        if "attendance" in player:
+            counts = player["attendance"]
+            keys(counts, ("attended", "eligible"), (), "attendance fields")
+            need(is_whole(counts["eligible"], 0, last)
+                 and is_whole(counts["attended"], 0, counts["eligible"]), "attendance counts")
         characters = player["characters"]
         need(isinstance(characters, list) and characters and all(text(name) for name in characters), "characters")
         specs = player.get("specs", {})
@@ -1724,9 +1993,9 @@ def run_render(args, opener, environ, sleep):
     raid = config["raidHelper"]
     extras = {"items": items, "gallery": gallery, "kills": boss_kills(events), "community": feed, "raid": raid,
               "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": config["recruitment"],
-              "roster": roster}
+              "roster": roster, "guild": config["guild"], "reports": config["reports"], "profiles": config["profiles"]}
     page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
-                       site_url=site_url, extras=extras, verification=verification)
+                       site_url=site_url, extras=extras, verification=verification, history_events=events)
     files = {"index.html": page.encode("utf-8"), **{name: brand_asset(name) for name in PAGE_ASSETS},
              **discovery_files(title, site_url, not present, config["recruitment"]), **files}
     for entry in gallery:
