@@ -11,7 +11,7 @@
     },
     {
       "class": "Mage",
-      "level": 37,
+      "level": 38,
       "name": "Aranith Jr",
       "rank": "Fresh Peon",
       "spec": "Frost",
@@ -81,7 +81,7 @@
     },
     {
       "class": "Shaman",
-      "level": 36,
+      "level": 37,
       "name": "Dark Tuga",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -142,7 +142,7 @@
     },
     {
       "class": "Paladin",
-      "level": 16,
+      "level": 17,
       "name": "Eizala Northborn",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -160,7 +160,7 @@
     },
     {
       "class": "Hunter",
-      "level": 35,
+      "level": 36,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Beast Mastery",
@@ -196,7 +196,7 @@
     },
     {
       "class": "Warrior",
-      "level": 31,
+      "level": 32,
       "name": "Gork Dreadmaul",
       "rank": "Fresh Peon",
       "spec": "Fury",
@@ -241,7 +241,7 @@
     },
     {
       "class": "Paladin",
-      "level": 28,
+      "level": 29,
       "name": "Ji Mbo",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -365,7 +365,7 @@
     },
     {
       "class": "Hunter",
-      "level": 45,
+      "level": 46,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -455,7 +455,7 @@
     },
     {
       "class": "Warrior",
-      "level": 48,
+      "level": 49,
       "name": "Scurrius Theratking",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -482,7 +482,7 @@
     },
     {
       "class": "Priest",
-      "level": 25,
+      "level": 26,
       "name": "Soinier Allied",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -509,7 +509,7 @@
     },
     {
       "class": "Paladin",
-      "level": 26,
+      "level": 27,
       "name": "Sour Lightbane",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -631,7 +631,7 @@
     },
     {
       "class": "Hunter",
-      "level": 34,
+      "level": 35,
       "name": "Wolf Psymon",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -648,6 +648,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-16T14:49:48Z",
+  "retrievedAt": "2026-11-16T17:55:13Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
