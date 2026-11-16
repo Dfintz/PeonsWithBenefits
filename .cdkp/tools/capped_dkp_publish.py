@@ -137,6 +137,13 @@ CHANGE_KINDS = ("reverse", "improper", "repair")
 SPEC_KINDS = ("account", "rosteradd", "alt", "spec")
 CLASSES = ("Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior")
 ROLES = ("Tank", "Healer", "Melee", "Ranged")
+ROLE_ICONS = {"Tank": "pwb-role-tank.png", "Healer": "pwb-role-healer.png",
+              "Melee": "pwb-role-melee.png", "Ranged": "pwb-role-ranged.png"}
+PAGE_ASSETS = (LOGO_FILE, *ROLE_ICONS.values())
+ROLE_LABELS = {"Tank": "Tanks", "Healer": "Healers", "Melee": "Melee DPS", "Ranged": "Ranged DPS",
+               "Unknown": "Unknown"}
+LEVEL_BANDS = (("60", 60, 60), ("50-59", 50, 59), ("40-49", 40, 49), ("30-39", 30, 39),
+               ("20-29", 20, 29), ("1-19", 1, 19), ("61+", 61, 100))
 ROLE_WORDS = {
     "Tank": frozenset({"prot", "protection", "tank", "bear", "guardian", "blood", "brewmaster", "vengeance"}),
     "Healer": frozenset({"holy", "disc", "discipline", "resto", "restoration", "heal", "healer", "healing",
@@ -323,7 +330,28 @@ a.item.q7{color:#00ccff}
 .roster-list li{margin:0;padding:.55rem 0;border-bottom:1px solid var(--line)}
 .roster-list a{display:inline-block;padding:.1rem 0;font-weight:600;overflow-wrap:anywhere;text-underline-offset:3px}
 .who{display:block;color:var(--muted);font-size:.85rem}
+.roster-stats{padding:1.4rem;background:var(--head);border:1px solid var(--line);margin:1.5rem 0}
+.roster-stats h3{font:600 .95rem/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;margin:1.7rem 0 .7rem}
+.roster-stats h3:first-child{margin-top:0}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.65rem;margin:0}
+.stat-classes{grid-template-columns:repeat(5,minmax(0,1fr))}
+.stat-tile{position:relative;min-width:0;padding:.85rem .9rem 1rem;border:1px solid var(--line);border-radius:.4rem;background:var(--bg)}
+.stat-tile dt{font-size:.85rem;font-weight:600}
+.stat-tile dd{margin:.15rem 0 0;font-size:1.7rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--fg)}
+.stat-tile img{width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:.4rem}
+.stat-bar{height:4px;background:var(--line);margin-top:.65rem}
+.stat-bar span{display:block;height:100%;background:currentColor}
+.stat-zero{color:var(--muted)}
+.stat-neutral{color:var(--muted)}
+.roster-stats .note{margin:.7rem 0 0}
+.spec-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.3rem 1.5rem;margin:.6rem 0;padding:0;list-style:none}
+.spec-counts li{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding:.35rem 0;margin:0}
+.spec-counts span{overflow-wrap:anywhere}
+.spec-counts strong{font-variant-numeric:tabular-nums}
 summary{cursor:pointer;min-height:44px;color:var(--accent);padding:.65rem 0}
+.roster-stats summary{margin-top:.7rem}
+@media (max-width:50rem){.stat-classes{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:40rem){.roster-stats{padding:1rem}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-tile img{display:block;margin:0 0 .3rem}}
 .skip{position:absolute;left:1rem;top:-5rem;background:var(--fg);color:var(--bg);padding:.6rem;z-index:2}
 .skip:focus{top:1rem}
 @media (max-width:50rem){.hero{grid-template-columns:1fr 1fr;gap:1rem}.guild-links{grid-template-columns:1fr 1fr}.community{grid-column:1/-1}.roster-list{grid-template-columns:repeat(2,minmax(0,1fr))}.positions{grid-template-columns:1fr}}
@@ -403,16 +431,83 @@ def roster_specs(standings):
     return {key: spec for key, spec in found.items() if spec}
 
 
-def roster_detail(member, specs):
-    """Level, then the ledger's spec when it fits the Armory class, else the Armory class (or spec) alone."""
+def roster_spec(member, specs):
+    """The recorded spec, shared by character details and counts; never substitute an Armory class."""
     klass, spec = member.get("class"), specs.get(member["name"].casefold()) or member.get("spec")
     if spec and klass:
-        named = spec_class(spec)
-        spec = None if named not in (None, klass) else spec if named else f"{spec} {klass}"
+        named = {name for name in CLASSES if name.lower() in spec_words(spec)}
+        spec = None if named and named != {klass} else spec if named else f"{spec} {klass}"
+    return spec
+
+
+def roster_detail(member, specs):
+    """Level, then a compatible recorded spec, else the Armory class alone."""
+    klass, spec = member.get("class"), roster_spec(member, specs)
     parts = [f'Level {member["level"]}'] if "level" in member else []
     if spec or klass:
         parts.append(spec or klass)
     return DOT.join(parts)
+
+
+def roster_breakdown(members, specs):
+    """Counts over the already-filtered roster. Unrecorded or ambiguous roles stay Unknown."""
+    classes = dict.fromkeys((*CLASSES, "Unknown"), 0)
+    levels = dict.fromkeys((*[label for label, _, _ in LEVEL_BANDS], "Unknown"), 0)
+    roles, recorded = dict.fromkeys((*ROLES, "Unknown"), 0), {}
+    unknown_specs = 0
+    for member in members:
+        classes[member.get("class", "Unknown")] += 1
+        level = member.get("level")
+        band = next((label for label, low, high in LEVEL_BANDS if level is not None and low <= level <= high),
+                    "Unknown")
+        levels[band] += 1
+        spec = roster_spec(member, specs)
+        spec_tokens = spec_words(spec) - {name.lower() for name in CLASSES} if spec else set()
+        named_role = spec_role(" ".join(spec_tokens))
+        if "frost" in spec_tokens and spec_class(spec) == "Mage":
+            named_role = "Ranged"
+        roles[(spec_role(spec) if named_role else None) or "Unknown"] += 1
+        if spec_tokens:
+            key = " ".join(spec.split()).casefold()
+            label, count = recorded.get(key, (" ".join(spec.split()), 0))
+            recorded[key] = (label, count + 1)
+        else:
+            unknown_specs += 1
+    return {"classes": classes, "levels": levels, "roles": roles,
+            "specs": sorted(recorded.values(), key=lambda entry: entry[0].casefold()), "unknown_specs": unknown_specs}
+
+
+def roster_statistics(members, specs):
+    stats = roster_breakdown(members, specs)
+    total = len(members)
+    page = ['<div class="roster-stats">']
+    for heading, counts in (("Classes", stats["classes"]), ("Levels", stats["levels"]), ("Raid roles", stats["roles"])):
+        grid = "stat-grid stat-classes" if heading == "Classes" else "stat-grid"
+        page += [f'<h3>{heading}</h3>', f'<dl class="{grid}" aria-label="{heading} breakdown">']
+        for label, count in counts.items():
+            if not count and (label == "61+" or (label == "Unknown" and heading != "Raid roles")):
+                continue
+            colour = f"c-{label.lower()}" if heading == "Classes" and label in CLASSES else (
+                f"role-{label.lower()}" if heading == "Raid roles" and label in ROLES else "stat-neutral")
+            icon = (f'<img src="{ROLE_ICONS[label]}" alt="" width="32" height="32" loading="lazy">'
+                    if heading == "Raid roles" and label in ROLE_ICONS else "")
+            title = ROLE_LABELS[label] if heading == "Raid roles" else label
+            width = count * 100 / total if total else 0
+            page.append(f'<div class="stat-tile {colour}{" stat-zero" if not count else ""}">'
+                        f'<dt>{icon}{esc(title)}</dt><dd>{count}</dd>'
+                        f'<div class="stat-bar" aria-hidden="true"><span style="width:{width:.2f}%"></span></div></div>')
+        page.append("</dl>")
+        if heading == "Raid roles":
+            known = total - stats["roles"]["Unknown"]
+            dps = stats["roles"]["Melee"] + stats["roles"]["Ranged"]
+            page.append(f'<p class="note">{known} of {total} characters have a known role &middot; {dps} DPS total. '
+                        'Roles use recorded specs, not class alone. Missing or ambiguous specs stay Unknown. '
+                        'The automatic Armory roster feed does not include specs.</p>')
+    page += ['<details><summary>View recorded specs</summary><ul class="spec-counts">']
+    for label, count in [*stats["specs"], ("Unknown / not recorded", stats["unknown_specs"])]:
+        page.append(f'<li><span>{esc(label)}</span><strong>{count}</strong></li>')
+    page.append('</ul></details></div>')
+    return page
 
 
 def guild_sections(specs=None, roster=None):
@@ -423,8 +518,9 @@ def guild_sections(specs=None, roster=None):
     page = ['<section aria-labelledby="roster"><h2 id="roster">The guild roster</h2>',
             f'<p class="note">{len(members)} characters from the public Blizzard Armory, coloured by class, with '
             f'spec where the ledger records one. Snapshot: {esc(stamp)}. Not a live feed or a DKP eligibility list.'
-            f'{left_out} Select a name to open its Armory profile.</p>',
-            f'<details><summary>View all {len(members)} characters</summary><ul class="roster-list">']
+            f'{left_out} Select a name to open its Armory profile.</p>']
+    page += roster_statistics(members, specs)
+    page.append(f'<details><summary>View all {len(members)} characters</summary><ul class="roster-list">')
     for member in members:
         klass = member.get("class")
         colour = f' class="c-{klass.lower()}"' if klass else ""
@@ -1119,7 +1215,7 @@ def build_site(ledger, title, source_url=None, site_url=None):
         "index.html": render_page(title, standings, recent, omitted, source_url, site_url=site_url).encode("utf-8"),
         "standings.json": store.indented(standings),
         "history.json": (store.canonical(history) + "\n").encode("ascii"),
-        LOGO_FILE: brand_asset(LOGO_FILE),
+        **{name: brand_asset(name) for name in PAGE_ASSETS},
     }
     return files, standings, history, changed
 
@@ -1413,7 +1509,7 @@ def run_render(args, opener, environ, sleep):
               "roster": roster}
     page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
                        site_url=site_url, extras=extras)
-    files = {"index.html": page.encode("utf-8"), LOGO_FILE: brand_asset(LOGO_FILE), **files}
+    files = {"index.html": page.encode("utf-8"), **{name: brand_asset(name) for name in PAGE_ASSETS}, **files}
     for entry in gallery:
         files[f"gallery/{entry['image']}"] = entry["data"]
     for name, content in files.items():

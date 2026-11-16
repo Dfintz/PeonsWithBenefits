@@ -105,6 +105,12 @@ The public page keeps this guidance here instead of displaying an "About this pa
 - Raid sign-ups publish counts by role only; names stay in Discord. The dated Armory roster is separate from
   the ledger and does not imply DKP balances or eligibility. Before the first approved publication, standings
   remain explicitly empty.
+- Roster statistics count visible characters, not accounts or raid sign-ups: every class, level bands, and
+  Tanks / Healers / Melee DPS / Ranged DPS / Unknown. Side Hustle characters are excluded from all totals.
+  Roles use class-compatible recorded specs, never class alone; plain Feral and other ambiguous roles stay
+  Unknown. The Armory roster feed has no specs, so roles populate when ledger specs are published. Expand
+  **View recorded specs** for counts of the saved spec labels. Missing class or level is shown as Unknown;
+  any level above 60 is shown separately as 61+.
 
 ## When something fails
 
@@ -115,3 +121,5 @@ does not fail the run. To refresh the tools, run `tools/capped_dkp_scaffold.py -
 ## Licence
 
 `.cdkp/` contains CappedDKP code under the Apache License 2.0; see `.cdkp/LICENSE` and `.cdkp/NOTICE`.
+The guild-supplied logo and four `pwb-role-*.png` images retain their existing rights; the code licence does
+not relicense those images. The icons are served locally, with no additional third-party requests.
