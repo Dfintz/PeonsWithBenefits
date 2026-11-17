@@ -135,7 +135,7 @@
     },
     {
       "class": "Shaman",
-      "level": 22,
+      "level": 23,
       "name": "Eh Eh",
       "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
@@ -151,7 +151,7 @@
     },
     {
       "class": "Paladin",
-      "level": 38,
+      "level": 39,
       "name": "Emeline Thefake",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -320,7 +320,7 @@
     },
     {
       "class": "Warrior",
-      "level": 23,
+      "level": 24,
       "name": "Morgruul Strife",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -499,15 +499,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/son-ack"
     },
     {
-      "class": "Paladin",
-      "level": 28,
-      "name": "Sour Lightbane",
-      "rank": "Fresh Peon",
-      "spec": "Retribution",
-      "specChecked": 1794904172,
-      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/sour-lightbane"
-    },
-    {
       "class": "Rogue",
       "level": 39,
       "name": "Sukuba Sinstitched",
@@ -604,7 +595,7 @@
     },
     {
       "class": "Priest",
-      "level": 35,
+      "level": 36,
       "name": "Vicar Abracadaver",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -639,6 +630,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-17T10:15:09Z",
+  "retrievedAt": "2026-11-17T13:25:20Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
