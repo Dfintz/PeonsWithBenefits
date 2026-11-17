@@ -356,7 +356,7 @@
     },
     {
       "class": "Hunter",
-      "level": 48,
+      "level": 49,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -446,7 +446,7 @@
     },
     {
       "class": "Warrior",
-      "level": 50,
+      "level": 51,
       "name": "Scurrius Theratking",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -639,6 +639,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-17T06:44:03Z",
+  "retrievedAt": "2026-11-17T10:15:09Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
