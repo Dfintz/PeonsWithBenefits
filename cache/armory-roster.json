@@ -29,7 +29,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Bird Ironhoof",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -38,7 +38,7 @@
     },
     {
       "class": "Shaman",
-      "level": 39,
+      "level": 40,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -56,7 +56,7 @@
     },
     {
       "class": "Druid",
-      "level": 37,
+      "level": 38,
       "name": "Cat Pants",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -99,7 +99,7 @@
     },
     {
       "class": "Priest",
-      "level": 28,
+      "level": 29,
       "name": "Detroit Ishorde",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -117,7 +117,7 @@
     },
     {
       "class": "Warrior",
-      "level": 25,
+      "level": 26,
       "name": "Dimitron Anton",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -160,7 +160,7 @@
     },
     {
       "class": "Hunter",
-      "level": 36,
+      "level": 37,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Beast Mastery",
@@ -169,7 +169,7 @@
     },
     {
       "class": "Druid",
-      "level": 38,
+      "level": 39,
       "name": "Gambino Ragehoof",
       "rank": "Fresh Peon",
       "spec": "Restoration",
@@ -205,7 +205,7 @@
     },
     {
       "class": "Warrior",
-      "level": 29,
+      "level": 30,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -241,7 +241,7 @@
     },
     {
       "class": "Paladin",
-      "level": 29,
+      "level": 30,
       "name": "Ji Mbo",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -250,7 +250,7 @@
     },
     {
       "class": "Warrior",
-      "level": 45,
+      "level": 46,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -268,7 +268,7 @@
     },
     {
       "class": "Paladin",
-      "level": 53,
+      "level": 54,
       "name": "Lorilath Macabre",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -293,7 +293,7 @@
     },
     {
       "class": "Warrior",
-      "level": 31,
+      "level": 32,
       "name": "Mauri Kreth",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -347,7 +347,7 @@
     },
     {
       "class": "Priest",
-      "level": 40,
+      "level": 42,
       "name": "Old Ubay",
       "rank": "Fresh Peon",
       "spec": "Shadow",
@@ -356,7 +356,7 @@
     },
     {
       "class": "Hunter",
-      "level": 46,
+      "level": 47,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -428,7 +428,7 @@
     },
     {
       "class": "Warlock",
-      "level": 23,
+      "level": 24,
       "name": "River Pixies",
       "rank": "Fresh Peon",
       "spec": "Affliction",
@@ -437,7 +437,7 @@
     },
     {
       "class": "Mage",
-      "level": 28,
+      "level": 29,
       "name": "Rufus Thornbury",
       "rank": "Fresh Peon",
       "spec": "Frost",
@@ -446,7 +446,7 @@
     },
     {
       "class": "Warrior",
-      "level": 49,
+      "level": 50,
       "name": "Scurrius Theratking",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -473,7 +473,7 @@
     },
     {
       "class": "Priest",
-      "level": 26,
+      "level": 27,
       "name": "Soinier Allied",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -482,7 +482,7 @@
     },
     {
       "class": "Warlock",
-      "level": 37,
+      "level": 38,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -500,7 +500,7 @@
     },
     {
       "class": "Paladin",
-      "level": 27,
+      "level": 28,
       "name": "Sour Lightbane",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -509,7 +509,7 @@
     },
     {
       "class": "Rogue",
-      "level": 38,
+      "level": 39,
       "name": "Sukuba Sinstitched",
       "rank": "Fresh Peon",
       "spec": "Subtlety",
@@ -527,7 +527,7 @@
     },
     {
       "class": "Hunter",
-      "level": 57,
+      "level": 58,
       "name": "Tealiz Dapwn",
       "rank": "Fresh Peon",
       "spec": "Marksmanship",
@@ -536,7 +536,7 @@
     },
     {
       "class": "Warlock",
-      "level": 51,
+      "level": 52,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -553,7 +553,7 @@
     },
     {
       "class": "Druid",
-      "level": 14,
+      "level": 16,
       "name": "Truespoon Wildmane",
       "rank": "Fresh Peon",
       "specChecked": 1794817224,
@@ -588,7 +588,7 @@
     },
     {
       "class": "Rogue",
-      "level": 42,
+      "level": 43,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -622,7 +622,7 @@
     },
     {
       "class": "Hunter",
-      "level": 35,
+      "level": 36,
       "name": "Wolf Psymon",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -639,6 +639,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-16T21:14:10Z",
+  "retrievedAt": "2026-11-17T00:35:07Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
