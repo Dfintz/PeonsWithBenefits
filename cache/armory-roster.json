@@ -29,7 +29,7 @@
     },
     {
       "class": "Warrior",
-      "level": 37,
+      "level": 38,
       "name": "Bird Ironhoof",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -65,7 +65,7 @@
     },
     {
       "class": "Druid",
-      "level": 38,
+      "level": 39,
       "name": "Catriel Agartha",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -302,7 +302,7 @@
     },
     {
       "class": "Shaman",
-      "level": 27,
+      "level": 28,
       "name": "Micol Jordan",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -356,7 +356,7 @@
     },
     {
       "class": "Hunter",
-      "level": 47,
+      "level": 48,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -639,6 +639,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-17T00:35:07Z",
+  "retrievedAt": "2026-11-17T03:39:35Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
