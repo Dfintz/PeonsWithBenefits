@@ -11,7 +11,7 @@
     },
     {
       "class": "Mage",
-      "level": 38,
+      "level": 39,
       "name": "Aranith Jr",
       "rank": "Fresh Peon",
       "spec": "Frost",
@@ -29,7 +29,7 @@
     },
     {
       "class": "Warrior",
-      "level": 38,
+      "level": 39,
       "name": "Bird Ironhoof",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -44,15 +44,6 @@
       "spec": "Enhancement",
       "specChecked": 1794903546,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bonkmaster-flex"
-    },
-    {
-      "class": "Shaman",
-      "level": 60,
-      "name": "Caro Kann",
-      "rank": "Fresh Peon",
-      "spec": "Restoration",
-      "specChecked": 1794903546,
-      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/caro-kann"
     },
     {
       "class": "Druid",
@@ -241,7 +232,7 @@
     },
     {
       "class": "Paladin",
-      "level": 30,
+      "level": 31,
       "name": "Ji Mbo",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -268,7 +259,7 @@
     },
     {
       "class": "Paladin",
-      "level": 54,
+      "level": 55,
       "name": "Lorilath Macabre",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -320,7 +311,7 @@
     },
     {
       "class": "Warrior",
-      "level": 24,
+      "level": 26,
       "name": "Morgruul Strife",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -329,7 +320,7 @@
     },
     {
       "class": "Warrior",
-      "level": 26,
+      "level": 27,
       "name": "Mystoklin Teknoklin",
       "rank": "Fresh Peon",
       "spec": "Arms",
@@ -338,7 +329,7 @@
     },
     {
       "class": "Hunter",
-      "level": 37,
+      "level": 38,
       "name": "N\u00edco Rob\u00ecn",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -356,7 +347,7 @@
     },
     {
       "class": "Hunter",
-      "level": 49,
+      "level": 50,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -383,7 +374,7 @@
     },
     {
       "class": "Mage",
-      "level": 19,
+      "level": 20,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -401,7 +392,7 @@
     },
     {
       "class": "Paladin",
-      "level": 20,
+      "level": 21,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -410,7 +401,7 @@
     },
     {
       "class": "Warrior",
-      "level": 28,
+      "level": 29,
       "name": "Retail Enjoyers",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -482,7 +473,7 @@
     },
     {
       "class": "Warlock",
-      "level": 38,
+      "level": 39,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -518,7 +509,7 @@
     },
     {
       "class": "Hunter",
-      "level": 59,
+      "level": 60,
       "name": "Tealiz Dapwn",
       "rank": "Fresh Peon",
       "spec": "Marksmanship",
@@ -527,7 +518,7 @@
     },
     {
       "class": "Warlock",
-      "level": 53,
+      "level": 54,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -544,7 +535,7 @@
     },
     {
       "class": "Druid",
-      "level": 16,
+      "level": 17,
       "name": "Truespoon Wildmane",
       "rank": "Fresh Peon",
       "specChecked": 1794904172,
@@ -595,7 +586,7 @@
     },
     {
       "class": "Priest",
-      "level": 36,
+      "level": 37,
       "name": "Vicar Abracadaver",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -604,7 +595,7 @@
     },
     {
       "class": "Mage",
-      "level": 46,
+      "level": 47,
       "name": "Voldemorph Jenkins",
       "rank": "Peon Plus",
       "spec": "Frost",
@@ -630,6 +621,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-17T16:27:27Z",
+  "retrievedAt": "2026-11-17T19:39:48Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
