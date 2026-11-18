@@ -13,7 +13,9 @@ file. Without it the raid calendar is reported as "unconfigured"; if Raid-Helper
 "error", and the page shows its empty state instead. Raid sign-up names and Discord IDs are never stored:
 a sign-up's role and spec are kept only on the roster character whose name matches, for at most
 SIGNUP_KEEP_SECONDS after the sign-up was last seen. Requests go only to the hosts in ALLOWED_HOSTS (plus the
-Raid-Helper API through capped_dkp_raidhelper) and never follow a redirect.
+Raid-Helper API through capped_dkp_raidhelper and the fixed public recruitment listing through
+capped_dkp_recruitment) and never follow a redirect. Recruitment sync is opt-in; its independent
+last-good cache survives source failures and the rendered page explicitly labels stale/manual fallback.
 
 The Armory roster comes from the same undocumented query the Armory's own guild page sends, which carries no
 specs. A spec is the talent tree with the most points on the character's profile page. That page's data is
@@ -44,6 +46,7 @@ if _TOOLS not in sys.path:
 
 import capped_dkp_ledger as store  # noqa: E402
 import capped_dkp_raidhelper as raidhelper  # noqa: E402
+import capped_dkp_recruitment as recruitment  # noqa: E402
 from capped_dkp_ledger import IntegrityError, ToolError  # noqa: E402
 
 CONFIG_FORMAT = "pwb-community-config"
@@ -246,7 +249,7 @@ def apply_links(value, label):
 
 
 def check_recruitment(value, label="recruitment"):
-    shape(value, ("openings", "expectations"), ("apply", "source", "updated"), label)
+    shape(value, ("openings", "expectations"), ("apply", "source", "updated", "sync"), label)
     openings = []
     for index, opening in enumerate(listing(value["openings"], 12, f"{label}.openings"), 1):
         where = f"{label}.openings[{index}]"
@@ -260,6 +263,10 @@ def check_recruitment(value, label="recruitment"):
     result = {"apply": apply_links(value, label), "openings": openings, "expectations": expectations}
     if "updated" in value:
         result["updated"] = calendar_day(value["updated"], f"{label}.updated")
+    if "sync" in value:
+        if value["sync"] != "guildsofwow":
+            raise IntegrityError(f"{label}.sync must be guildsofwow, or omitted for manual openings")
+        result["sync"] = value["sync"]
     return result
 
 
@@ -442,7 +449,7 @@ def check_raid_event(event, where):
 
 
 def check_data(document, label="community data"):
-    shape(document, ("format", "version", "generated", "raidHelper"), (), label)
+    shape(document, ("format", "version", "generated", "raidHelper"), ("recruitment",), label)
     header(document, DATA_FORMAT, label)
     if not whole(document["generated"]):
         raise IntegrityError(f"{label} generated must be a unix time")
@@ -453,10 +460,27 @@ def check_data(document, label="community data"):
         raise IntegrityError(f"{label} raidHelper.checked must be a unix time or null")
     events = [check_raid_event(event, f"{label} raid {index}")
               for index, event in enumerate(listing(raid["events"], RAID_LIMIT, f"{label} raid events"), 1)]
-    return {
+    result = {
         "generated": document["generated"],
         "raidHelper": {"status": raid["status"], "checked": raid["checked"], "events": events},
     }
+    if "recruitment" in document:
+        result["recruitment"] = recruitment.check_feed(document["recruitment"])
+    return result
+
+
+def resolved_recruitment(config, feed, now=None):
+    """Keep officer-owned apply links/expectations; substitute only verified source openings."""
+    result = dict(config["recruitment"])
+    if result.get("sync") != "guildsofwow":
+        return result
+    snapshot = (feed or {}).get("recruitment") or recruitment.unavailable(
+        int(time.time()) if now is None else now)
+    result["snapshot"] = snapshot
+    if snapshot["status"] in ("ok", "stale"):
+        result["openings"] = snapshot["openings"]
+        result.pop("updated", None)
+    return result
 
 
 def load_data(path):
@@ -933,6 +957,8 @@ def run_fetch(args, opener, environ, now, sleep, say):
         update_roster(args.roster, opener, now, sleep, declared, say, secrets)
 
     document = {"format": DATA_FORMAT, "version": VERSION, "generated": now, "raidHelper": raid}
+    if config["recruitment"].get("sync") == "guildsofwow":
+        document["recruitment"] = recruitment.refresh(args.recruitment, opener, now, say)
     check_data(document)
     store.write_atomic(Path(args.out), store.indented(document))
     if args.items and json.dumps(cache, sort_keys=True) != before:
@@ -956,6 +982,8 @@ def build_parser():
     fetch.add_argument("--roster", metavar="FILE",
                        help="armory-roster.json to keep up to date: the character list once it is 3 hours old, "
                             "each character's spec from its Armory profile page, and declared sign-up roles")
+    fetch.add_argument("--recruitment", metavar="FILE",
+                       help="last-good public openings cache; enabled by recruitment.sync= guildsofwow")
     fetch.add_argument("--out", required=True, metavar="FILE", help="community data file to write")
     return root
 

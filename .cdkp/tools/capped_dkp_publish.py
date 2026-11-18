@@ -1344,6 +1344,18 @@ def raids_section(extras):
     return page
 
 
+def recruitment_status(recruitment):
+    snapshot = recruitment.get("snapshot")
+    if not snapshot:
+        return ""
+    status = snapshot["status"]
+    if status == "ok":
+        return "Open positions verified from the public Guilds of WoW listing."
+    if status == "stale":
+        return "Recruitment sync error: showing stale, last-known-good openings. Check the source before applying."
+    return "Recruitment sync unavailable: manual openings below are not verified against the source."
+
+
 def positions_section(recruitment):
     links = recruitment.get("apply") or [GUILD_LINKS[0][1][0][1]]
     updated = (f' Updated <span class="nowrap">{esc(recruitment["updated"])}</span>.'
@@ -1352,8 +1364,18 @@ def positions_section(recruitment):
     note = ("Recruitment need reflects urgency, not DKP loot priority."
             if ranked else "Roles the raid team is recruiting for.")
     page = ['<section aria-labelledby="recruiting"><h2 id="recruiting">Open positions</h2>',
-            f'<p class="note">{note}{updated}</p>',
-            '<div class="positions">']
+            f'<p class="note">{note}{updated}</p>']
+    snapshot = recruitment.get("snapshot")
+    if snapshot:
+        from capped_dkp_recruitment import ERRORS
+        message = recruitment_status(recruitment)
+        if snapshot.get("error"):
+            message += " " + ERRORS[snapshot["error"]]
+        checked = f" Last attempted {time_html(snapshot['checked'])}."
+        verified = f" Last verified {time_html(snapshot['updated'])}." if snapshot["updated"] is not None else ""
+        page.append(f'<p class="note" role="status">{esc(message)}{verified}{checked} '
+                    f'<a href="{esc(snapshot["source"])}" rel="noopener noreferrer">Public recruitment source</a>.</p>')
+    page.append('<div class="positions">')
     if recruitment["openings"]:
         page.append('<ul class="openings">')
         for opening in recruitment["openings"]:
@@ -1369,7 +1391,12 @@ def positions_section(recruitment):
                         f'<ul class="specs">{"".join(specs)}</ul></li>')
         page.append("</ul>")
     else:
-        page.append(empty_state("No open positions right now.", "Good company is always welcome; say hello on Discord."))
+        if snapshot and snapshot["status"] == "error":
+            page.append(empty_state("Open positions could not be verified.", "Check the public recruitment source."))
+        elif snapshot and snapshot["status"] == "stale":
+            page.append(empty_state("No positions in the last verified listing.", "Current openings are unknown."))
+        else:
+            page.append(empty_state("No open positions right now.", "Good company is always welcome; say hello on Discord."))
     page.append('<div class="expect"><h3>What we expect</h3>')
     if recruitment["expectations"]:
         page.append("<ul>" + "".join(f"<li>{esc(line)}</li>" for line in recruitment["expectations"]) + "</ul>")
@@ -1596,6 +1623,12 @@ def llms_text(title, site_url, pending, recruitment):
         host = (urllib.parse.urlsplit(link).hostname or "").removeprefix("www.")
         lines.append(f"- [{md_text(APPLY_LABELS.get(host) or f'Apply on {host}')}]({md_url(link)})")
         listed.add(link)
+    status = recruitment_status(recruitment)
+    if status:
+        lines += ["", status]
+        snapshot = recruitment["snapshot"]
+        lines.append(f"Source: {snapshot['source']}; last attempt: {snapshot['checked']}; "
+                     f"last verified: {snapshot['updated']}.")
     if recruitment["openings"]:
         updated = f" (updated {md_text(recruitment['updated'])})" if recruitment.get("updated") else ""
         lines += ["", f"## Open positions{updated}", ""]
@@ -2069,6 +2102,7 @@ def run_render(args, opener, environ, sleep):
     items = community.load_items(args.items) if args.items else {}
     gallery = community.load_gallery(args.gallery) if args.gallery else []
     feed = community.load_data(args.community) if args.community else None
+    recruitment = community.resolved_recruitment(config, feed)
     roster = None
     if args.roster and Path(args.roster).is_file():
         roster = store.read_json(args.roster, ROSTER_BYTES, Path(args.roster).name)
@@ -2090,12 +2124,12 @@ def run_render(args, opener, environ, sleep):
     recent = [event for event in reversed(events) if event["kind"] in PAGE_ACTIVITY][:RECENT_EVENTS]
     raid = config["raidHelper"]
     extras = {"items": items, "gallery": gallery, "kills": boss_kills(events), "community": feed, "raid": raid,
-              "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": config["recruitment"],
+              "raid_days": raid["days"] if raid else community.RAID_DAYS, "recruitment": recruitment,
               "roster": roster, "guild": config["guild"], "reports": config["reports"], "profiles": config["profiles"]}
     page = render_page(title, standings, recent, history["omitted"], source_url, pending=not present,
                        site_url=site_url, extras=extras, verification=verification, history_events=events)
     files = {"index.html": page.encode("utf-8"), **{name: brand_asset(name) for name in PAGE_ASSETS},
-             **discovery_files(title, site_url, not present, config["recruitment"]), **files}
+             **discovery_files(title, site_url, not present, recruitment), **files}
     for entry in gallery:
         files[f"gallery/{entry['image']}"] = entry["data"]
     for name, content in files.items():

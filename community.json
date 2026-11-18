@@ -17,6 +17,7 @@
     "days": 14
   },
   "recruitment": {
+    "sync": "guildsofwow",
     "apply": [
       "https://guildsforever.com/guilds/peons-with-benefits/apply",
       "https://guildsofwow.com/peons-with-benefits"

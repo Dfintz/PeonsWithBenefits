@@ -29,6 +29,7 @@ yet: check the first runs under **Actions**.
 | `gallery/` | `gallery.json` and its images | Officers |
 | `cache/item-cache.json` | Wowhead item names, saved by the workflow | Only the workflow |
 | `cache/armory-roster.json` | Latest Armory roster, saved by the workflow | Only the workflow |
+| `cache/gow-recruitment.json` | Last verified public recruitment openings | Only the workflow |
 | `.cdkp/` | Vendored page tools, the guild logo and the fallback Armory roster | Only the scaffold's `--public --update` |
 | `.cdkp/TOOLKIT.json` | SHA-256 of every file in `.cdkp/` and of the workflow | Only the scaffold |
 | `.github/workflows/cdkp-site.yml` | Builds and deploys the page | Only the scaffold |
@@ -47,6 +48,11 @@ Scheduled runs often start late when GitHub is busy, so raid sign-up counts can 
      summary; sign-up names and Discord IDs are not copied into the published event data.
    - **Wowhead:** names and quality of looted items, at most 50 new lookups per run. They are saved in
      `cache/item-cache.json` so each item is looked up once.
+   - **Guilds of WoW:** public recruitment classes, specs and explicit urgency labels from the guild listing,
+     enabled by `recruitment.sync: "guildsofwow"`. No API key, application or private management data is used.
+     Only a fully validated listing replaces `cache/gow-recruitment.json`. Fetch failures, challenges or changed
+     markup retain the last verified openings and show a stale/error notice, last attempt and last verification
+     time on the page. Without a verified cache, manual openings are explicitly labelled unverified.
    - **Blizzard Armory:** the guild's public roster (names, profile links, level, class and rank), asked for
      only when `cache/armory-roster.json` is missing or at least 3 hours old, then saved there. Because the roster
      query has no specs, the workflow also reads character profile pages for their leading talent tree, up to 30
@@ -92,8 +98,10 @@ Edit these files in a commit to `main`; the page rebuilds within a few minutes.
 - **Open positions** (`community.json` → `recruitment`): `openings` (class and specs), `expectations`, `apply`
   and the date it was `updated`. A spec is plain text or `{"name": "Holy", "priority": "low"}`, with priority
   `high`, `mid` or `low`, shown as High need / Medium need / Low need. These describe recruitment urgency,
-  not DKP loot priority. The supplied openings match the Guilds of WoW listing checked on 2026-11-18;
-  urgency is omitted unless verified. Update them here when recruitment changes. `apply` lists 1 to 3 `https://` links where people apply;
+  not DKP loot priority. With `sync: "guildsofwow"`, scheduled builds use the verified public listing instead;
+  these manual openings remain a fallback and are not overwritten. Remove `sync` to manage openings manually.
+  The fallback matches the listing checked on 2026-11-18; urgency is omitted unless verified.
+  `apply` lists 1 to 3 `https://` links where people apply;
   the first is the main button. The older single `source` link still works in place of `apply`.
 - **Raid-Helper** (`community.json` → `raidHelper`): `serverId` is the Discord server ID, written as text; `days`
   is how far ahead to look (1 to 60). Remove the block to hide the raid calendar.
