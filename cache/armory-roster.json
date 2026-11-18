@@ -20,7 +20,7 @@
     },
     {
       "class": "Druid",
-      "level": 24,
+      "level": 25,
       "name": "Areni Rue",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -38,7 +38,7 @@
     },
     {
       "class": "Druid",
-      "level": 46,
+      "level": 47,
       "name": "Bamba Forever",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -47,7 +47,7 @@
     },
     {
       "class": "Warrior",
-      "level": 40,
+      "level": 41,
       "name": "Bird Ironhoof",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -65,7 +65,7 @@
     },
     {
       "class": "Priest",
-      "level": 40,
+      "level": 41,
       "name": "Bruce Martin",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -99,7 +99,7 @@
     },
     {
       "class": "Shaman",
-      "level": 39,
+      "level": 40,
       "name": "Dark Tuga",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -108,7 +108,7 @@
     },
     {
       "class": "Druid",
-      "level": 27,
+      "level": 28,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -135,7 +135,7 @@
     },
     {
       "class": "Warrior",
-      "level": 27,
+      "level": 28,
       "name": "Dimitron Anton",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -153,7 +153,7 @@
     },
     {
       "class": "Shaman",
-      "level": 25,
+      "level": 27,
       "name": "Eh Eh",
       "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
@@ -169,7 +169,7 @@
     },
     {
       "class": "Paladin",
-      "level": 40,
+      "level": 41,
       "name": "Emeline Thefake",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -196,7 +196,7 @@
     },
     {
       "class": "Druid",
-      "level": 39,
+      "level": 40,
       "name": "Ginko Mushimaster",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -310,7 +310,7 @@
     },
     {
       "class": "Warrior",
-      "level": 33,
+      "level": 34,
       "name": "Mauri Kreth",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -346,7 +346,7 @@
     },
     {
       "class": "Warrior",
-      "level": 29,
+      "level": 30,
       "name": "Mystoklin Teknoklin",
       "rank": "Fresh Peon",
       "spec": "Arms",
@@ -409,7 +409,7 @@
     },
     {
       "class": "Mage",
-      "level": 20,
+      "level": 21,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -436,7 +436,7 @@
     },
     {
       "class": "Warrior",
-      "level": 31,
+      "level": 32,
       "name": "Retail Enjoyers",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -508,7 +508,7 @@
     },
     {
       "class": "Warlock",
-      "level": 39,
+      "level": 40,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -640,7 +640,7 @@
     },
     {
       "class": "Mage",
-      "level": 48,
+      "level": 49,
       "name": "Voldemorph Jenkins",
       "spec": "Frost",
       "specChecked": 1794992062,
@@ -656,6 +656,15 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/wolf-psymon"
     },
     {
+      "class": "Priest",
+      "level": 39,
+      "name": "Zakalwe Priest",
+      "rank": "Fresh Peon",
+      "spec": "Discipline",
+      "specChecked": 1795035284,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zakalwe-priest"
+    },
+    {
       "class": "Rogue",
       "level": 30,
       "name": "Zarkos Vsall",
@@ -665,6 +674,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-18T17:39:38Z",
+  "retrievedAt": "2026-11-18T20:54:44Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
