@@ -56,7 +56,7 @@
     },
     {
       "class": "Shaman",
-      "level": 40,
+      "level": 41,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -117,7 +117,7 @@
     },
     {
       "class": "Priest",
-      "level": 30,
+      "level": 31,
       "name": "Detroit Ishorde",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -153,7 +153,7 @@
     },
     {
       "class": "Shaman",
-      "level": 24,
+      "level": 25,
       "name": "Eh Eh",
       "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
@@ -196,7 +196,7 @@
     },
     {
       "class": "Druid",
-      "level": 38,
+      "level": 39,
       "name": "Ginko Mushimaster",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -250,7 +250,7 @@
     },
     {
       "class": "Rogue",
-      "level": 26,
+      "level": 27,
       "name": "Hwan Ker",
       "rank": "Fresh Peon",
       "spec": "Assassination",
@@ -268,7 +268,7 @@
     },
     {
       "class": "Warrior",
-      "level": 48,
+      "level": 49,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -286,9 +286,8 @@
     },
     {
       "class": "Paladin",
-      "level": 56,
+      "level": 57,
       "name": "Lorilath Macabre",
-      "rank": "Peon Plus",
       "spec": "Retribution",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lorilath-macabre"
@@ -374,7 +373,7 @@
     },
     {
       "class": "Hunter",
-      "level": 52,
+      "level": 53,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -383,7 +382,7 @@
     },
     {
       "class": "Priest",
-      "level": 38,
+      "level": 39,
       "name": "Pater Patapios",
       "rank": "Fresh Peon",
       "spec": "Shadow",
@@ -473,7 +472,7 @@
     },
     {
       "class": "Warrior",
-      "level": 52,
+      "level": 53,
       "name": "Scurrius Theratking",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -563,7 +562,7 @@
     },
     {
       "class": "Warlock",
-      "level": 55,
+      "level": 56,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -643,7 +642,6 @@
       "class": "Mage",
       "level": 48,
       "name": "Voldemorph Jenkins",
-      "rank": "Peon Plus",
       "spec": "Frost",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/voldemorph-jenkins"
@@ -667,6 +665,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-18T14:26:04Z",
+  "retrievedAt": "2026-11-18T17:39:38Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
