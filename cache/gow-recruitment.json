@@ -1,0 +1,86 @@
+{
+  "format": "pwb-recruitment",
+  "recruitment": {
+    "checked": 1795011185,
+    "guildId": "8003f5c8-af13-433e-b8d2-33fc1129ec7f",
+    "openings": [
+      {
+        "class": "Mage",
+        "specs": [
+          {
+            "name": "Arcane",
+            "priority": "mid"
+          },
+          {
+            "name": "Fire",
+            "priority": "mid"
+          },
+          {
+            "name": "Frost",
+            "priority": "mid"
+          }
+        ]
+      },
+      {
+        "class": "Priest",
+        "specs": [
+          {
+            "name": "Discipline",
+            "priority": "low"
+          },
+          {
+            "name": "Holy",
+            "priority": "low"
+          }
+        ]
+      },
+      {
+        "class": "Rogue",
+        "specs": [
+          {
+            "name": "Assassination",
+            "priority": "low"
+          },
+          {
+            "name": "Combat",
+            "priority": "low"
+          },
+          {
+            "name": "Subtlety",
+            "priority": "low"
+          }
+        ]
+      },
+      {
+        "class": "Shaman",
+        "specs": [
+          {
+            "name": "Restoration",
+            "priority": "low"
+          }
+        ]
+      },
+      {
+        "class": "Warlock",
+        "specs": [
+          {
+            "name": "Affliction",
+            "priority": "mid"
+          },
+          {
+            "name": "Demonology",
+            "priority": "mid"
+          },
+          {
+            "name": "Destruction",
+            "priority": "mid"
+          }
+        ]
+      }
+    ],
+    "source": "https://guildsofwow.com/peons-with-benefits",
+    "status": "ok",
+    "updated": 1795011185
+  },
+  "version": 1
+}
