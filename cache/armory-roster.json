@@ -153,7 +153,7 @@
     },
     {
       "class": "Shaman",
-      "level": 23,
+      "level": 24,
       "name": "Eh Eh",
       "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
@@ -259,7 +259,7 @@
     },
     {
       "class": "Paladin",
-      "level": 32,
+      "level": 33,
       "name": "Ji Mbo",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -347,7 +347,7 @@
     },
     {
       "class": "Warrior",
-      "level": 28,
+      "level": 29,
       "name": "Mystoklin Teknoklin",
       "rank": "Fresh Peon",
       "spec": "Arms",
@@ -500,7 +500,7 @@
     },
     {
       "class": "Priest",
-      "level": 27,
+      "level": 28,
       "name": "Soinier Allied",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -563,7 +563,7 @@
     },
     {
       "class": "Warlock",
-      "level": 54,
+      "level": 55,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -574,7 +574,7 @@
       "class": "Warlock",
       "level": 10,
       "name": "Truespoon Deadlock",
-      "rank": "Fresh Peon",
+      "rank": "Side Hustle",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-deadlock"
     },
@@ -591,7 +591,7 @@
       "class": "Shaman",
       "level": 14,
       "name": "Truespoon Wolfstorm",
-      "rank": "Fresh Peon",
+      "rank": "Side Hustle",
       "spec": "Enhancement",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wolfstorm"
@@ -667,6 +667,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-18T11:24:28Z",
+  "retrievedAt": "2026-11-18T14:26:04Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
