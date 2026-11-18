@@ -11,12 +11,21 @@
     },
     {
       "class": "Mage",
-      "level": 39,
+      "level": 40,
       "name": "Aranith Jr",
       "rank": "Fresh Peon",
       "spec": "Frost",
       "specChecked": 1794903546,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/aranith-jr"
+    },
+    {
+      "class": "Druid",
+      "level": 24,
+      "name": "Areni Rue",
+      "rank": "Fresh Peon",
+      "spec": "Feral",
+      "specChecked": 1794989943,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/areni-rue"
     },
     {
       "class": "Hunter",
@@ -29,7 +38,7 @@
     },
     {
       "class": "Druid",
-      "level": 45,
+      "level": 46,
       "name": "Bamba Forever",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -223,7 +232,7 @@
     },
     {
       "class": "Warlock",
-      "level": 25,
+      "level": 26,
       "name": "Hellsaken Soulrend",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -288,12 +297,12 @@
       "class": "Hunter",
       "level": 3,
       "name": "Lorilath Moocabre",
-      "rank": "Fresh Peon",
+      "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lorilath-moocabre"
     },
     {
       "class": "Priest",
-      "level": 23,
+      "level": 24,
       "name": "Lymster Orel",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -311,7 +320,7 @@
     },
     {
       "class": "Shaman",
-      "level": 28,
+      "level": 29,
       "name": "Micol Jordan",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -365,7 +374,7 @@
     },
     {
       "class": "Hunter",
-      "level": 51,
+      "level": 52,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -374,7 +383,7 @@
     },
     {
       "class": "Priest",
-      "level": 37,
+      "level": 38,
       "name": "Pater Patapios",
       "rank": "Fresh Peon",
       "spec": "Shadow",
@@ -428,7 +437,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 31,
       "name": "Retail Enjoyers",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -544,6 +553,15 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tealiz-dapwn"
     },
     {
+      "class": "Hunter",
+      "level": 45,
+      "name": "Temu Rexar",
+      "rank": "Fresh Peon",
+      "spec": "Marksmanship",
+      "specChecked": 1794989943,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/temu-rexar"
+    },
+    {
       "class": "Warlock",
       "level": 54,
       "name": "Tick Tock",
@@ -597,7 +615,7 @@
     },
     {
       "class": "Rogue",
-      "level": 44,
+      "level": 45,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -648,6 +666,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-18T05:15:25Z",
+  "retrievedAt": "2026-11-18T08:19:03Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
