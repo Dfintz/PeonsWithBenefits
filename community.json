@@ -21,12 +21,13 @@
       "https://guildsforever.com/guilds/peons-with-benefits/apply",
       "https://guildsofwow.com/peons-with-benefits"
     ],
-    "updated": "2026-11-15",
+    "updated": "2026-11-18",
     "openings": [
-      {"class": "Druid", "specs": [{"name": "Guardian", "priority": "low"}, {"name": "Restoration", "priority": "low"}]},
-      {"class": "Paladin", "specs": [{"name": "Holy", "priority": "low"}, {"name": "Protection", "priority": "low"}]},
+      {"class": "Mage", "specs": [{"name": "Arcane", "priority": "mid"}, {"name": "Fire", "priority": "mid"}, {"name": "Frost", "priority": "mid"}]},
       {"class": "Priest", "specs": [{"name": "Discipline", "priority": "low"}, {"name": "Holy", "priority": "low"}]},
-      {"class": "Warrior", "specs": [{"name": "Protection", "priority": "low"}]}
+      {"class": "Rogue", "specs": [{"name": "Assassination", "priority": "low"}, {"name": "Combat", "priority": "low"}, {"name": "Subtlety", "priority": "low"}]},
+      {"class": "Shaman", "specs": [{"name": "Restoration", "priority": "low"}]},
+      {"class": "Warlock", "specs": [{"name": "Affliction", "priority": "mid"}, {"name": "Demonology", "priority": "mid"}, {"name": "Destruction", "priority": "mid"}]}
     ],
     "expectations": [
       "Consumables ready before the pull.",
