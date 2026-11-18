@@ -2,7 +2,7 @@
   "members": [
     {
       "class": "Paladin",
-      "level": 15,
+      "level": 16,
       "name": "Alexbeav Scourgelight",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -28,8 +28,17 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/balan-stickyhoof"
     },
     {
+      "class": "Druid",
+      "level": 45,
+      "name": "Bamba Forever",
+      "rank": "Fresh Peon",
+      "spec": "Feral",
+      "specChecked": 1794966887,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bamba-forever"
+    },
+    {
       "class": "Warrior",
-      "level": 39,
+      "level": 40,
       "name": "Bird Ironhoof",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -46,8 +55,17 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bonkmaster-flex"
     },
     {
+      "class": "Priest",
+      "level": 40,
+      "name": "Bruce Martin",
+      "rank": "Fresh Peon",
+      "spec": "Discipline",
+      "specChecked": 1794966887,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bruce-martin"
+    },
+    {
       "class": "Druid",
-      "level": 38,
+      "level": 39,
       "name": "Cat Pants",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -72,7 +90,7 @@
     },
     {
       "class": "Shaman",
-      "level": 38,
+      "level": 39,
       "name": "Dark Tuga",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -90,7 +108,7 @@
     },
     {
       "class": "Priest",
-      "level": 29,
+      "level": 30,
       "name": "Detroit Ishorde",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -108,7 +126,7 @@
     },
     {
       "class": "Warrior",
-      "level": 26,
+      "level": 27,
       "name": "Dimitron Anton",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -151,7 +169,7 @@
     },
     {
       "class": "Hunter",
-      "level": 37,
+      "level": 38,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Beast Mastery",
@@ -205,7 +223,7 @@
     },
     {
       "class": "Warlock",
-      "level": 24,
+      "level": 25,
       "name": "Hellsaken Soulrend",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -214,7 +232,7 @@
     },
     {
       "class": "Hunter",
-      "level": 25,
+      "level": 27,
       "name": "Honda Africa",
       "rank": "Fresh Peon",
       "spec": "Marksmanship",
@@ -232,7 +250,7 @@
     },
     {
       "class": "Paladin",
-      "level": 31,
+      "level": 32,
       "name": "Ji Mbo",
       "rank": "Fresh Peon",
       "spec": "Retribution",
@@ -241,7 +259,7 @@
     },
     {
       "class": "Warrior",
-      "level": 47,
+      "level": 48,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -259,7 +277,7 @@
     },
     {
       "class": "Paladin",
-      "level": 55,
+      "level": 56,
       "name": "Lorilath Macabre",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -275,7 +293,7 @@
     },
     {
       "class": "Priest",
-      "level": 22,
+      "level": 23,
       "name": "Lymster Orel",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -284,7 +302,7 @@
     },
     {
       "class": "Warrior",
-      "level": 32,
+      "level": 33,
       "name": "Mauri Kreth",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -302,7 +320,7 @@
     },
     {
       "class": "Druid",
-      "level": 35,
+      "level": 36,
       "name": "Moist Pasture",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -311,7 +329,7 @@
     },
     {
       "class": "Warrior",
-      "level": 26,
+      "level": 27,
       "name": "Morgruul Strife",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -320,7 +338,7 @@
     },
     {
       "class": "Warrior",
-      "level": 27,
+      "level": 28,
       "name": "Mystoklin Teknoklin",
       "rank": "Fresh Peon",
       "spec": "Arms",
@@ -329,7 +347,7 @@
     },
     {
       "class": "Hunter",
-      "level": 38,
+      "level": 39,
       "name": "N\u00edco Rob\u00ecn",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -347,7 +365,7 @@
     },
     {
       "class": "Hunter",
-      "level": 50,
+      "level": 51,
       "name": "Ox Milk",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -355,8 +373,17 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ox-milk"
     },
     {
+      "class": "Priest",
+      "level": 37,
+      "name": "Pater Patapios",
+      "rank": "Fresh Peon",
+      "spec": "Shadow",
+      "specChecked": 1794966887,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/pater-patapios"
+    },
+    {
       "class": "Shaman",
-      "level": 28,
+      "level": 30,
       "name": "Pepis Tatis",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -401,7 +428,7 @@
     },
     {
       "class": "Warrior",
-      "level": 29,
+      "level": 30,
       "name": "Retail Enjoyers",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -419,7 +446,7 @@
     },
     {
       "class": "Warlock",
-      "level": 24,
+      "level": 25,
       "name": "River Pixies",
       "rank": "Fresh Peon",
       "spec": "Affliction",
@@ -437,7 +464,7 @@
     },
     {
       "class": "Warrior",
-      "level": 51,
+      "level": 52,
       "name": "Scurrius Theratking",
       "rank": "Fresh Peon",
       "spec": "Protection",
@@ -491,7 +518,7 @@
     },
     {
       "class": "Rogue",
-      "level": 39,
+      "level": 40,
       "name": "Sukuba Sinstitched",
       "rank": "Fresh Peon",
       "spec": "Subtlety",
@@ -535,7 +562,7 @@
     },
     {
       "class": "Druid",
-      "level": 17,
+      "level": 18,
       "name": "Truespoon Wildmane",
       "rank": "Fresh Peon",
       "specChecked": 1794904172,
@@ -561,7 +588,7 @@
     },
     {
       "class": "Warlock",
-      "level": 25,
+      "level": 26,
       "name": "Unwell Frank",
       "rank": "Fresh Peon",
       "spec": "Affliction",
@@ -586,7 +613,7 @@
     },
     {
       "class": "Priest",
-      "level": 37,
+      "level": 38,
       "name": "Vicar Abracadaver",
       "rank": "Fresh Peon",
       "spec": "Discipline",
@@ -595,7 +622,7 @@
     },
     {
       "class": "Mage",
-      "level": 47,
+      "level": 48,
       "name": "Voldemorph Jenkins",
       "rank": "Peon Plus",
       "spec": "Frost",
@@ -604,7 +631,7 @@
     },
     {
       "class": "Hunter",
-      "level": 37,
+      "level": 38,
       "name": "Wolf Psymon",
       "rank": "Fresh Peon",
       "spec": "Beast Mastery",
@@ -621,6 +648,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-17T22:54:15Z",
+  "retrievedAt": "2026-11-18T01:54:47Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
