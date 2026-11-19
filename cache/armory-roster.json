@@ -61,7 +61,7 @@
     },
     {
       "class": "Priest",
-      "level": 41,
+      "level": 42,
       "name": "Bruce Martin",
       "spec": "Discipline",
       "specChecked": 1795054779,
@@ -300,7 +300,7 @@
     },
     {
       "class": "Shaman",
-      "level": 30,
+      "level": 31,
       "name": "Micol Jordan",
       "spec": "Enhancement",
       "specChecked": 1794991201,
@@ -308,7 +308,7 @@
     },
     {
       "class": "Druid",
-      "level": 36,
+      "level": 37,
       "name": "Moist Pasture",
       "spec": "Feral",
       "specChecked": 1794991201,
@@ -348,7 +348,7 @@
     },
     {
       "class": "Hunter",
-      "level": 53,
+      "level": 54,
       "name": "Ox Milk",
       "spec": "Beast Mastery",
       "specChecked": 1794991201,
@@ -439,7 +439,7 @@
     },
     {
       "class": "Warrior",
-      "level": 54,
+      "level": 55,
       "name": "Scurrius Theratking",
       "spec": "Protection",
       "specChecked": 1794991201,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-19T03:39:50Z",
+  "retrievedAt": "2026-11-19T06:44:42Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
