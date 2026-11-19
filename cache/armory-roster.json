@@ -11,7 +11,7 @@
     },
     {
       "class": "Mage",
-      "level": 40,
+      "level": 41,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795076965,
@@ -61,7 +61,7 @@
     },
     {
       "class": "Priest",
-      "level": 42,
+      "level": 43,
       "name": "Bruce Martin",
       "spec": "Discipline",
       "specChecked": 1795054779,
@@ -101,7 +101,7 @@
     },
     {
       "class": "Druid",
-      "level": 29,
+      "level": 30,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 27,
+      "level": 28,
       "name": "Eh Eh",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -160,7 +160,7 @@
     },
     {
       "class": "Paladin",
-      "level": 42,
+      "level": 44,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795076965,
@@ -168,7 +168,7 @@
     },
     {
       "class": "Hunter",
-      "level": 39,
+      "level": 40,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -185,7 +185,7 @@
     },
     {
       "class": "Druid",
-      "level": 40,
+      "level": 41,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795076965,
@@ -252,7 +252,7 @@
     },
     {
       "class": "Warrior",
-      "level": 50,
+      "level": 51,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -332,7 +332,7 @@
     },
     {
       "class": "Hunter",
-      "level": 39,
+      "level": 40,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795078482,
@@ -406,7 +406,7 @@
     },
     {
       "class": "Warrior",
-      "level": 33,
+      "level": 34,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795078482,
@@ -513,7 +513,7 @@
     },
     {
       "class": "Hunter",
-      "level": 45,
+      "level": 46,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795076355,
@@ -612,7 +612,7 @@
     },
     {
       "class": "Priest",
-      "level": 39,
+      "level": 40,
       "name": "Zakalwe Priest",
       "spec": "Discipline",
       "specChecked": 1795035284,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-19T13:14:52Z",
+  "retrievedAt": "2026-11-19T16:16:10Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
