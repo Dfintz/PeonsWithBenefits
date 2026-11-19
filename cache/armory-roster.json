@@ -13,7 +13,6 @@
       "class": "Mage",
       "level": 40,
       "name": "Aranith Jr",
-      "rank": "Fresh Peon",
       "spec": "Frost",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/aranith-jr"
@@ -22,7 +21,6 @@
       "class": "Druid",
       "level": 25,
       "name": "Areni Rue",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794989943,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/areni-rue"
@@ -38,25 +36,23 @@
     },
     {
       "class": "Druid",
-      "level": 47,
+      "level": 48,
       "name": "Bamba Forever",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794966887,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bamba-forever"
     },
     {
       "class": "Warrior",
-      "level": 41,
+      "level": 42,
       "name": "Bird Ironhoof",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bird-ironhoof"
     },
     {
       "class": "Shaman",
-      "level": 41,
+      "level": 42,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -67,16 +63,14 @@
       "class": "Priest",
       "level": 41,
       "name": "Bruce Martin",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1794966887,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bruce-martin"
     },
     {
       "class": "Druid",
-      "level": 39,
+      "level": 41,
       "name": "Cat Pants",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/cat-pants"
@@ -85,7 +79,6 @@
       "class": "Druid",
       "level": 39,
       "name": "Catriel Agartha",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/catriel-agartha"
@@ -94,21 +87,21 @@
       "class": "Mage",
       "level": 10,
       "name": "Corax Felraven",
-      "rank": "Side Hustle",
+      "rank": "Fresh Peon",
+      "specChecked": 1795048553,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/corax-felraven"
     },
     {
       "class": "Shaman",
       "level": 40,
       "name": "Dark Tuga",
-      "rank": "Fresh Peon",
       "spec": "Enhancement",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dark-tuga"
     },
     {
       "class": "Druid",
-      "level": 28,
+      "level": 29,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -119,7 +112,6 @@
       "class": "Priest",
       "level": 31,
       "name": "Detroit Ishorde",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/detroit-ishorde"
@@ -137,7 +129,6 @@
       "class": "Warrior",
       "level": 28,
       "name": "Dimitron Anton",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dimitron-anton"
@@ -146,7 +137,6 @@
       "class": "Shaman",
       "level": 33,
       "name": "Dingy Bingy",
-      "rank": "Fresh Peon",
       "spec": "Restoration",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dingy-bingy"
@@ -155,30 +145,30 @@
       "class": "Shaman",
       "level": 27,
       "name": "Eh Eh",
-      "rank": "Side Hustle",
+      "rank": "Fresh Peon",
+      "spec": "Enhancement",
+      "specChecked": 1795048553,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
     },
     {
       "class": "Paladin",
       "level": 18,
       "name": "Eizala Northborn",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eizala-northborn"
     },
     {
       "class": "Paladin",
-      "level": 41,
+      "level": 42,
       "name": "Emeline Thefake",
-      "rank": "Fresh Peon",
       "spec": "Retribution",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/emeline-thefake"
     },
     {
       "class": "Hunter",
-      "level": 38,
+      "level": 39,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -189,7 +179,6 @@
       "class": "Druid",
       "level": 39,
       "name": "Gambino Ragehoof",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/gambino-ragehoof"
@@ -198,7 +187,6 @@
       "class": "Druid",
       "level": 40,
       "name": "Ginko Mushimaster",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ginko-mushimaster"
@@ -216,7 +204,6 @@
       "class": "Warrior",
       "level": 32,
       "name": "Gork Dreadmaul",
-      "rank": "Fresh Peon",
       "spec": "Fury",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/gork-dreadmaul"
@@ -243,7 +230,6 @@
       "class": "Hunter",
       "level": 27,
       "name": "Honda Africa",
-      "rank": "Fresh Peon",
       "spec": "Marksmanship",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/honda-africa"
@@ -252,7 +238,6 @@
       "class": "Rogue",
       "level": 27,
       "name": "Hwan Ker",
-      "rank": "Fresh Peon",
       "spec": "Assassination",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/hwan-ker"
@@ -261,14 +246,13 @@
       "class": "Paladin",
       "level": 33,
       "name": "Ji Mbo",
-      "rank": "Fresh Peon",
       "spec": "Retribution",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ji-mbo"
     },
     {
       "class": "Warrior",
-      "level": 49,
+      "level": 50,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -279,7 +263,6 @@
       "class": "Priest",
       "level": 13,
       "name": "Khata Sinweaver",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/khata-sinweaver"
@@ -296,32 +279,29 @@
       "class": "Hunter",
       "level": 3,
       "name": "Lorilath Moocabre",
-      "rank": "Side Hustle",
+      "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lorilath-moocabre"
     },
     {
       "class": "Priest",
       "level": 24,
       "name": "Lymster Orel",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1794990555,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lymster-orel"
     },
     {
       "class": "Warrior",
-      "level": 34,
+      "level": 35,
       "name": "Mauri Kreth",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/mauri-kreth"
     },
     {
       "class": "Shaman",
-      "level": 29,
+      "level": 30,
       "name": "Micol Jordan",
-      "rank": "Fresh Peon",
       "spec": "Enhancement",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/micol-jordan"
@@ -330,7 +310,6 @@
       "class": "Druid",
       "level": 36,
       "name": "Moist Pasture",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/moist-pasture"
@@ -339,7 +318,6 @@
       "class": "Warrior",
       "level": 27,
       "name": "Morgruul Strife",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/morgruul-strife"
@@ -348,7 +326,6 @@
       "class": "Warrior",
       "level": 30,
       "name": "Mystoklin Teknoklin",
-      "rank": "Fresh Peon",
       "spec": "Arms",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/mystoklin-teknoklin"
@@ -357,7 +334,6 @@
       "class": "Hunter",
       "level": 39,
       "name": "N\u00edco Rob\u00ecn",
-      "rank": "Fresh Peon",
       "spec": "Beast Mastery",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/n%C3%ADco-rob%C3%ACn"
@@ -366,7 +342,6 @@
       "class": "Priest",
       "level": 42,
       "name": "Old Ubay",
-      "rank": "Fresh Peon",
       "spec": "Shadow",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/old-ubay"
@@ -375,7 +350,6 @@
       "class": "Hunter",
       "level": 53,
       "name": "Ox Milk",
-      "rank": "Fresh Peon",
       "spec": "Beast Mastery",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ox-milk"
@@ -384,7 +358,6 @@
       "class": "Priest",
       "level": 39,
       "name": "Pater Patapios",
-      "rank": "Fresh Peon",
       "spec": "Shadow",
       "specChecked": 1794966887,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/pater-patapios"
@@ -393,7 +366,6 @@
       "class": "Shaman",
       "level": 30,
       "name": "Pepis Tatis",
-      "rank": "Fresh Peon",
       "spec": "Enhancement",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/pepis-tatis"
@@ -402,7 +374,6 @@
       "class": "Priest",
       "level": 34,
       "name": "Porph Prest",
-      "rank": "Fresh Peon",
       "spec": "Shadow",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/porph-prest"
@@ -420,7 +391,6 @@
       "class": "Rogue",
       "level": 45,
       "name": "Rat Toe",
-      "rank": "Fresh Peon",
       "spec": "Assassination",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/rat-toe"
@@ -436,9 +406,8 @@
     },
     {
       "class": "Warrior",
-      "level": 32,
+      "level": 33,
       "name": "Retail Enjoyers",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/retail-enjoyers"
@@ -456,7 +425,6 @@
       "class": "Warlock",
       "level": 25,
       "name": "River Pixies",
-      "rank": "Fresh Peon",
       "spec": "Affliction",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/river-pixies"
@@ -465,16 +433,14 @@
       "class": "Mage",
       "level": 30,
       "name": "Rufus Thornbury",
-      "rank": "Fresh Peon",
       "spec": "Frost",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/rufus-thornbury"
     },
     {
       "class": "Warrior",
-      "level": 53,
+      "level": 54,
       "name": "Scurrius Theratking",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/scurrius-theratking"
@@ -492,7 +458,6 @@
       "class": "Rogue",
       "level": 36,
       "name": "Sira Levila",
-      "rank": "Fresh Peon",
       "spec": "Combat",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/sira-levila"
@@ -501,14 +466,13 @@
       "class": "Priest",
       "level": 28,
       "name": "Soinier Allied",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/soinier-allied"
     },
     {
       "class": "Warlock",
-      "level": 40,
+      "level": 41,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -519,7 +483,6 @@
       "class": "Warrior",
       "level": 22,
       "name": "Son Ack",
-      "rank": "Fresh Peon",
       "spec": "Arms",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/son-ack"
@@ -528,7 +491,6 @@
       "class": "Rogue",
       "level": 40,
       "name": "Sukuba Sinstitched",
-      "rank": "Fresh Peon",
       "spec": "Subtlety",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/sukuba-sinstitched"
@@ -537,7 +499,6 @@
       "class": "Shaman",
       "level": 28,
       "name": "Tahuln Stickyhoof",
-      "rank": "Fresh Peon",
       "spec": "Restoration",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tahuln-stickyhoof"
@@ -546,7 +507,6 @@
       "class": "Hunter",
       "level": 60,
       "name": "Tealiz Dapwn",
-      "rank": "Fresh Peon",
       "spec": "Marksmanship",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tealiz-dapwn"
@@ -555,7 +515,6 @@
       "class": "Hunter",
       "level": 45,
       "name": "Temu Rexar",
-      "rank": "Fresh Peon",
       "spec": "Marksmanship",
       "specChecked": 1794989943,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/temu-rexar"
@@ -573,15 +532,14 @@
       "class": "Warlock",
       "level": 10,
       "name": "Truespoon Deadlock",
-      "rank": "Side Hustle",
+      "rank": "Fresh Peon",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-deadlock"
     },
     {
       "class": "Druid",
-      "level": 18,
+      "level": 20,
       "name": "Truespoon Wildmane",
-      "rank": "Fresh Peon",
       "spec": "Feral",
       "specChecked": 1794991201,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wildmane"
@@ -590,7 +548,7 @@
       "class": "Shaman",
       "level": 14,
       "name": "Truespoon Wolfstorm",
-      "rank": "Side Hustle",
+      "rank": "Fresh Peon",
       "spec": "Enhancement",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wolfstorm"
@@ -599,7 +557,6 @@
       "class": "Paladin",
       "level": 30,
       "name": "Tzioukina Lights",
-      "rank": "Fresh Peon",
       "spec": "Protection",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tzioukina-lights"
@@ -608,14 +565,13 @@
       "class": "Warlock",
       "level": 26,
       "name": "Unwell Frank",
-      "rank": "Fresh Peon",
       "spec": "Affliction",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/unwell-frank"
     },
     {
       "class": "Rogue",
-      "level": 45,
+      "level": 46,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -626,14 +582,14 @@
       "class": "Druid",
       "level": 10,
       "name": "Velial Earthbreaker",
-      "rank": "Side Hustle",
+      "rank": "Fresh Peon",
+      "specChecked": 1795048553,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/velial-earthbreaker"
     },
     {
       "class": "Priest",
       "level": 38,
       "name": "Vicar Abracadaver",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/vicar-abracadaver"
@@ -650,7 +606,6 @@
       "class": "Hunter",
       "level": 38,
       "name": "Wolf Psymon",
-      "rank": "Fresh Peon",
       "spec": "Beast Mastery",
       "specChecked": 1794992062,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/wolf-psymon"
@@ -659,14 +614,13 @@
       "class": "Priest",
       "level": 39,
       "name": "Zakalwe Priest",
-      "rank": "Fresh Peon",
       "spec": "Discipline",
       "specChecked": 1795035284,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zakalwe-priest"
     },
     {
       "class": "Rogue",
-      "level": 30,
+      "level": 31,
       "name": "Zarkos Vsall",
       "rank": "Peon Plus",
       "spec": "Combat",
@@ -674,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-18T20:54:44Z",
+  "retrievedAt": "2026-11-19T00:35:53Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
