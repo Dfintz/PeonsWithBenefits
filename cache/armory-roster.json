@@ -244,7 +244,7 @@
     },
     {
       "class": "Paladin",
-      "level": 33,
+      "level": 34,
       "name": "Ji Mbo",
       "spec": "Retribution",
       "specChecked": 1795076965,
@@ -521,7 +521,7 @@
     },
     {
       "class": "Warlock",
-      "level": 56,
+      "level": 57,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-19T09:54:23Z",
+  "retrievedAt": "2026-11-19T13:14:52Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
