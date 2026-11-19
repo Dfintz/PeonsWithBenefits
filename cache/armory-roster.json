@@ -27,7 +27,7 @@
     },
     {
       "class": "Hunter",
-      "level": 28,
+      "level": 29,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -93,7 +93,7 @@
     },
     {
       "class": "Shaman",
-      "level": 40,
+      "level": 41,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795076965,
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 28,
+      "level": 29,
       "name": "Eh Eh",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -185,7 +185,7 @@
     },
     {
       "class": "Druid",
-      "level": 41,
+      "level": 42,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795076965,
@@ -210,7 +210,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 32,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -269,7 +269,7 @@
     },
     {
       "class": "Paladin",
-      "level": 57,
+      "level": 58,
       "name": "Lorilath Macabre",
       "spec": "Retribution",
       "specChecked": 1795076965,
@@ -292,7 +292,7 @@
     },
     {
       "class": "Warrior",
-      "level": 35,
+      "level": 36,
       "name": "Mauri Kreth",
       "spec": "Protection",
       "specChecked": 1795078482,
@@ -348,7 +348,7 @@
     },
     {
       "class": "Hunter",
-      "level": 54,
+      "level": 55,
       "name": "Ox Milk",
       "spec": "Beast Mastery",
       "specChecked": 1795078482,
@@ -431,7 +431,7 @@
     },
     {
       "class": "Mage",
-      "level": 30,
+      "level": 31,
       "name": "Rufus Thornbury",
       "spec": "Frost",
       "specChecked": 1795078482,
@@ -439,7 +439,7 @@
     },
     {
       "class": "Warrior",
-      "level": 55,
+      "level": 56,
       "name": "Scurrius Theratking",
       "spec": "Protection",
       "specChecked": 1795078482,
@@ -497,7 +497,7 @@
     },
     {
       "class": "Shaman",
-      "level": 28,
+      "level": 29,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795078482,
@@ -521,7 +521,7 @@
     },
     {
       "class": "Warlock",
-      "level": 57,
+      "level": 58,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -563,7 +563,7 @@
     },
     {
       "class": "Warlock",
-      "level": 26,
+      "level": 27,
       "name": "Unwell Frank",
       "spec": "Affliction",
       "specChecked": 1795079773,
@@ -612,7 +612,7 @@
     },
     {
       "class": "Priest",
-      "level": 40,
+      "level": 41,
       "name": "Zakalwe Priest",
       "spec": "Discipline",
       "specChecked": 1795035284,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-19T16:16:10Z",
+  "retrievedAt": "2026-11-19T19:25:13Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
