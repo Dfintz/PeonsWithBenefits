@@ -61,7 +61,7 @@
     },
     {
       "class": "Priest",
-      "level": 43,
+      "level": 44,
       "name": "Bruce Martin",
       "spec": "Discipline",
       "specChecked": 1795141192,
@@ -101,7 +101,7 @@
     },
     {
       "class": "Druid",
-      "level": 32,
+      "level": 33,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -269,7 +269,7 @@
     },
     {
       "class": "Paladin",
-      "level": 59,
+      "level": 60,
       "name": "Lorilath Macabre",
       "spec": "Retribution",
       "specChecked": 1795076965,
@@ -316,7 +316,7 @@
     },
     {
       "class": "Warrior",
-      "level": 27,
+      "level": 28,
       "name": "Morgruul Strife",
       "spec": "Protection",
       "specChecked": 1795078482,
@@ -324,7 +324,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 31,
       "name": "Mystoklin Teknoklin",
       "spec": "Arms",
       "specChecked": 1795078482,
@@ -513,7 +513,7 @@
     },
     {
       "class": "Hunter",
-      "level": 47,
+      "level": 48,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795076355,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-20T01:42:24Z",
+  "retrievedAt": "2026-11-20T04:54:02Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
