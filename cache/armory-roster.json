@@ -11,7 +11,7 @@
     },
     {
       "class": "Mage",
-      "level": 41,
+      "level": 42,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795076965,
@@ -27,7 +27,7 @@
     },
     {
       "class": "Hunter",
-      "level": 29,
+      "level": 30,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -36,7 +36,7 @@
     },
     {
       "class": "Druid",
-      "level": 48,
+      "level": 49,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795054779,
@@ -44,7 +44,7 @@
     },
     {
       "class": "Warrior",
-      "level": 42,
+      "level": 43,
       "name": "Bird Ironhoof",
       "spec": "Protection",
       "specChecked": 1795076965,
@@ -69,7 +69,7 @@
     },
     {
       "class": "Druid",
-      "level": 41,
+      "level": 42,
       "name": "Cat Pants",
       "spec": "Feral",
       "specChecked": 1795076965,
@@ -101,7 +101,7 @@
     },
     {
       "class": "Druid",
-      "level": 30,
+      "level": 32,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 29,
+      "level": 30,
       "name": "Eh Eh",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
@@ -160,7 +160,7 @@
     },
     {
       "class": "Paladin",
-      "level": 44,
+      "level": 45,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795076965,
@@ -168,7 +168,7 @@
     },
     {
       "class": "Hunter",
-      "level": 40,
+      "level": 41,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -185,7 +185,7 @@
     },
     {
       "class": "Druid",
-      "level": 42,
+      "level": 43,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795076965,
@@ -252,7 +252,7 @@
     },
     {
       "class": "Warrior",
-      "level": 51,
+      "level": 52,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -269,7 +269,7 @@
     },
     {
       "class": "Paladin",
-      "level": 58,
+      "level": 59,
       "name": "Lorilath Macabre",
       "spec": "Retribution",
       "specChecked": 1795076965,
@@ -332,7 +332,7 @@
     },
     {
       "class": "Hunter",
-      "level": 40,
+      "level": 41,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795078482,
@@ -397,7 +397,7 @@
     },
     {
       "class": "Paladin",
-      "level": 21,
+      "level": 24,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -406,7 +406,7 @@
     },
     {
       "class": "Warrior",
-      "level": 34,
+      "level": 35,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795078482,
@@ -456,7 +456,7 @@
     },
     {
       "class": "Rogue",
-      "level": 36,
+      "level": 37,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795078482,
@@ -472,7 +472,7 @@
     },
     {
       "class": "Warlock",
-      "level": 41,
+      "level": 42,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -497,7 +497,7 @@
     },
     {
       "class": "Shaman",
-      "level": 29,
+      "level": 30,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795078482,
@@ -513,7 +513,7 @@
     },
     {
       "class": "Hunter",
-      "level": 46,
+      "level": 47,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795076355,
@@ -521,7 +521,7 @@
     },
     {
       "class": "Warlock",
-      "level": 58,
+      "level": 59,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -571,7 +571,7 @@
     },
     {
       "class": "Rogue",
-      "level": 46,
+      "level": 47,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -596,7 +596,7 @@
     },
     {
       "class": "Mage",
-      "level": 49,
+      "level": 50,
       "name": "Voldemorph Jenkins",
       "spec": "Frost",
       "specChecked": 1795079773,
@@ -604,7 +604,7 @@
     },
     {
       "class": "Hunter",
-      "level": 38,
+      "level": 39,
       "name": "Wolf Psymon",
       "spec": "Beast Mastery",
       "specChecked": 1795079773,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-19T22:39:50Z",
+  "retrievedAt": "2026-11-20T01:42:24Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
