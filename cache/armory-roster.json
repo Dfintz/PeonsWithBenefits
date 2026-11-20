@@ -52,7 +52,7 @@
     },
     {
       "class": "Shaman",
-      "level": 42,
+      "level": 43,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -61,7 +61,7 @@
     },
     {
       "class": "Priest",
-      "level": 44,
+      "level": 45,
       "name": "Bruce Martin",
       "spec": "Discipline",
       "specChecked": 1795141192,
@@ -127,7 +127,7 @@
     },
     {
       "class": "Warrior",
-      "level": 28,
+      "level": 29,
       "name": "Dimitron Anton",
       "spec": "Protection",
       "specChecked": 1795163972,
@@ -135,7 +135,7 @@
     },
     {
       "class": "Shaman",
-      "level": 33,
+      "level": 34,
       "name": "Dingy Bingy",
       "spec": "Enhancement",
       "specChecked": 1795163972,
@@ -160,7 +160,7 @@
     },
     {
       "class": "Paladin",
-      "level": 45,
+      "level": 46,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795163972,
@@ -252,7 +252,7 @@
     },
     {
       "class": "Warrior",
-      "level": 52,
+      "level": 53,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -356,7 +356,7 @@
     },
     {
       "class": "Priest",
-      "level": 39,
+      "level": 40,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795141192,
@@ -571,7 +571,7 @@
     },
     {
       "class": "Rogue",
-      "level": 47,
+      "level": 48,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-20T14:15:26Z",
+  "retrievedAt": "2026-11-20T17:25:13Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
