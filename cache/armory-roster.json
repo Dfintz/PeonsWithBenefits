@@ -431,7 +431,7 @@
     },
     {
       "class": "Mage",
-      "level": 31,
+      "level": 32,
       "name": "Rufus Thornbury",
       "spec": "Frost",
       "specChecked": 1795078482,
@@ -439,7 +439,7 @@
     },
     {
       "class": "Warrior",
-      "level": 56,
+      "level": 57,
       "name": "Scurrius Theratking",
       "spec": "Protection",
       "specChecked": 1795078482,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-20T04:54:02Z",
+  "retrievedAt": "2026-11-20T07:55:02Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
