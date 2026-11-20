@@ -456,7 +456,7 @@
     },
     {
       "class": "Rogue",
-      "level": 37,
+      "level": 38,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795164894,
@@ -472,7 +472,7 @@
     },
     {
       "class": "Warlock",
-      "level": 42,
+      "level": 43,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -521,7 +521,7 @@
     },
     {
       "class": "Warlock",
-      "level": 59,
+      "level": 60,
       "name": "Tick Tock",
       "rank": "Peon Plus",
       "spec": "Affliction",
@@ -588,7 +588,7 @@
     },
     {
       "class": "Priest",
-      "level": 38,
+      "level": 39,
       "name": "Vicar Abracadaver",
       "spec": "Discipline",
       "specChecked": 1795166774,
@@ -628,6 +628,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-20T07:55:02Z",
+  "retrievedAt": "2026-11-20T11:13:53Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
