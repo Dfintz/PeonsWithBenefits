@@ -69,7 +69,7 @@
     },
     {
       "class": "Priest",
-      "level": 45,
+      "level": 46,
       "name": "Bruce Martin",
       "spec": "Shadow",
       "specChecked": 1795228095,
@@ -566,7 +566,7 @@
       "name": "Truespoon Wolfstorm",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
-      "specChecked": 1795164894,
+      "specChecked": 1795252461,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wolfstorm"
     },
     {
@@ -644,6 +644,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-21T05:55:03Z",
+  "retrievedAt": "2026-11-21T09:14:21Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
