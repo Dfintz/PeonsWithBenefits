@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 43,
+      "level": 44,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795163972,
@@ -60,7 +60,7 @@
     },
     {
       "class": "Shaman",
-      "level": 44,
+      "level": 45,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -77,7 +77,7 @@
     },
     {
       "class": "Druid",
-      "level": 43,
+      "level": 44,
       "name": "Cat Pants",
       "spec": "Feral",
       "specChecked": 1795163972,
@@ -201,7 +201,7 @@
     },
     {
       "class": "Druid",
-      "level": 44,
+      "level": 45,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795163972,
@@ -244,7 +244,7 @@
     },
     {
       "class": "Hunter",
-      "level": 27,
+      "level": 28,
       "name": "Honda Africa",
       "spec": "Marksmanship",
       "specChecked": 1795163972,
@@ -316,7 +316,7 @@
     },
     {
       "class": "Shaman",
-      "level": 31,
+      "level": 32,
       "name": "Micol Jordan",
       "spec": "Enhancement",
       "specChecked": 1795164894,
@@ -324,7 +324,7 @@
     },
     {
       "class": "Druid",
-      "level": 37,
+      "level": 38,
       "name": "Moist Pasture",
       "spec": "Feral",
       "specChecked": 1795164894,
@@ -332,7 +332,7 @@
     },
     {
       "class": "Warrior",
-      "level": 28,
+      "level": 29,
       "name": "Morgruul Strife",
       "spec": "Protection",
       "specChecked": 1795164894,
@@ -455,7 +455,7 @@
     },
     {
       "class": "Warrior",
-      "level": 58,
+      "level": 59,
       "name": "Scurrius Theratking",
       "spec": "Protection",
       "specChecked": 1795164894,
@@ -488,7 +488,7 @@
     },
     {
       "class": "Warlock",
-      "level": 43,
+      "level": 44,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -529,7 +529,7 @@
     },
     {
       "class": "Hunter",
-      "level": 48,
+      "level": 49,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795163337,
@@ -554,7 +554,7 @@
     },
     {
       "class": "Druid",
-      "level": 21,
+      "level": 22,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795164894,
@@ -644,6 +644,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-20T23:39:49Z",
+  "retrievedAt": "2026-11-21T02:54:28Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
