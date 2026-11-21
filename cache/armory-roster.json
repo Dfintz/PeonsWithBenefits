@@ -11,7 +11,7 @@
     },
     {
       "class": "Warrior",
-      "level": 35,
+      "level": 36,
       "name": "Ancient Spawn",
       "spec": "Arms",
       "specChecked": 1795293553,
@@ -60,7 +60,7 @@
     },
     {
       "class": "Shaman",
-      "level": 45,
+      "level": 46,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -109,7 +109,7 @@
     },
     {
       "class": "Shaman",
-      "level": 43,
+      "level": 44,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795250390,
@@ -184,7 +184,7 @@
     },
     {
       "class": "Hunter",
-      "level": 42,
+      "level": 43,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -218,7 +218,7 @@
     },
     {
       "class": "Warrior",
-      "level": 33,
+      "level": 35,
       "name": "Gork Dreadmaul",
       "spec": "Fury",
       "specChecked": 1795250390,
@@ -348,7 +348,7 @@
     },
     {
       "class": "Hunter",
-      "level": 43,
+      "level": 44,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795251300,
@@ -356,7 +356,7 @@
     },
     {
       "class": "Priest",
-      "level": 42,
+      "level": 43,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795251300,
@@ -396,7 +396,7 @@
     },
     {
       "class": "Mage",
-      "level": 22,
+      "level": 23,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -455,7 +455,7 @@
     },
     {
       "class": "Warrior",
-      "level": 59,
+      "level": 60,
       "name": "Scurrius Theratking",
       "spec": "Protection",
       "specChecked": 1795251300,
@@ -472,7 +472,7 @@
     },
     {
       "class": "Rogue",
-      "level": 40,
+      "level": 41,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795251300,
@@ -480,7 +480,7 @@
     },
     {
       "class": "Priest",
-      "level": 30,
+      "level": 31,
       "name": "Soinier Allied",
       "spec": "Discipline",
       "specChecked": 1795251300,
@@ -488,7 +488,7 @@
     },
     {
       "class": "Warlock",
-      "level": 44,
+      "level": 45,
       "name": "Solarnoctis Lomeelen",
       "rank": "Peon Plus",
       "spec": "Demonology",
@@ -612,7 +612,7 @@
     },
     {
       "class": "Mage",
-      "level": 52,
+      "level": 53,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
       "specChecked": 1795253958,
@@ -644,6 +644,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-21T18:25:50Z",
+  "retrievedAt": "2026-11-21T21:39:53Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
