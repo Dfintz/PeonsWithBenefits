@@ -68,7 +68,7 @@
     },
     {
       "class": "Shaman",
-      "level": 46,
+      "level": 47,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -85,7 +85,7 @@
     },
     {
       "class": "Druid",
-      "level": 46,
+      "level": 47,
       "name": "Cat Pants",
       "spec": "Feral",
       "specChecked": 1795337674,
@@ -117,7 +117,7 @@
     },
     {
       "class": "Shaman",
-      "level": 44,
+      "level": 45,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795337674,
@@ -209,7 +209,7 @@
     },
     {
       "class": "Druid",
-      "level": 45,
+      "level": 46,
       "name": "Ginko Mushimaster",
       "spec": "Restoration",
       "specChecked": 1795337674,
@@ -226,7 +226,7 @@
     },
     {
       "class": "Warrior",
-      "level": 37,
+      "level": 38,
       "name": "Gork Dreadmaul",
       "spec": "Fury",
       "specChecked": 1795337674,
@@ -252,7 +252,7 @@
     },
     {
       "class": "Hunter",
-      "level": 28,
+      "level": 29,
       "name": "Honda Africa",
       "spec": "Marksmanship",
       "specChecked": 1795337674,
@@ -276,7 +276,7 @@
     },
     {
       "class": "Warrior",
-      "level": 56,
+      "level": 57,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -290,6 +290,14 @@
       "spec": "Discipline",
       "specChecked": 1795337674,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/khata-sinweaver"
+    },
+    {
+      "class": "Rogue",
+      "level": 37,
+      "name": "Lilith Pierce",
+      "spec": "Combat",
+      "specChecked": 1795367512,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lilith-pierce"
     },
     {
       "class": "Paladin",
@@ -356,7 +364,7 @@
     },
     {
       "class": "Druid",
-      "level": 47,
+      "level": 48,
       "name": "No Fears",
       "spec": "Restoration",
       "specChecked": 1795320977,
@@ -364,7 +372,7 @@
     },
     {
       "class": "Hunter",
-      "level": 45,
+      "level": 46,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795338864,
@@ -372,7 +380,7 @@
     },
     {
       "class": "Priest",
-      "level": 46,
+      "level": 48,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795338864,
@@ -412,7 +420,7 @@
     },
     {
       "class": "Mage",
-      "level": 23,
+      "level": 24,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -488,7 +496,7 @@
     },
     {
       "class": "Rogue",
-      "level": 43,
+      "level": 44,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795338864,
@@ -529,7 +537,7 @@
     },
     {
       "class": "Shaman",
-      "level": 30,
+      "level": 31,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795338864,
@@ -660,6 +668,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-22T13:54:52Z",
+  "retrievedAt": "2026-11-22T17:11:52Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
