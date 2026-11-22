@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 44,
+      "level": 45,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795250390,
@@ -44,7 +44,7 @@
     },
     {
       "class": "Druid",
-      "level": 50,
+      "level": 51,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795228095,
@@ -52,7 +52,7 @@
     },
     {
       "class": "Warrior",
-      "level": 43,
+      "level": 44,
       "name": "Bird Ironhoof",
       "spec": "Protection",
       "specChecked": 1795250390,
@@ -69,7 +69,7 @@
     },
     {
       "class": "Priest",
-      "level": 46,
+      "level": 47,
       "name": "Bruce Martin",
       "spec": "Shadow",
       "specChecked": 1795228095,
@@ -77,7 +77,7 @@
     },
     {
       "class": "Druid",
-      "level": 45,
+      "level": 46,
       "name": "Cat Pants",
       "spec": "Feral",
       "specChecked": 1795250390,
@@ -104,7 +104,7 @@
       "level": 10,
       "name": "Corax Felraven",
       "rank": "Fresh Peon",
-      "specChecked": 1795222205,
+      "specChecked": 1795309045,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/corax-felraven"
     },
     {
@@ -117,7 +117,7 @@
     },
     {
       "class": "Druid",
-      "level": 34,
+      "level": 35,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -143,7 +143,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 31,
       "name": "Dimitron Anton",
       "spec": "Protection",
       "specChecked": 1795250390,
@@ -163,7 +163,7 @@
       "name": "Eh Eh",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
-      "specChecked": 1795222205,
+      "specChecked": 1795309045,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eh-eh"
     },
     {
@@ -218,7 +218,7 @@
     },
     {
       "class": "Warrior",
-      "level": 35,
+      "level": 36,
       "name": "Gork Dreadmaul",
       "spec": "Fury",
       "specChecked": 1795250390,
@@ -268,7 +268,7 @@
     },
     {
       "class": "Warrior",
-      "level": 55,
+      "level": 56,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -308,7 +308,7 @@
     },
     {
       "class": "Warrior",
-      "level": 38,
+      "level": 39,
       "name": "Mauri Kreth",
       "spec": "Protection",
       "specChecked": 1795251300,
@@ -324,7 +324,7 @@
     },
     {
       "class": "Druid",
-      "level": 39,
+      "level": 40,
       "name": "Moist Pasture",
       "spec": "Feral",
       "specChecked": 1795251300,
@@ -348,7 +348,7 @@
     },
     {
       "class": "Hunter",
-      "level": 44,
+      "level": 45,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795251300,
@@ -356,7 +356,7 @@
     },
     {
       "class": "Priest",
-      "level": 43,
+      "level": 45,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795251300,
@@ -422,7 +422,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795251300,
@@ -472,7 +472,7 @@
     },
     {
       "class": "Rogue",
-      "level": 41,
+      "level": 42,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795251300,
@@ -529,7 +529,7 @@
     },
     {
       "class": "Hunter",
-      "level": 49,
+      "level": 50,
       "name": "Temu Rexar",
       "spec": "Beast Mastery",
       "specChecked": 1795250390,
@@ -554,7 +554,7 @@
     },
     {
       "class": "Druid",
-      "level": 22,
+      "level": 23,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795251300,
@@ -587,7 +587,7 @@
     },
     {
       "class": "Rogue",
-      "level": 50,
+      "level": 51,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -599,7 +599,7 @@
       "level": 10,
       "name": "Velial Earthbreaker",
       "rank": "Fresh Peon",
-      "specChecked": 1795222205,
+      "specChecked": 1795309045,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/velial-earthbreaker"
     },
     {
@@ -644,6 +644,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-21T21:39:53Z",
+  "retrievedAt": "2026-11-22T00:57:25Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
