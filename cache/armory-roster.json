@@ -11,7 +11,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Ancient Spawn",
       "spec": "Arms",
       "specChecked": 1795293553,
@@ -35,7 +35,7 @@
     },
     {
       "class": "Hunter",
-      "level": 30,
+      "level": 32,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -44,7 +44,7 @@
     },
     {
       "class": "Druid",
-      "level": 52,
+      "level": 53,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795314606,
@@ -77,7 +77,7 @@
     },
     {
       "class": "Priest",
-      "level": 48,
+      "level": 49,
       "name": "Bruce Martin",
       "spec": "Shadow",
       "specChecked": 1795314606,
@@ -101,7 +101,7 @@
     },
     {
       "class": "Rogue",
-      "level": 49,
+      "level": 50,
       "name": "Cool Shoeshine",
       "spec": "Subtlety",
       "specChecked": 1795305281,
@@ -234,7 +234,7 @@
     },
     {
       "class": "Warrior",
-      "level": 32,
+      "level": 33,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -276,7 +276,7 @@
     },
     {
       "class": "Warrior",
-      "level": 57,
+      "level": 58,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -293,7 +293,7 @@
     },
     {
       "class": "Rogue",
-      "level": 37,
+      "level": 38,
       "name": "Lilith Pierce",
       "spec": "Combat",
       "specChecked": 1795367512,
@@ -340,7 +340,7 @@
     },
     {
       "class": "Druid",
-      "level": 40,
+      "level": 41,
       "name": "Moist Pasture",
       "spec": "Feral",
       "specChecked": 1795338864,
@@ -437,7 +437,7 @@
     },
     {
       "class": "Paladin",
-      "level": 27,
+      "level": 29,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -446,7 +446,7 @@
     },
     {
       "class": "Warrior",
-      "level": 38,
+      "level": 39,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795338864,
@@ -496,7 +496,7 @@
     },
     {
       "class": "Rogue",
-      "level": 44,
+      "level": 45,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795338864,
@@ -537,7 +537,7 @@
     },
     {
       "class": "Shaman",
-      "level": 31,
+      "level": 32,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795338864,
@@ -636,7 +636,7 @@
     },
     {
       "class": "Mage",
-      "level": 55,
+      "level": 56,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
       "specChecked": 1795340372,
@@ -644,7 +644,7 @@
     },
     {
       "class": "Hunter",
-      "level": 39,
+      "level": 40,
       "name": "Wolf Psymon",
       "spec": "Beast Mastery",
       "specChecked": 1795340372,
@@ -668,6 +668,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-22T17:11:52Z",
+  "retrievedAt": "2026-11-22T20:14:01Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
