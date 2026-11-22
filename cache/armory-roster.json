@@ -413,7 +413,7 @@
     },
     {
       "class": "Rogue",
-      "level": 45,
+      "level": 46,
       "name": "Rat Toe",
       "spec": "Assassination",
       "specChecked": 1795251300,
@@ -652,6 +652,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-22T04:16:17Z",
+  "retrievedAt": "2026-11-22T07:24:45Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
