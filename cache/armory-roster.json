@@ -34,6 +34,14 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/areni-rue"
     },
     {
+      "class": "Warlock",
+      "level": 36,
+      "name": "Ayumi Optick",
+      "spec": "Affliction",
+      "specChecked": 1795389844,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ayumi-optick"
+    },
+    {
       "class": "Hunter",
       "level": 32,
       "name": "Balan Stickyhoof",
@@ -44,11 +52,20 @@
     },
     {
       "class": "Druid",
-      "level": 53,
+      "level": 54,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795314606,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bamba-forever"
+    },
+    {
+      "class": "Druid",
+      "level": 17,
+      "name": "Bird Ironfur",
+      "rank": "Fresh Peon",
+      "spec": "Feral",
+      "specChecked": 1795389844,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bird-ironfur"
     },
     {
       "class": "Warrior",
@@ -68,7 +85,7 @@
     },
     {
       "class": "Shaman",
-      "level": 47,
+      "level": 48,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -117,7 +134,7 @@
     },
     {
       "class": "Shaman",
-      "level": 45,
+      "level": 46,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795337674,
@@ -151,7 +168,7 @@
     },
     {
       "class": "Warrior",
-      "level": 32,
+      "level": 33,
       "name": "Dimitron Anton",
       "spec": "Protection",
       "specChecked": 1795337674,
@@ -234,7 +251,7 @@
     },
     {
       "class": "Warrior",
-      "level": 33,
+      "level": 34,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -252,7 +269,7 @@
     },
     {
       "class": "Hunter",
-      "level": 29,
+      "level": 30,
       "name": "Honda Africa",
       "spec": "Marksmanship",
       "specChecked": 1795337674,
@@ -275,8 +292,16 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ji-mbo"
     },
     {
+      "class": "Shaman",
+      "level": 60,
+      "name": "Jjs Jjs",
+      "spec": "Elemental",
+      "specChecked": 1795389844,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/jjs-jjs"
+    },
+    {
       "class": "Warrior",
-      "level": 58,
+      "level": 59,
       "name": "Kargan Vercceti",
       "rank": "Head Peon",
       "spec": "Protection",
@@ -293,7 +318,7 @@
     },
     {
       "class": "Rogue",
-      "level": 38,
+      "level": 39,
       "name": "Lilith Pierce",
       "spec": "Combat",
       "specChecked": 1795367512,
@@ -324,7 +349,7 @@
     },
     {
       "class": "Warrior",
-      "level": 39,
+      "level": 40,
       "name": "Mauri Kreth",
       "spec": "Protection",
       "specChecked": 1795338864,
@@ -340,7 +365,7 @@
     },
     {
       "class": "Druid",
-      "level": 41,
+      "level": 42,
       "name": "Moist Pasture",
       "spec": "Feral",
       "specChecked": 1795338864,
@@ -372,7 +397,7 @@
     },
     {
       "class": "Hunter",
-      "level": 46,
+      "level": 47,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795338864,
@@ -380,7 +405,7 @@
     },
     {
       "class": "Priest",
-      "level": 48,
+      "level": 49,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795338864,
@@ -393,6 +418,12 @@
       "spec": "Beast Mastery",
       "specChecked": 1795338864,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ox-milk"
+    },
+    {
+      "class": "Priest",
+      "level": 4,
+      "name": "Papabocman Archbishop",
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/papabocman-archbishop"
     },
     {
       "class": "Priest",
@@ -487,7 +518,7 @@
     },
     {
       "class": "Priest",
-      "level": 18,
+      "level": 21,
       "name": "Sir Montana",
       "rank": "Peon Plus",
       "spec": "Shadow",
@@ -496,7 +527,7 @@
     },
     {
       "class": "Rogue",
-      "level": 45,
+      "level": 46,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795338864,
@@ -537,7 +568,7 @@
     },
     {
       "class": "Shaman",
-      "level": 32,
+      "level": 33,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795338864,
@@ -553,7 +584,7 @@
     },
     {
       "class": "Hunter",
-      "level": 50,
+      "level": 51,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795337674,
@@ -636,7 +667,7 @@
     },
     {
       "class": "Mage",
-      "level": 56,
+      "level": 57,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
       "specChecked": 1795340372,
@@ -668,6 +699,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-22T20:14:01Z",
+  "retrievedAt": "2026-11-22T23:24:04Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
