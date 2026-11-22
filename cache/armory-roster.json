@@ -59,6 +59,14 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bird-ironhoof"
     },
     {
+      "class": "Priest",
+      "level": 26,
+      "name": "Blairy Witch",
+      "spec": "Shadow",
+      "specChecked": 1795355692,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/blairy-witch"
+    },
+    {
       "class": "Shaman",
       "level": 46,
       "name": "Bonkmaster Flex",
@@ -218,7 +226,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Gork Dreadmaul",
       "spec": "Fury",
       "specChecked": 1795337674,
@@ -260,7 +268,7 @@
     },
     {
       "class": "Paladin",
-      "level": 35,
+      "level": 36,
       "name": "Ji Mbo",
       "spec": "Retribution",
       "specChecked": 1795337674,
@@ -348,7 +356,7 @@
     },
     {
       "class": "Druid",
-      "level": 46,
+      "level": 47,
       "name": "No Fears",
       "spec": "Restoration",
       "specChecked": 1795320977,
@@ -380,7 +388,7 @@
     },
     {
       "class": "Priest",
-      "level": 41,
+      "level": 42,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795314606,
@@ -421,7 +429,7 @@
     },
     {
       "class": "Paladin",
-      "level": 25,
+      "level": 27,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -447,7 +455,7 @@
     },
     {
       "class": "Warlock",
-      "level": 26,
+      "level": 27,
       "name": "River Pixies",
       "spec": "Affliction",
       "specChecked": 1795338864,
@@ -480,7 +488,7 @@
     },
     {
       "class": "Rogue",
-      "level": 42,
+      "level": 43,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795338864,
@@ -595,7 +603,7 @@
     },
     {
       "class": "Rogue",
-      "level": 51,
+      "level": 52,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -620,7 +628,7 @@
     },
     {
       "class": "Mage",
-      "level": 54,
+      "level": 55,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
       "specChecked": 1795340372,
@@ -652,6 +660,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-22T10:39:40Z",
+  "retrievedAt": "2026-11-22T13:54:52Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
