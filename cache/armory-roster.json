@@ -486,7 +486,7 @@
     },
     {
       "class": "Warrior",
-      "level": 40,
+      "level": 42,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795338864,
@@ -708,6 +708,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-23T05:39:13Z",
+  "retrievedAt": "2026-11-23T08:41:34Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
