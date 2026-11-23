@@ -55,7 +55,7 @@
       "level": 54,
       "name": "Bamba Forever",
       "spec": "Feral",
-      "specChecked": 1795314606,
+      "specChecked": 1795401151,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bamba-forever"
     },
     {
@@ -96,8 +96,8 @@
       "class": "Priest",
       "level": 49,
       "name": "Bruce Martin",
-      "spec": "Shadow",
-      "specChecked": 1795314606,
+      "spec": "Discipline",
+      "specChecked": 1795401151,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bruce-martin"
     },
     {
@@ -430,7 +430,7 @@
       "level": 42,
       "name": "Pater Patapios",
       "spec": "Shadow",
-      "specChecked": 1795314606,
+      "specChecked": 1795401151,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/pater-patapios"
     },
     {
@@ -699,6 +699,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-22T23:24:04Z",
+  "retrievedAt": "2026-11-23T02:32:31Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
