@@ -35,7 +35,7 @@
     },
     {
       "class": "Warlock",
-      "level": 36,
+      "level": 37,
       "name": "Ayumi Optick",
       "spec": "Affliction",
       "specChecked": 1795389844,
@@ -60,7 +60,7 @@
     },
     {
       "class": "Druid",
-      "level": 17,
+      "level": 18,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -74,6 +74,15 @@
       "spec": "Protection",
       "specChecked": 1795337674,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bird-ironhoof"
+    },
+    {
+      "class": "Warrior",
+      "level": 14,
+      "name": "Black Cleaver",
+      "rank": "Fresh Peon",
+      "spec": "Arms",
+      "specChecked": 1795412353,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/black-cleaver"
     },
     {
       "class": "Priest",
@@ -94,7 +103,7 @@
     },
     {
       "class": "Priest",
-      "level": 49,
+      "level": 50,
       "name": "Bruce Martin",
       "spec": "Discipline",
       "specChecked": 1795401151,
@@ -209,7 +218,7 @@
     },
     {
       "class": "Hunter",
-      "level": 43,
+      "level": 44,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -421,7 +430,7 @@
     },
     {
       "class": "Priest",
-      "level": 4,
+      "level": 6,
       "name": "Papabocman Archbishop",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/papabocman-archbishop"
     },
@@ -477,7 +486,7 @@
     },
     {
       "class": "Warrior",
-      "level": 39,
+      "level": 40,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795338864,
@@ -609,7 +618,7 @@
     },
     {
       "class": "Druid",
-      "level": 24,
+      "level": 25,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795338864,
@@ -642,7 +651,7 @@
     },
     {
       "class": "Rogue",
-      "level": 52,
+      "level": 53,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -699,6 +708,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-23T02:32:31Z",
+  "retrievedAt": "2026-11-23T05:39:13Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
