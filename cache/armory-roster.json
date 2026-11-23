@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 46,
+      "level": 47,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795425639,
@@ -60,7 +60,7 @@
     },
     {
       "class": "Druid",
-      "level": 20,
+      "level": 22,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 46,
+      "level": 47,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795425639,
@@ -210,7 +210,7 @@
     },
     {
       "class": "Paladin",
-      "level": 46,
+      "level": 47,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795425639,
@@ -294,7 +294,7 @@
     },
     {
       "class": "Paladin",
-      "level": 36,
+      "level": 37,
       "name": "Ji Mbo",
       "spec": "Retribution",
       "specChecked": 1795425639,
@@ -406,7 +406,7 @@
     },
     {
       "class": "Hunter",
-      "level": 47,
+      "level": 48,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795426330,
@@ -527,7 +527,7 @@
     },
     {
       "class": "Priest",
-      "level": 21,
+      "level": 22,
       "name": "Sir Montana",
       "rank": "Peon Plus",
       "spec": "Shadow",
@@ -708,6 +708,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-23T11:54:07Z",
+  "retrievedAt": "2026-11-23T14:54:20Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
