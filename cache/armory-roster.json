@@ -60,7 +60,7 @@
     },
     {
       "class": "Druid",
-      "level": 18,
+      "level": 20,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -202,7 +202,7 @@
     },
     {
       "class": "Paladin",
-      "level": 18,
+      "level": 20,
       "name": "Eizala Northborn",
       "spec": "Protection",
       "specChecked": 1795425639,
@@ -382,7 +382,7 @@
     },
     {
       "class": "Warrior",
-      "level": 30,
+      "level": 31,
       "name": "Morgruul Strife",
       "spec": "Protection",
       "specChecked": 1795426330,
@@ -486,7 +486,7 @@
     },
     {
       "class": "Warrior",
-      "level": 42,
+      "level": 43,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795426330,
@@ -708,6 +708,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-23T08:41:34Z",
+  "retrievedAt": "2026-11-23T11:54:07Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
