@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 48,
+      "level": 49,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795512419,
@@ -43,7 +43,7 @@
     },
     {
       "class": "Hunter",
-      "level": 32,
+      "level": 33,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -60,7 +60,7 @@
     },
     {
       "class": "Druid",
-      "level": 27,
+      "level": 29,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 49,
+      "level": 50,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795512419,
@@ -210,7 +210,7 @@
     },
     {
       "class": "Paladin",
-      "level": 49,
+      "level": 50,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795512419,
@@ -391,7 +391,7 @@
     },
     {
       "class": "Warrior",
-      "level": 32,
+      "level": 33,
       "name": "Morgruul Strife",
       "spec": "Protection",
       "specChecked": 1795513211,
@@ -399,7 +399,7 @@
     },
     {
       "class": "Warrior",
-      "level": 31,
+      "level": 32,
       "name": "Mystoklin Teknoklin",
       "spec": "Arms",
       "specChecked": 1795513211,
@@ -423,7 +423,7 @@
     },
     {
       "class": "Priest",
-      "level": 51,
+      "level": 52,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795513211,
@@ -469,7 +469,7 @@
     },
     {
       "class": "Mage",
-      "level": 24,
+      "level": 25,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -545,7 +545,7 @@
     },
     {
       "class": "Rogue",
-      "level": 47,
+      "level": 48,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795513211,
@@ -669,7 +669,7 @@
     },
     {
       "class": "Shaman",
-      "level": 44,
+      "level": 45,
       "name": "Velaelyn Khora",
       "spec": "Enhancement",
       "specChecked": 1795537033,
@@ -693,7 +693,7 @@
     },
     {
       "class": "Mage",
-      "level": 58,
+      "level": 59,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
       "specChecked": 1795514109,
@@ -725,6 +725,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-24T19:24:48Z",
+  "retrievedAt": "2026-11-24T22:24:48Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
