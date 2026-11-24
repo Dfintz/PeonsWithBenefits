@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 47,
+      "level": 48,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795425639,
@@ -35,7 +35,7 @@
     },
     {
       "class": "Warlock",
-      "level": 38,
+      "level": 39,
       "name": "Ayumi Optick",
       "spec": "Affliction",
       "specChecked": 1795476246,
@@ -60,7 +60,7 @@
     },
     {
       "class": "Druid",
-      "level": 24,
+      "level": 26,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -111,7 +111,7 @@
     },
     {
       "class": "Druid",
-      "level": 47,
+      "level": 48,
       "name": "Cat Pants",
       "spec": "Feral",
       "specChecked": 1795425639,
@@ -151,7 +151,7 @@
     },
     {
       "class": "Druid",
-      "level": 36,
+      "level": 37,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -202,7 +202,7 @@
     },
     {
       "class": "Paladin",
-      "level": 20,
+      "level": 21,
       "name": "Eizala Northborn",
       "spec": "Protection",
       "specChecked": 1795425639,
@@ -252,7 +252,7 @@
     },
     {
       "class": "Warrior",
-      "level": 39,
+      "level": 40,
       "name": "Gork Dreadmaul",
       "spec": "Fury",
       "specChecked": 1795425639,
@@ -391,7 +391,7 @@
     },
     {
       "class": "Warrior",
-      "level": 31,
+      "level": 32,
       "name": "Morgruul Strife",
       "spec": "Protection",
       "specChecked": 1795426330,
@@ -415,7 +415,7 @@
     },
     {
       "class": "Hunter",
-      "level": 48,
+      "level": 49,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795426330,
@@ -431,7 +431,7 @@
     },
     {
       "class": "Hunter",
-      "level": 57,
+      "level": 58,
       "name": "Ox Milk",
       "spec": "Beast Mastery",
       "specChecked": 1795426330,
@@ -627,7 +627,7 @@
     },
     {
       "class": "Druid",
-      "level": 25,
+      "level": 26,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795426330,
@@ -660,7 +660,7 @@
     },
     {
       "class": "Rogue",
-      "level": 53,
+      "level": 54,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -685,7 +685,7 @@
     },
     {
       "class": "Mage",
-      "level": 57,
+      "level": 58,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
       "specChecked": 1795426851,
@@ -717,6 +717,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-24T00:32:08Z",
+  "retrievedAt": "2026-11-24T03:39:52Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
