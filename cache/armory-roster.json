@@ -520,7 +520,7 @@
     },
     {
       "class": "Mage",
-      "level": 33,
+      "level": 34,
       "name": "Rufus Thornbury",
       "spec": "Frost",
       "specChecked": 1795513211,
@@ -639,7 +639,7 @@
       "name": "Truespoon Wolfstorm",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wolfstorm"
     },
     {
@@ -647,7 +647,7 @@
       "level": 30,
       "name": "Tzioukina Lights",
       "spec": "Protection",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tzioukina-lights"
     },
     {
@@ -655,7 +655,7 @@
       "level": 29,
       "name": "Unwell Frank",
       "spec": "Affliction",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/unwell-frank"
     },
     {
@@ -664,7 +664,7 @@
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/vasz-swiftstrike"
     },
     {
@@ -680,7 +680,7 @@
       "level": 39,
       "name": "Vicar Abracadaver",
       "spec": "Discipline",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/vicar-abracadaver"
     },
     {
@@ -688,7 +688,7 @@
       "level": 58,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/voldemorph-jenkins"
     },
     {
@@ -696,7 +696,7 @@
       "level": 41,
       "name": "Wolf Psymon",
       "spec": "Beast Mastery",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/wolf-psymon"
     },
     {
@@ -713,10 +713,10 @@
       "name": "Zarkos Vsall",
       "rank": "Peon Plus",
       "spec": "Combat",
-      "specChecked": 1795426851,
+      "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-24T06:45:05Z",
+  "retrievedAt": "2026-11-24T09:55:09Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
