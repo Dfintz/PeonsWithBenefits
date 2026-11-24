@@ -210,7 +210,7 @@
     },
     {
       "class": "Paladin",
-      "level": 48,
+      "level": 49,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795512419,
@@ -218,7 +218,7 @@
     },
     {
       "class": "Hunter",
-      "level": 44,
+      "level": 45,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -367,7 +367,7 @@
     },
     {
       "class": "Warrior",
-      "level": 41,
+      "level": 42,
       "name": "Mauri Kreth",
       "spec": "Protection",
       "specChecked": 1795513211,
@@ -415,7 +415,7 @@
     },
     {
       "class": "Hunter",
-      "level": 49,
+      "level": 50,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795513211,
@@ -701,7 +701,7 @@
     },
     {
       "class": "Priest",
-      "level": 41,
+      "level": 42,
       "name": "Zakalwe Priest",
       "spec": "Discipline",
       "specChecked": 1795469138,
@@ -715,8 +715,16 @@
       "spec": "Combat",
       "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
+    },
+    {
+      "class": "Shaman",
+      "level": 47,
+      "name": "Zephyr Windscar",
+      "spec": "Enhancement",
+      "specChecked": 1795526114,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-24T09:55:09Z",
+  "retrievedAt": "2026-11-24T13:15:14Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
