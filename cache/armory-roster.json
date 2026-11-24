@@ -52,7 +52,7 @@
     },
     {
       "class": "Druid",
-      "level": 55,
+      "level": 56,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795488020,
@@ -60,7 +60,7 @@
     },
     {
       "class": "Druid",
-      "level": 26,
+      "level": 27,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -77,7 +77,7 @@
     },
     {
       "class": "Warrior",
-      "level": 16,
+      "level": 18,
       "name": "Black Cleaver",
       "rank": "Fresh Peon",
       "spec": "Arms",
@@ -94,7 +94,7 @@
     },
     {
       "class": "Shaman",
-      "level": 50,
+      "level": 51,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 48,
+      "level": 49,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795512419,
@@ -151,7 +151,7 @@
     },
     {
       "class": "Druid",
-      "level": 37,
+      "level": 38,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -235,7 +235,7 @@
     },
     {
       "class": "Druid",
-      "level": 47,
+      "level": 48,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795512419,
@@ -407,7 +407,7 @@
     },
     {
       "class": "Druid",
-      "level": 49,
+      "level": 50,
       "name": "No Fears",
       "spec": "Restoration",
       "specChecked": 1795494472,
@@ -660,12 +660,20 @@
     },
     {
       "class": "Rogue",
-      "level": 54,
+      "level": 55,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
       "specChecked": 1795514109,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/vasz-swiftstrike"
+    },
+    {
+      "class": "Shaman",
+      "level": 44,
+      "name": "Velaelyn Khora",
+      "spec": "Enhancement",
+      "specChecked": 1795537033,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/velaelyn-khora"
     },
     {
       "class": "Druid",
@@ -692,16 +700,8 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/voldemorph-jenkins"
     },
     {
-      "class": "Hunter",
-      "level": 41,
-      "name": "Wolf Psymon",
-      "spec": "Beast Mastery",
-      "specChecked": 1795514109,
-      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/wolf-psymon"
-    },
-    {
       "class": "Priest",
-      "level": 42,
+      "level": 43,
       "name": "Zakalwe Priest",
       "spec": "Discipline",
       "specChecked": 1795469138,
@@ -725,6 +725,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-24T13:15:14Z",
+  "retrievedAt": "2026-11-24T16:17:13Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
