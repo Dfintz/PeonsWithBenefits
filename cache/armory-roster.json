@@ -35,7 +35,7 @@
     },
     {
       "class": "Warlock",
-      "level": 37,
+      "level": 38,
       "name": "Ayumi Optick",
       "spec": "Affliction",
       "specChecked": 1795476246,
@@ -52,7 +52,7 @@
     },
     {
       "class": "Druid",
-      "level": 54,
+      "level": 55,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795401151,
@@ -77,7 +77,7 @@
     },
     {
       "class": "Warrior",
-      "level": 15,
+      "level": 16,
       "name": "Black Cleaver",
       "rank": "Fresh Peon",
       "spec": "Arms",
@@ -94,7 +94,7 @@
     },
     {
       "class": "Shaman",
-      "level": 49,
+      "level": 50,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -103,7 +103,7 @@
     },
     {
       "class": "Priest",
-      "level": 50,
+      "level": 51,
       "name": "Bruce Martin",
       "spec": "Discipline",
       "specChecked": 1795401151,
@@ -130,7 +130,7 @@
       "level": 50,
       "name": "Cool Shoeshine",
       "spec": "Subtlety",
-      "specChecked": 1795391698,
+      "specChecked": 1795480328,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/cool-shoeshine"
     },
     {
@@ -143,7 +143,7 @@
     },
     {
       "class": "Shaman",
-      "level": 47,
+      "level": 48,
       "name": "Dark Tuga",
       "spec": "Enhancement",
       "specChecked": 1795425639,
@@ -210,7 +210,7 @@
     },
     {
       "class": "Paladin",
-      "level": 47,
+      "level": 48,
       "name": "Emeline Thefake",
       "spec": "Retribution",
       "specChecked": 1795425639,
@@ -235,7 +235,7 @@
     },
     {
       "class": "Druid",
-      "level": 46,
+      "level": 47,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795425639,
@@ -260,7 +260,7 @@
     },
     {
       "class": "Warrior",
-      "level": 34,
+      "level": 35,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -278,7 +278,7 @@
     },
     {
       "class": "Hunter",
-      "level": 30,
+      "level": 31,
       "name": "Honda Africa",
       "spec": "Marksmanship",
       "specChecked": 1795425639,
@@ -336,7 +336,7 @@
     },
     {
       "class": "Rogue",
-      "level": 39,
+      "level": 40,
       "name": "Lilith Pierce",
       "spec": "Combat",
       "specChecked": 1795454068,
@@ -423,7 +423,7 @@
     },
     {
       "class": "Priest",
-      "level": 50,
+      "level": 51,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795426330,
@@ -431,7 +431,7 @@
     },
     {
       "class": "Hunter",
-      "level": 56,
+      "level": 57,
       "name": "Ox Milk",
       "spec": "Beast Mastery",
       "specChecked": 1795426330,
@@ -445,7 +445,7 @@
     },
     {
       "class": "Priest",
-      "level": 43,
+      "level": 44,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795401151,
@@ -495,7 +495,7 @@
     },
     {
       "class": "Warrior",
-      "level": 44,
+      "level": 45,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795426330,
@@ -512,7 +512,7 @@
     },
     {
       "class": "Warlock",
-      "level": 27,
+      "level": 28,
       "name": "River Pixies",
       "spec": "Affliction",
       "specChecked": 1795426330,
@@ -520,7 +520,7 @@
     },
     {
       "class": "Mage",
-      "level": 32,
+      "level": 33,
       "name": "Rufus Thornbury",
       "spec": "Frost",
       "specChecked": 1795426330,
@@ -545,7 +545,7 @@
     },
     {
       "class": "Rogue",
-      "level": 46,
+      "level": 47,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795426330,
@@ -717,6 +717,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     }
   ],
-  "retrievedAt": "2026-11-23T20:54:35Z",
+  "retrievedAt": "2026-11-24T00:32:08Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
