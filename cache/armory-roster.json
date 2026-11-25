@@ -52,7 +52,7 @@
     },
     {
       "class": "Druid",
-      "level": 57,
+      "level": 58,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795574432,
@@ -94,7 +94,7 @@
     },
     {
       "class": "Shaman",
-      "level": 52,
+      "level": 53,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -108,6 +108,14 @@
       "spec": "Shadow",
       "specChecked": 1795574432,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bruce-martin"
+    },
+    {
+      "class": "Druid",
+      "level": 49,
+      "name": "Bully Thorne",
+      "spec": "Feral",
+      "specChecked": 1795637676,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bully-thorne"
     },
     {
       "class": "Druid",
@@ -127,7 +135,7 @@
     },
     {
       "class": "Rogue",
-      "level": 51,
+      "level": 52,
       "name": "Cool Shoeshine",
       "rank": "Peon Plus",
       "spec": "Subtlety",
@@ -144,7 +152,7 @@
     },
     {
       "class": "Shaman",
-      "level": 50,
+      "level": 51,
       "name": "Dark Tuga",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -364,7 +372,7 @@
     },
     {
       "class": "Hunter",
-      "level": 3,
+      "level": 6,
       "name": "Lorilath Moocabre",
       "rank": "Fresh Peon",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lorilath-moocabre"
@@ -532,7 +540,7 @@
     },
     {
       "class": "Mage",
-      "level": 35,
+      "level": 36,
       "name": "Rufus Thornbury",
       "spec": "Frost",
       "specChecked": 1795600494,
@@ -683,7 +691,7 @@
     },
     {
       "class": "Shaman",
-      "level": 45,
+      "level": 46,
       "name": "Velaelyn Khora",
       "specChecked": 1795623560,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/velaelyn-khora"
@@ -739,13 +747,13 @@
     },
     {
       "class": "Shaman",
-      "level": 48,
+      "level": 49,
       "name": "Zephyr Windscar",
       "spec": "Enhancement",
       "specChecked": 1795612532,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-25T17:12:34Z",
+  "retrievedAt": "2026-11-25T20:14:36Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
