@@ -11,7 +11,7 @@
     },
     {
       "class": "Warrior",
-      "level": 39,
+      "level": 40,
       "name": "Ancient Spawn",
       "spec": "Arms",
       "specChecked": 1795554841,
@@ -59,16 +59,8 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bamba-forever"
     },
     {
-      "class": "Paladin",
-      "level": 60,
-      "name": "Beezly Power",
-      "spec": "Retribution",
-      "specChecked": 1795569952,
-      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/beezly-power"
-    },
-    {
       "class": "Druid",
-      "level": 31,
+      "level": 33,
       "name": "Bird Ironfur",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -161,7 +153,7 @@
     },
     {
       "class": "Druid",
-      "level": 39,
+      "level": 40,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -220,7 +212,7 @@
     },
     {
       "class": "Paladin",
-      "level": 50,
+      "level": 51,
       "name": "Emeline Thefake",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -229,7 +221,7 @@
     },
     {
       "class": "Hunter",
-      "level": 45,
+      "level": 46,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -419,7 +411,7 @@
     },
     {
       "class": "Warrior",
-      "level": 33,
+      "level": 34,
       "name": "Mystoklin Teknoklin",
       "spec": "Arms",
       "specChecked": 1795600494,
@@ -435,7 +427,7 @@
     },
     {
       "class": "Hunter",
-      "level": 51,
+      "level": 52,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795600494,
@@ -465,7 +457,7 @@
     },
     {
       "class": "Priest",
-      "level": 44,
+      "level": 45,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795574432,
@@ -721,6 +713,14 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/voldemorph-jenkins"
     },
     {
+      "class": "Warlock",
+      "level": 60,
+      "name": "Xave Shadowflame",
+      "spec": "Affliction",
+      "specChecked": 1795626754,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/xave-shadowflame"
+    },
+    {
       "class": "Priest",
       "level": 44,
       "name": "Zakalwe Priest",
@@ -746,6 +746,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-25T13:54:36Z",
+  "retrievedAt": "2026-11-25T17:12:34Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
