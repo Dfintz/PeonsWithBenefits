@@ -35,7 +35,7 @@
     },
     {
       "class": "Warlock",
-      "level": 41,
+      "level": 42,
       "name": "Ayumi Optick",
       "spec": "Affliction",
       "specChecked": 1795562701,
@@ -69,7 +69,7 @@
     },
     {
       "class": "Warrior",
-      "level": 44,
+      "level": 45,
       "name": "Bird Ironhoof",
       "spec": "Protection",
       "specChecked": 1795598842,
@@ -94,7 +94,7 @@
     },
     {
       "class": "Shaman",
-      "level": 53,
+      "level": 54,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -103,7 +103,7 @@
     },
     {
       "class": "Priest",
-      "level": 52,
+      "level": 53,
       "name": "Bruce Martin",
       "spec": "Shadow",
       "specChecked": 1795574432,
@@ -226,6 +226,14 @@
       "spec": "Retribution",
       "specChecked": 1795598842,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/emeline-thefake"
+    },
+    {
+      "class": "Warrior",
+      "level": 47,
+      "name": "Erna Solburnt",
+      "spec": "Arms",
+      "specChecked": 1795649077,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/erna-solburnt"
     },
     {
       "class": "Hunter",
@@ -355,8 +363,16 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/khata-sinweaver"
     },
     {
+      "class": "Shaman",
+      "level": 45,
+      "name": "Lex Lightcaster",
+      "spec": "Enhancement",
+      "specChecked": 1795649077,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lex-lightcaster"
+    },
+    {
       "class": "Rogue",
-      "level": 41,
+      "level": 42,
       "name": "Lilith Pierce",
       "spec": "Combat",
       "specChecked": 1795628390,
@@ -419,7 +435,7 @@
     },
     {
       "class": "Warrior",
-      "level": 34,
+      "level": 35,
       "name": "Mystoklin Teknoklin",
       "spec": "Arms",
       "specChecked": 1795600494,
@@ -443,7 +459,7 @@
     },
     {
       "class": "Priest",
-      "level": 52,
+      "level": 53,
       "name": "Old Ubay",
       "spec": "Shadow",
       "specChecked": 1795600494,
@@ -465,7 +481,7 @@
     },
     {
       "class": "Priest",
-      "level": 45,
+      "level": 46,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795574432,
@@ -532,7 +548,7 @@
     },
     {
       "class": "Warlock",
-      "level": 28,
+      "level": 29,
       "name": "River Pixies",
       "spec": "Affliction",
       "specChecked": 1795600494,
@@ -540,7 +556,7 @@
     },
     {
       "class": "Mage",
-      "level": 36,
+      "level": 37,
       "name": "Rufus Thornbury",
       "spec": "Frost",
       "specChecked": 1795600494,
@@ -566,7 +582,7 @@
     },
     {
       "class": "Rogue",
-      "level": 49,
+      "level": 50,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795600494,
@@ -607,7 +623,7 @@
     },
     {
       "class": "Shaman",
-      "level": 33,
+      "level": 34,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795600494,
@@ -624,7 +640,7 @@
     },
     {
       "class": "Hunter",
-      "level": 52,
+      "level": 53,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795598842,
@@ -649,7 +665,7 @@
     },
     {
       "class": "Druid",
-      "level": 26,
+      "level": 27,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795600494,
@@ -663,6 +679,14 @@
       "spec": "Enhancement",
       "specChecked": 1795601766,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wolfstorm"
+    },
+    {
+      "class": "Hunter",
+      "level": 34,
+      "name": "Turok Nergash",
+      "spec": "Marksmanship",
+      "specChecked": 1795649077,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/turok-nergash"
     },
     {
       "class": "Paladin",
@@ -682,7 +706,7 @@
     },
     {
       "class": "Rogue",
-      "level": 55,
+      "level": 56,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Combat",
@@ -747,13 +771,13 @@
     },
     {
       "class": "Shaman",
-      "level": 49,
+      "level": 50,
       "name": "Zephyr Windscar",
       "spec": "Enhancement",
       "specChecked": 1795612532,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-25T20:14:36Z",
+  "retrievedAt": "2026-11-25T23:24:37Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
