@@ -1,7 +1,7 @@
 {
   "format": "pwb-recruitment",
   "recruitment": {
-    "checked": 1795596889,
+    "checked": 1795598207,
     "guildId": "8003f5c8-af13-433e-b8d2-33fc1129ec7f",
     "openings": [
       {
@@ -18,45 +18,6 @@
           {
             "name": "Frost",
             "priority": "mid"
-          }
-        ]
-      },
-      {
-        "class": "Priest",
-        "specs": [
-          {
-            "name": "Discipline",
-            "priority": "low"
-          },
-          {
-            "name": "Holy",
-            "priority": "low"
-          }
-        ]
-      },
-      {
-        "class": "Rogue",
-        "specs": [
-          {
-            "name": "Assassination",
-            "priority": "low"
-          },
-          {
-            "name": "Combat",
-            "priority": "low"
-          },
-          {
-            "name": "Subtlety",
-            "priority": "low"
-          }
-        ]
-      },
-      {
-        "class": "Shaman",
-        "specs": [
-          {
-            "name": "Restoration",
-            "priority": "low"
           }
         ]
       },
@@ -80,7 +41,7 @@
     ],
     "source": "https://guildsofwow.com/peons-with-benefits",
     "status": "ok",
-    "updated": 1795596889
+    "updated": 1795598207
   },
   "version": 1
 }
