@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 49,
+      "level": 50,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795598842,
@@ -237,7 +237,7 @@
     },
     {
       "class": "Hunter",
-      "level": 46,
+      "level": 47,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -254,7 +254,7 @@
     },
     {
       "class": "Druid",
-      "level": 49,
+      "level": 50,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795598842,
@@ -411,7 +411,7 @@
     },
     {
       "class": "Shaman",
-      "level": 33,
+      "level": 34,
       "name": "Micol Jordan",
       "spec": "Elemental",
       "specChecked": 1795600494,
@@ -419,8 +419,9 @@
     },
     {
       "class": "Druid",
-      "level": 43,
+      "level": 44,
       "name": "Moist Pasture",
+      "rank": "Peon Plus",
       "spec": "Feral",
       "specChecked": 1795600494,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/moist-pasture"
@@ -640,7 +641,7 @@
     },
     {
       "class": "Hunter",
-      "level": 53,
+      "level": 54,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795598842,
@@ -665,7 +666,7 @@
     },
     {
       "class": "Druid",
-      "level": 27,
+      "level": 28,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795600494,
@@ -778,6 +779,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-26T02:30:01Z",
+  "retrievedAt": "2026-11-26T05:39:24Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
