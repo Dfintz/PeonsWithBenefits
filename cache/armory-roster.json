@@ -135,7 +135,7 @@
     },
     {
       "class": "Rogue",
-      "level": 52,
+      "level": 53,
       "name": "Cool Shoeshine",
       "rank": "Peon Plus",
       "spec": "Subtlety",
@@ -202,6 +202,14 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dingy-bingy"
     },
     {
+      "class": "Mage",
+      "level": 42,
+      "name": "Eerikki Winterborn",
+      "spec": "Frost",
+      "specChecked": 1795694095,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/eerikki-winterborn"
+    },
+    {
       "class": "Shaman",
       "level": 30,
       "name": "Eh Eh",
@@ -220,7 +228,7 @@
     },
     {
       "class": "Paladin",
-      "level": 51,
+      "level": 52,
       "name": "Emeline Thefake",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -428,7 +436,7 @@
     },
     {
       "class": "Warrior",
-      "level": 35,
+      "level": 36,
       "name": "Morgruul Strife",
       "spec": "Arms",
       "specChecked": 1795688150,
@@ -452,7 +460,7 @@
     },
     {
       "class": "Hunter",
-      "level": 52,
+      "level": 53,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795688150,
@@ -716,7 +724,7 @@
     },
     {
       "class": "Shaman",
-      "level": 46,
+      "level": 47,
       "name": "Velaelyn Khora",
       "specChecked": 1795623560,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/velaelyn-khora"
@@ -779,6 +787,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-26T08:40:18Z",
+  "retrievedAt": "2026-11-26T11:54:55Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
