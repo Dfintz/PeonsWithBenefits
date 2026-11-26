@@ -34,14 +34,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/areni-rue"
     },
     {
-      "class": "Warlock",
-      "level": 42,
-      "name": "Ayumi Optick",
-      "spec": "Affliction",
-      "specChecked": 1795649969,
-      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ayumi-optick"
-    },
-    {
       "class": "Hunter",
       "level": 33,
       "name": "Balan Stickyhoof",
@@ -111,7 +103,7 @@
     },
     {
       "class": "Druid",
-      "level": 50,
+      "level": 51,
       "name": "Bully Thorne",
       "spec": "Feral",
       "specChecked": 1795637676,
@@ -152,7 +144,7 @@
     },
     {
       "class": "Shaman",
-      "level": 51,
+      "level": 52,
       "name": "Dark Tuga",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -161,7 +153,7 @@
     },
     {
       "class": "Druid",
-      "level": 40,
+      "level": 41,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -187,7 +179,7 @@
     },
     {
       "class": "Warrior",
-      "level": 33,
+      "level": 34,
       "name": "Dimitron Anton",
       "spec": "Protection",
       "specChecked": 1795685982,
@@ -228,7 +220,7 @@
     },
     {
       "class": "Paladin",
-      "level": 52,
+      "level": 53,
       "name": "Emeline Thefake",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -237,7 +229,7 @@
     },
     {
       "class": "Warrior",
-      "level": 47,
+      "level": 48,
       "name": "Erna Solburnt",
       "spec": "Arms",
       "specChecked": 1795649077,
@@ -245,7 +237,7 @@
     },
     {
       "class": "Hunter",
-      "level": 47,
+      "level": 48,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Survival",
@@ -371,8 +363,16 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/khata-sinweaver"
     },
     {
+      "class": "Warlock",
+      "level": 44,
+      "name": "Lam Ram",
+      "spec": "Affliction",
+      "specChecked": 1795706089,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lam-ram"
+    },
+    {
       "class": "Shaman",
-      "level": 45,
+      "level": 46,
       "name": "Lex Lightcaster",
       "spec": "Enhancement",
       "specChecked": 1795649077,
@@ -452,7 +452,7 @@
     },
     {
       "class": "Druid",
-      "level": 50,
+      "level": 51,
       "name": "No Fears",
       "spec": "Restoration",
       "specChecked": 1795667953,
@@ -490,7 +490,7 @@
     },
     {
       "class": "Priest",
-      "level": 46,
+      "level": 47,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795661653,
@@ -691,7 +691,7 @@
     },
     {
       "class": "Hunter",
-      "level": 34,
+      "level": 35,
       "name": "Turok Nergash",
       "spec": "Marksmanship",
       "specChecked": 1795649077,
@@ -787,6 +787,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-26T11:54:55Z",
+  "retrievedAt": "2026-11-26T15:14:49Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
