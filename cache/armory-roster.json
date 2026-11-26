@@ -11,15 +11,15 @@
     },
     {
       "class": "Warrior",
-      "level": 40,
+      "level": 41,
       "name": "Ancient Spawn",
-      "spec": "Arms",
-      "specChecked": 1795641286,
+      "spec": "Fury",
+      "specChecked": 1795728283,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/ancient-spawn"
     },
     {
       "class": "Mage",
-      "level": 50,
+      "level": 51,
       "name": "Aranith Jr",
       "spec": "Frost",
       "specChecked": 1795685982,
@@ -27,7 +27,7 @@
     },
     {
       "class": "Druid",
-      "level": 26,
+      "level": 27,
       "name": "Areni Rue",
       "spec": "Feral",
       "specChecked": 1795685982,
@@ -35,7 +35,7 @@
     },
     {
       "class": "Hunter",
-      "level": 33,
+      "level": 34,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -44,7 +44,7 @@
     },
     {
       "class": "Druid",
-      "level": 58,
+      "level": 59,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795661653,
@@ -61,7 +61,7 @@
     },
     {
       "class": "Warrior",
-      "level": 45,
+      "level": 46,
       "name": "Bird Ironhoof",
       "spec": "Protection",
       "specChecked": 1795685982,
@@ -111,7 +111,7 @@
     },
     {
       "class": "Druid",
-      "level": 49,
+      "level": 50,
       "name": "Cat Pants",
       "spec": "Feral",
       "specChecked": 1795685982,
@@ -162,7 +162,7 @@
     },
     {
       "class": "Priest",
-      "level": 31,
+      "level": 32,
       "name": "Detroit Ishorde",
       "spec": "Discipline",
       "specChecked": 1795685982,
@@ -262,7 +262,7 @@
     },
     {
       "class": "Druid",
-      "level": 15,
+      "level": 16,
       "name": "Gizu Lepwn",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -342,7 +342,7 @@
       "name": "Jjs Xd",
       "rank": "Fresh Peon",
       "spec": "Protection",
-      "specChecked": 1795641286,
+      "specChecked": 1795728283,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/jjs-xd"
     },
     {
@@ -460,7 +460,7 @@
     },
     {
       "class": "Hunter",
-      "level": 53,
+      "level": 54,
       "name": "N\u00edco Rob\u00ecn",
       "spec": "Beast Mastery",
       "specChecked": 1795688150,
@@ -514,7 +514,7 @@
     },
     {
       "class": "Mage",
-      "level": 25,
+      "level": 26,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -531,7 +531,7 @@
     },
     {
       "class": "Paladin",
-      "level": 30,
+      "level": 31,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -540,7 +540,7 @@
     },
     {
       "class": "Warrior",
-      "level": 45,
+      "level": 46,
       "name": "Retail Enjoyers",
       "spec": "Protection",
       "specChecked": 1795688150,
@@ -591,7 +591,7 @@
     },
     {
       "class": "Rogue",
-      "level": 50,
+      "level": 51,
       "name": "Sira Levila",
       "spec": "Combat",
       "specChecked": 1795688150,
@@ -632,7 +632,7 @@
     },
     {
       "class": "Shaman",
-      "level": 34,
+      "level": 35,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795688150,
@@ -715,7 +715,7 @@
     },
     {
       "class": "Rogue",
-      "level": 56,
+      "level": 57,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -764,7 +764,7 @@
     },
     {
       "class": "Priest",
-      "level": 44,
+      "level": 45,
       "name": "Zakalwe Priest",
       "spec": "Discipline",
       "specChecked": 1795643697,
@@ -781,13 +781,13 @@
     },
     {
       "class": "Shaman",
-      "level": 50,
+      "level": 51,
       "name": "Zephyr Windscar",
       "spec": "Enhancement",
       "specChecked": 1795699576,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-26T18:17:58Z",
+  "retrievedAt": "2026-11-26T21:24:43Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
