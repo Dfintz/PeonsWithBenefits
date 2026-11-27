@@ -30,7 +30,7 @@
     },
     {
       "class": "Druid",
-      "level": 28,
+      "level": 30,
       "name": "Areni Rue",
       "spec": "Feral",
       "specChecked": 1795772391,
@@ -47,7 +47,7 @@
     },
     {
       "class": "Druid",
-      "level": 59,
+      "level": 60,
       "name": "Bamba Forever",
       "spec": "Feral",
       "specChecked": 1795748082,
@@ -90,7 +90,7 @@
     },
     {
       "class": "Shaman",
-      "level": 56,
+      "level": 57,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -135,7 +135,7 @@
     },
     {
       "class": "Rogue",
-      "level": 54,
+      "level": 55,
       "name": "Cool Shoeshine",
       "rank": "Peon Plus",
       "spec": "Subtlety",
@@ -179,7 +179,7 @@
     },
     {
       "class": "Shaman",
-      "level": 25,
+      "level": 26,
       "name": "Diavolo Noctis",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -254,7 +254,7 @@
     },
     {
       "class": "Hunter",
-      "level": 48,
+      "level": 49,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Beast Mastery",
@@ -279,7 +279,7 @@
     },
     {
       "class": "Druid",
-      "level": 17,
+      "level": 18,
       "name": "Gizu Lepwn",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -400,7 +400,7 @@
     },
     {
       "class": "Mage",
-      "level": 45,
+      "level": 46,
       "name": "Lichard Rottingham",
       "specChecked": 1795794893,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lichard-rottingham"
@@ -573,7 +573,7 @@
     },
     {
       "class": "Paladin",
-      "level": 31,
+      "level": 32,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -582,7 +582,7 @@
     },
     {
       "class": "Warrior",
-      "level": 47,
+      "level": 48,
       "name": "Retail Enjoyers",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -635,7 +635,7 @@
     },
     {
       "class": "Rogue",
-      "level": 51,
+      "level": 52,
       "name": "Sira Levila",
       "signupRole": "Melee",
       "signupSeen": 1795737600,
@@ -697,7 +697,7 @@
     },
     {
       "class": "Hunter",
-      "level": 55,
+      "level": 56,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795772391,
@@ -814,7 +814,7 @@
     },
     {
       "class": "Priest",
-      "level": 46,
+      "level": 47,
       "name": "Zakalwe Priest",
       "spec": "Shadow",
       "specChecked": 1795731250,
@@ -838,6 +838,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-27T15:54:53Z",
+  "retrievedAt": "2026-11-27T19:11:37Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
