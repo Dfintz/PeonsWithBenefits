@@ -198,7 +198,7 @@
     },
     {
       "class": "Mage",
-      "level": 42,
+      "level": 43,
       "name": "Eerikki Winterborn",
       "spec": "Frost",
       "specChecked": 1795694095,
@@ -223,7 +223,7 @@
     },
     {
       "class": "Paladin",
-      "level": 53,
+      "level": 54,
       "name": "Emeline Thefake",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -369,7 +369,7 @@
     },
     {
       "class": "Warlock",
-      "level": 44,
+      "level": 45,
       "name": "Lam Ram",
       "spec": "Affliction",
       "specChecked": 1795706089,
@@ -493,7 +493,7 @@
     },
     {
       "class": "Priest",
-      "level": 6,
+      "level": 7,
       "name": "Papabocman Archbishop",
       "rank": "Side Hustle",
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/papabocman-archbishop"
@@ -551,7 +551,7 @@
     },
     {
       "class": "Warrior",
-      "level": 46,
+      "level": 47,
       "name": "Retail Enjoyers",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -803,6 +803,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-27T00:35:21Z",
+  "retrievedAt": "2026-11-27T03:39:52Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
