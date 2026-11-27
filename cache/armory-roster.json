@@ -30,7 +30,7 @@
     },
     {
       "class": "Druid",
-      "level": 27,
+      "level": 28,
       "name": "Areni Rue",
       "spec": "Feral",
       "specChecked": 1795772391,
@@ -90,7 +90,7 @@
     },
     {
       "class": "Shaman",
-      "level": 55,
+      "level": 56,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -161,7 +161,7 @@
     },
     {
       "class": "Druid",
-      "level": 41,
+      "level": 42,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -237,7 +237,7 @@
     },
     {
       "class": "Paladin",
-      "level": 54,
+      "level": 55,
       "name": "Emeline Thefake",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -392,11 +392,18 @@
     },
     {
       "class": "Shaman",
-      "level": 47,
+      "level": 48,
       "name": "Lex Lightcaster",
       "spec": "Enhancement",
       "specChecked": 1795735485,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lex-lightcaster"
+    },
+    {
+      "class": "Mage",
+      "level": 45,
+      "name": "Lichard Rottingham",
+      "specChecked": 1795794893,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lichard-rottingham"
     },
     {
       "class": "Rogue",
@@ -474,7 +481,7 @@
     },
     {
       "class": "Druid",
-      "level": 52,
+      "level": 53,
       "name": "No Fears",
       "signupRole": "Healer",
       "signupSeen": 1795737600,
@@ -485,7 +492,7 @@
     },
     {
       "class": "Hunter",
-      "level": 54,
+      "level": 55,
       "name": "N\u00edco Rob\u00ecn",
       "rank": "Peon Plus",
       "signupRole": "Ranged",
@@ -732,7 +739,7 @@
     },
     {
       "class": "Hunter",
-      "level": 35,
+      "level": 36,
       "name": "Turok Nergash",
       "spec": "Marksmanship",
       "specChecked": 1795735485,
@@ -807,7 +814,7 @@
     },
     {
       "class": "Priest",
-      "level": 45,
+      "level": 46,
       "name": "Zakalwe Priest",
       "spec": "Shadow",
       "specChecked": 1795731250,
@@ -824,13 +831,13 @@
     },
     {
       "class": "Shaman",
-      "level": 51,
+      "level": 52,
       "name": "Zephyr Windscar",
       "spec": "Enhancement",
       "specChecked": 1795786763,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-27T12:54:50Z",
+  "retrievedAt": "2026-11-27T15:54:53Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
