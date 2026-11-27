@@ -1,7 +1,7 @@
 {
   "format": "pwb-recruitment",
   "recruitment": {
-    "checked": 1795822763,
+    "checked": 1795823667,
     "guildId": "8003f5c8-af13-433e-b8d2-33fc1129ec7f",
     "openings": [
       {
@@ -41,7 +41,7 @@
     ],
     "source": "https://guildsofwow.com/peons-with-benefits",
     "status": "ok",
-    "updated": 1795822763
+    "updated": 1795823667
   },
   "version": 1
 }
