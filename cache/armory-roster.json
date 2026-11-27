@@ -101,6 +101,9 @@
       "class": "Priest",
       "level": 54,
       "name": "Bruce Martin",
+      "signupRole": "Healer",
+      "signupSeen": 1795737600,
+      "signupSpec": "Discipline",
       "spec": "Shadow",
       "specChecked": 1795748082,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/bruce-martin"
