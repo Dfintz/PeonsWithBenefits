@@ -21,6 +21,9 @@
       "class": "Mage",
       "level": 51,
       "name": "Aranith Jr",
+      "signupRole": "Ranged",
+      "signupSeen": 1795737600,
+      "signupSpec": "Frost",
       "spec": "Frost",
       "specChecked": 1795772391,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/aranith-jr"
@@ -479,6 +482,9 @@
       "level": 54,
       "name": "N\u00edco Rob\u00ecn",
       "rank": "Peon Plus",
+      "signupRole": "Ranged",
+      "signupSeen": 1795737600,
+      "signupSpec": "Beastmastery",
       "spec": "Beast Mastery",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/n%C3%ADco-rob%C3%ACn"
@@ -618,6 +624,9 @@
       "class": "Rogue",
       "level": 51,
       "name": "Sira Levila",
+      "signupRole": "Melee",
+      "signupSeen": 1795737600,
+      "signupSpec": "Subtlety",
       "spec": "Combat",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/sira-levila"
