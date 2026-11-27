@@ -4,7 +4,7 @@
       "class": "Paladin",
       "level": 16,
       "name": "Alexbeav Scourgelight",
-      "rank": "Peon Plus",
+      "rank": "Side Hustle",
       "spec": "Retribution",
       "specChecked": 1795772391,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/alexbeav-scourgelight"
@@ -197,6 +197,14 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dingy-bingy"
     },
     {
+      "class": "Priest",
+      "level": 14,
+      "name": "Dispelvis Decaysley",
+      "spec": "Shadow",
+      "specChecked": 1795784090,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dispelvis-decaysley"
+    },
+    {
       "class": "Mage",
       "level": 43,
       "name": "Eerikki Winterborn",
@@ -363,6 +371,7 @@
       "class": "Priest",
       "level": 13,
       "name": "Khata Sinweaver",
+      "rank": "Side Hustle",
       "spec": "Discipline",
       "specChecked": 1795772391,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/khata-sinweaver"
@@ -410,6 +419,7 @@
       "class": "Priest",
       "level": 24,
       "name": "Lymster Orel",
+      "rank": "Side Hustle",
       "spec": "Discipline",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/lymster-orel"
@@ -510,6 +520,7 @@
       "class": "Shaman",
       "level": 30,
       "name": "Pepis Tatis",
+      "rank": "Side Hustle",
       "spec": "Enhancement",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/pepis-tatis"
@@ -518,6 +529,7 @@
       "class": "Priest",
       "level": 34,
       "name": "Porph Prest",
+      "rank": "Side Hustle",
       "spec": "Shadow",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/porph-prest"
@@ -562,7 +574,7 @@
       "class": "Paladin",
       "level": 23,
       "name": "Rickie Sanchez",
-      "rank": "Peon Plus",
+      "rank": "Side Hustle",
       "spec": "Holy",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/rickie-sanchez"
@@ -715,6 +727,7 @@
       "class": "Paladin",
       "level": 30,
       "name": "Tzioukina Lights",
+      "rank": "Side Hustle",
       "spec": "Protection",
       "specChecked": 1795775960,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tzioukina-lights"
@@ -730,7 +743,7 @@
     },
     {
       "class": "Rogue",
-      "level": 57,
+      "level": 58,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -739,7 +752,7 @@
     },
     {
       "class": "Shaman",
-      "level": 47,
+      "level": 48,
       "name": "Velaelyn Khora",
       "spec": "Enhancement",
       "specChecked": 1795710412,
@@ -803,6 +816,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-27T09:54:50Z",
+  "retrievedAt": "2026-11-27T12:54:50Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
