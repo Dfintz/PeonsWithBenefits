@@ -476,6 +476,9 @@
       "class": "Druid",
       "level": 52,
       "name": "No Fears",
+      "signupRole": "Healer",
+      "signupSeen": 1795737600,
+      "signupSpec": "Restoration",
       "spec": "Restoration",
       "specChecked": 1795754385,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/no-fears"
