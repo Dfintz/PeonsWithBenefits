@@ -11,7 +11,7 @@
     },
     {
       "class": "Warrior",
-      "level": 42,
+      "level": 43,
       "name": "Ancient Spawn",
       "spec": "Fury",
       "specChecked": 1795814688,
@@ -229,7 +229,7 @@
     },
     {
       "class": "Paladin",
-      "level": 21,
+      "level": 22,
       "name": "Eizala Northborn",
       "spec": "Protection",
       "specChecked": 1795859666,
@@ -306,7 +306,7 @@
     },
     {
       "class": "Warrior",
-      "level": 38,
+      "level": 39,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -324,7 +324,7 @@
     },
     {
       "class": "Hunter",
-      "level": 32,
+      "level": 33,
       "name": "Honda Africa",
       "spec": "Marksmanship",
       "specChecked": 1795859666,
@@ -340,7 +340,7 @@
     },
     {
       "class": "Paladin",
-      "level": 37,
+      "level": 38,
       "name": "Ji Mbo",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -472,7 +472,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Morgruul Strife",
       "rank": "Peon Plus",
       "spec": "Arms",
@@ -537,7 +537,7 @@
     },
     {
       "class": "Priest",
-      "level": 47,
+      "level": 48,
       "name": "Pater Patapios",
       "spec": "Shadow",
       "specChecked": 1795835819,
@@ -581,7 +581,7 @@
     },
     {
       "class": "Paladin",
-      "level": 33,
+      "level": 34,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -643,7 +643,7 @@
     },
     {
       "class": "Rogue",
-      "level": 53,
+      "level": 54,
       "name": "Sira Levila",
       "signupRole": "Melee",
       "signupSeen": 1795824000,
@@ -743,7 +743,7 @@
       "name": "Truespoon Wolfstorm",
       "rank": "Fresh Peon",
       "spec": "Enhancement",
-      "specChecked": 1795775960,
+      "specChecked": 1795863248,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wolfstorm"
     },
     {
@@ -769,7 +769,7 @@
       "name": "Unwell Frank",
       "rank": "Peon Plus",
       "spec": "Affliction",
-      "specChecked": 1795775960,
+      "specChecked": 1795863248,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/unwell-frank"
     },
     {
@@ -778,7 +778,7 @@
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
-      "specChecked": 1795775960,
+      "specChecked": 1795863248,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/vasz-swiftstrike"
     },
     {
@@ -802,7 +802,7 @@
       "level": 39,
       "name": "Vicar Abracadaver",
       "spec": "Discipline",
-      "specChecked": 1795775960,
+      "specChecked": 1795863248,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/vicar-abracadaver"
     },
     {
@@ -810,7 +810,7 @@
       "level": 60,
       "name": "Voldemorph Jenkins",
       "spec": "Arcane",
-      "specChecked": 1795775960,
+      "specChecked": 1795863248,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/voldemorph-jenkins"
     },
     {
@@ -835,7 +835,7 @@
       "name": "Zarkos Vsall",
       "rank": "Peon Plus",
       "spec": "Combat",
-      "specChecked": 1795775960,
+      "specChecked": 1795863248,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zarkos-vsall"
     },
     {
@@ -847,6 +847,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-28T07:39:56Z",
+  "retrievedAt": "2026-11-28T10:54:08Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
