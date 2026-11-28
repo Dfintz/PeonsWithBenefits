@@ -725,6 +725,9 @@
       "level": 60,
       "name": "Tick Tock",
       "rank": "Peon Plus",
+      "signupRole": "Ranged",
+      "signupSeen": 1795824000,
+      "signupSpec": "Affliction",
       "spec": "Affliction",
       "specChecked": 1795862356,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/tick-tock"
