@@ -38,7 +38,7 @@
     },
     {
       "class": "Hunter",
-      "level": 36,
+      "level": 37,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -90,7 +90,7 @@
     },
     {
       "class": "Shaman",
-      "level": 58,
+      "level": 59,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -118,7 +118,7 @@
     },
     {
       "class": "Druid",
-      "level": 51,
+      "level": 52,
       "name": "Cat Pants",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -152,7 +152,7 @@
     },
     {
       "class": "Shaman",
-      "level": 53,
+      "level": 54,
       "name": "Dark Tuga",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -188,7 +188,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Dimitron Anton",
       "spec": "Protection",
       "specChecked": 1795859666,
@@ -209,6 +209,14 @@
       "spec": "Shadow",
       "specChecked": 1795871582,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dispelvis-decaysley"
+    },
+    {
+      "class": "Warlock",
+      "level": 38,
+      "name": "Dorlak Wayforger",
+      "spec": "Affliction",
+      "specChecked": 1795895691,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/dorlak-wayforger"
     },
     {
       "class": "Mage",
@@ -237,7 +245,7 @@
     },
     {
       "class": "Paladin",
-      "level": 55,
+      "level": 56,
       "name": "Emeline Thefake",
       "rank": "Peon Plus",
       "spec": "Retribution",
@@ -271,7 +279,7 @@
     },
     {
       "class": "Druid",
-      "level": 50,
+      "level": 51,
       "name": "Ginko Mushimaster",
       "spec": "Feral",
       "specChecked": 1795859666,
@@ -400,7 +408,7 @@
     },
     {
       "class": "Shaman",
-      "level": 49,
+      "level": 50,
       "name": "Lex Lightcaster",
       "spec": "Enhancement",
       "specChecked": 1795822763,
@@ -501,7 +509,7 @@
     },
     {
       "class": "Hunter",
-      "level": 56,
+      "level": 57,
       "name": "N\u00edco Rob\u00ecn",
       "rank": "Peon Plus",
       "signupRole": "Ranged",
@@ -564,7 +572,7 @@
     },
     {
       "class": "Mage",
-      "level": 26,
+      "level": 27,
       "name": "Prophet Nostradamous",
       "rank": "Peon Plus",
       "spec": "Arcane",
@@ -591,7 +599,7 @@
     },
     {
       "class": "Warrior",
-      "level": 49,
+      "level": 50,
       "name": "Retail Enjoyers",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -644,7 +652,7 @@
     },
     {
       "class": "Rogue",
-      "level": 54,
+      "level": 55,
       "name": "Sira Levila",
       "signupRole": "Melee",
       "signupSeen": 1795824000,
@@ -681,7 +689,7 @@
     },
     {
       "class": "Rogue",
-      "level": 41,
+      "level": 42,
       "name": "Sukuba Sinstitched",
       "spec": "Subtlety",
       "specChecked": 1795862356,
@@ -731,7 +739,7 @@
     },
     {
       "class": "Druid",
-      "level": 31,
+      "level": 32,
       "name": "Truespoon Wildmane",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -784,7 +792,7 @@
     },
     {
       "class": "Shaman",
-      "level": 49,
+      "level": 50,
       "name": "Velaelyn Khora",
       "spec": "Enhancement",
       "specChecked": 1795884875,
@@ -823,8 +831,16 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/xave-shadowflame"
     },
     {
+      "class": "Druid",
+      "level": 60,
+      "name": "Yipu Rabies",
+      "spec": "Balance",
+      "specChecked": 1795895691,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/yipu-rabies"
+    },
+    {
       "class": "Priest",
-      "level": 47,
+      "level": 48,
       "name": "Zakalwe Priest",
       "spec": "Shadow",
       "specChecked": 1795817651,
@@ -841,13 +857,13 @@
     },
     {
       "class": "Shaman",
-      "level": 53,
+      "level": 54,
       "name": "Zephyr Windscar",
       "spec": "Enhancement",
       "specChecked": 1795873171,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-28T16:54:35Z",
+  "retrievedAt": "2026-11-28T19:54:51Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
