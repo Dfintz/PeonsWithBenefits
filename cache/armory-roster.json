@@ -38,7 +38,7 @@
     },
     {
       "class": "Hunter",
-      "level": 35,
+      "level": 36,
       "name": "Balan Stickyhoof",
       "rank": "Peon Plus",
       "spec": "Beast Mastery",
@@ -82,7 +82,7 @@
     },
     {
       "class": "Priest",
-      "level": 28,
+      "level": 30,
       "name": "Blairy Witch",
       "spec": "Shadow",
       "specChecked": 1795877691,
@@ -90,7 +90,7 @@
     },
     {
       "class": "Shaman",
-      "level": 57,
+      "level": 58,
       "name": "Bonkmaster Flex",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -188,7 +188,7 @@
     },
     {
       "class": "Warrior",
-      "level": 35,
+      "level": 36,
       "name": "Dimitron Anton",
       "spec": "Protection",
       "specChecked": 1795859666,
@@ -279,7 +279,7 @@
     },
     {
       "class": "Druid",
-      "level": 20,
+      "level": 21,
       "name": "Gizu Lepwn",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -306,7 +306,7 @@
     },
     {
       "class": "Warrior",
-      "level": 39,
+      "level": 40,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -416,7 +416,7 @@
     },
     {
       "class": "Rogue",
-      "level": 42,
+      "level": 43,
       "name": "Lilith Pierce",
       "spec": "Combat",
       "specChecked": 1795802047,
@@ -617,7 +617,7 @@
     },
     {
       "class": "Mage",
-      "level": 38,
+      "level": 39,
       "name": "Rufus Thornbury",
       "rank": "Peon Plus",
       "spec": "Frost",
@@ -689,7 +689,7 @@
     },
     {
       "class": "Shaman",
-      "level": 36,
+      "level": 37,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795862356,
@@ -784,10 +784,10 @@
     },
     {
       "class": "Shaman",
-      "level": 48,
+      "level": 49,
       "name": "Velaelyn Khora",
       "spec": "Enhancement",
-      "specChecked": 1795797595,
+      "specChecked": 1795884875,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/velaelyn-khora"
     },
     {
@@ -848,6 +848,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-28T13:54:12Z",
+  "retrievedAt": "2026-11-28T16:54:35Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
