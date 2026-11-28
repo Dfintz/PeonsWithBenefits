@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 51,
+      "level": 52,
       "name": "Aranith Jr",
       "signupRole": "Ranged",
       "signupSeen": 1795824000,
@@ -118,7 +118,7 @@
     },
     {
       "class": "Druid",
-      "level": 50,
+      "level": 51,
       "name": "Cat Pants",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -161,7 +161,7 @@
     },
     {
       "class": "Druid",
-      "level": 42,
+      "level": 43,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -179,7 +179,7 @@
     },
     {
       "class": "Shaman",
-      "level": 26,
+      "level": 27,
       "name": "Diavolo Noctis",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -212,7 +212,7 @@
     },
     {
       "class": "Mage",
-      "level": 43,
+      "level": 44,
       "name": "Eerikki Winterborn",
       "spec": "Frost",
       "specChecked": 1795782071,
@@ -263,7 +263,7 @@
     },
     {
       "class": "Druid",
-      "level": 39,
+      "level": 41,
       "name": "Gambino Ragehoof",
       "spec": "Feral",
       "specChecked": 1795772391,
@@ -279,7 +279,7 @@
     },
     {
       "class": "Druid",
-      "level": 18,
+      "level": 20,
       "name": "Gizu Lepwn",
       "rank": "Fresh Peon",
       "spec": "Feral",
@@ -306,7 +306,7 @@
     },
     {
       "class": "Warrior",
-      "level": 36,
+      "level": 37,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -372,6 +372,14 @@
       "spec": "Protection",
       "specChecked": 1795772391,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/kargan-vercceti"
+    },
+    {
+      "class": "Warlock",
+      "level": 60,
+      "name": "Kelklet Cepeye",
+      "spec": "Affliction",
+      "specChecked": 1795828557,
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/kelklet-cepeye"
     },
     {
       "class": "Priest",
@@ -447,7 +455,7 @@
     },
     {
       "class": "Shaman",
-      "level": 34,
+      "level": 35,
       "name": "Micol Jordan",
       "spec": "Enhancement",
       "specChecked": 1795775148,
@@ -492,7 +500,7 @@
     },
     {
       "class": "Hunter",
-      "level": 55,
+      "level": 56,
       "name": "N\u00edco Rob\u00ecn",
       "rank": "Peon Plus",
       "signupRole": "Ranged",
@@ -573,7 +581,7 @@
     },
     {
       "class": "Paladin",
-      "level": 32,
+      "level": 33,
       "name": "Ravenheart Sorrowlight",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -582,7 +590,7 @@
     },
     {
       "class": "Warrior",
-      "level": 48,
+      "level": 49,
       "name": "Retail Enjoyers",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -635,7 +643,7 @@
     },
     {
       "class": "Rogue",
-      "level": 52,
+      "level": 53,
       "name": "Sira Levila",
       "signupRole": "Melee",
       "signupSeen": 1795824000,
@@ -680,7 +688,7 @@
     },
     {
       "class": "Shaman",
-      "level": 35,
+      "level": 36,
       "name": "Tahuln Stickyhoof",
       "spec": "Restoration",
       "specChecked": 1795775148,
@@ -722,7 +730,7 @@
     },
     {
       "class": "Druid",
-      "level": 29,
+      "level": 30,
       "name": "Truespoon Wildmane",
       "spec": "Feral",
       "specChecked": 1795775148,
@@ -765,7 +773,7 @@
     },
     {
       "class": "Rogue",
-      "level": 58,
+      "level": 59,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -831,13 +839,13 @@
     },
     {
       "class": "Shaman",
-      "level": 52,
+      "level": 53,
       "name": "Zephyr Windscar",
       "spec": "Enhancement",
       "specChecked": 1795786763,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-27T22:14:11Z",
+  "retrievedAt": "2026-11-28T01:15:57Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
