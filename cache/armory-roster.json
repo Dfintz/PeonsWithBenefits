@@ -19,7 +19,7 @@
     },
     {
       "class": "Mage",
-      "level": 52,
+      "level": 53,
       "name": "Aranith Jr",
       "signupRole": "Ranged",
       "signupSeen": 1795824000,
@@ -30,7 +30,7 @@
     },
     {
       "class": "Druid",
-      "level": 30,
+      "level": 31,
       "name": "Areni Rue",
       "spec": "Feral",
       "specChecked": 1795772391,
@@ -127,7 +127,7 @@
     },
     {
       "class": "Druid",
-      "level": 39,
+      "level": 40,
       "name": "Catriel Agartha",
       "spec": "Feral",
       "specChecked": 1795772391,
@@ -161,7 +161,7 @@
     },
     {
       "class": "Druid",
-      "level": 43,
+      "level": 44,
       "name": "Deadly Pastrami",
       "rank": "Peon Plus",
       "spec": "Feral",
@@ -170,7 +170,7 @@
     },
     {
       "class": "Priest",
-      "level": 33,
+      "level": 34,
       "name": "Detroit Ishorde",
       "rank": "Peon Plus",
       "spec": "Discipline",
@@ -179,7 +179,7 @@
     },
     {
       "class": "Shaman",
-      "level": 27,
+      "level": 28,
       "name": "Diavolo Noctis",
       "rank": "Peon Plus",
       "spec": "Enhancement",
@@ -254,7 +254,7 @@
     },
     {
       "class": "Hunter",
-      "level": 49,
+      "level": 50,
       "name": "Fintzgar Trapstampler",
       "rank": "Benefits Admin",
       "spec": "Beast Mastery",
@@ -306,7 +306,7 @@
     },
     {
       "class": "Warrior",
-      "level": 37,
+      "level": 38,
       "name": "Gree Malkin",
       "rank": "Peon Plus",
       "spec": "Protection",
@@ -400,7 +400,7 @@
     },
     {
       "class": "Shaman",
-      "level": 48,
+      "level": 49,
       "name": "Lex Lightcaster",
       "spec": "Enhancement",
       "specChecked": 1795822763,
@@ -680,7 +680,7 @@
     },
     {
       "class": "Rogue",
-      "level": 40,
+      "level": 41,
       "name": "Sukuba Sinstitched",
       "spec": "Subtlety",
       "specChecked": 1795775148,
@@ -705,7 +705,7 @@
     },
     {
       "class": "Hunter",
-      "level": 56,
+      "level": 57,
       "name": "Temu Rexar",
       "spec": "Marksmanship",
       "specChecked": 1795772391,
@@ -730,8 +730,9 @@
     },
     {
       "class": "Druid",
-      "level": 30,
+      "level": 31,
       "name": "Truespoon Wildmane",
+      "rank": "Peon Plus",
       "spec": "Feral",
       "specChecked": 1795775148,
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/truespoon-wildmane"
@@ -773,7 +774,7 @@
     },
     {
       "class": "Rogue",
-      "level": 59,
+      "level": 60,
       "name": "Vasz Swiftstrike",
       "rank": "Head Peon",
       "spec": "Subtlety",
@@ -846,6 +847,6 @@
       "url": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/zephyr-windscar"
     }
   ],
-  "retrievedAt": "2026-11-28T01:15:57Z",
+  "retrievedAt": "2026-11-28T04:27:20Z",
   "source": "https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/guild/peons-with-benefits"
 }
